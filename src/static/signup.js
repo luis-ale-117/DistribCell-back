@@ -36,22 +36,15 @@ form.addEventListener('submit', async (e) => {
             .then(data => {
               if (data != null) { //if data
                 if (data['Error']) {
-                  //setIsSubmitted(false); //user not submitted
                   alert(data['Error']);
                   //navegate("/");
                 }
                 else {
                   alert(data['Mensaje'])
-                    //hijoAPadre(data)
-                    //setIsSubmitted(true); //user submitted
-                    /*fetch('/home')
-                    .then(response => response.json())
-                    .then(data => console.log(data))//navegate("/Home");*/
                 }
               }
               else { //if data is null
                 alert('Algo salio mal')
-                //setIsSubmitted(false); //user not submitted
               }
             })
             //get server error
@@ -64,5 +57,4 @@ form.addEventListener('submit', async (e) => {
                 .catch(_ => console.log("Error"));
             });
     }
-    
 })
