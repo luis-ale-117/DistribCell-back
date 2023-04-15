@@ -54,7 +54,7 @@ To start the project go to the `src` directory and run the following command
 ```bash
 python index.py
 ```
-If you install or delete any library run the following command to update `requiremets.txt`
+If you install or delete any library run the following command to update `requirements.txt`
 ```bash
 pip freeeze > requirements.txt
 ```
