@@ -5,8 +5,9 @@ Repo with the backend devolpment of the Cellular Automaton project for TT
 ***
 All the programs you must have to run.
 ```
+$ git
 $ Python10
-$ mysql
+$ mysql or mariadb (For linux)
 ```
 ### Installation
 ***
@@ -30,7 +31,7 @@ The above command will create a directory called `.env` that will store the pyth
 
 For linux
 ```bash
-source venv/bin/activate
+source .env/bin/activate
 ```
 For windows
 ```cmd
@@ -58,3 +59,44 @@ If you install or delete any library run the following command to update `requir
 pip freeeze > requirements.txt
 ```
 
+## Contribution
+For contributing to this repository and send your changes, first you need to create a `new branch` where you can save your changes without affecting `main`. To create a new branch use
+```bash
+git checkout -b <new-branch-with-meaningfull-short-name>
+```
+> NOTE: `main` branch is protected, so you always need to create a new branch to publish your changes.
+
+Once you are in the `new branch` you can safely make your changes.
+To see the list of branches you have use
+```bash
+git branch
+```
+> NOTE: Exit pressing `q` on the keyboard
+
+To change between branches use the following command
+```bash
+git checkout <branch-name>
+```
+To see the commits (like checkpoints) of the current branch use
+```bash
+git log
+```
+> NOTE: Exit pressing `q` on the keyboard
+
+To save your changes on a commit, first go to the root directory of this project and execute
+```bash
+git add .
+```
+Then make a commit of the changes you made with descriptive message of them using
+```bash
+git commit -m "<Great-description-of-your-changes>"
+```
+> TIP: Make small changes and commit them frecuently so if you break something you can rollback to a previous commit.
+
+Once all your changes and commits are ready, send them to the remote repository on github using
+```bash
+git push origin <your-branch-name>
+```
+After that command your branch with your changes are on GitHub, now you need to create a `pull request` to merge `your branch` into `main`. So go to this project on GitHub logged with your account. If you recently `pushed` your changes, you should see a warning that says "< your-branch > had recent pushes", with a green button that says "Compare & pull request".
+
+Clic the green button and navigate until see another green button to make the pull request. Leave a bref and descriptive title and comment anything you want on the corresponding section.
