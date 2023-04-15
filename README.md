@@ -13,6 +13,12 @@ $ mysql
 A little intro about the installation.
 
 First clone the repository of the project
+
+Using ssh (recommended)
+```bash
+git clone git@github.com:luis-ale-117/DistribCell-back.git
+```
+Using https
 ```bash
 git clone https://github.com/luis-ale-117/DistribCell-back.git
 ```
