@@ -22,8 +22,8 @@ users_blueprint = Blueprint('users', __name__)
 #Funcion users()
 def delete():
     email = session['email']
-    #db.session.query(User).filter(User.email == email).delete()
-    #db.session.commit()
+    db.session.query(User).filter(User.email == email).delete()
+    db.session.commit()
     print("va a regresar")
     return redirect('/logout')
 def update():

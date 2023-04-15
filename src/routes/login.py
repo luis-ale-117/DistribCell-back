@@ -44,7 +44,7 @@ def login():
             resp = db.session.query(User).filter(User.email == email).filter(User.password == password).first()
             #Si no existen usuario 
             if resp is None:
-                return {'Mensaje':'Usuario o contraseña incorrecta'}
+                return render_template('login.html',error="Usuario o contraseña incorrectos")
             else:
                 session['email'] = email
                 session['name'] = resp.name
@@ -55,7 +55,7 @@ def login():
             print(e)
             return e 
     if request.method == 'DELETE':
-        return render_template('login.html')
+        return render_template('login.html',error="Algo no esta bien")
     
 @login_blueprint.route("/logout",methods=['GET','DELETE'])
 def logout():
