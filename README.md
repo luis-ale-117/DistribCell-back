@@ -29,7 +29,7 @@ First clone the repository of the project
 
 If you already did the ssh key setup on your computer, you can clone the project using ssh (recommended). Otherwise, you can do the setup following [this guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and then clone the project using ssh. If you don't want to do the setup, you can clone the project using https (not recommended) following [this guide](https://gitprotect.io/blog/how-to-clone-using-https-in-git/).
 
-If you are using `ssh` and `Git Bash` for windows, you may need to reload the ssh keys after cloning the project. To do that, run the following command on `Git Bash`
+If you are using `ssh` and `Git Bash` for windows, you may need to reload the ssh keys before cloning the project. To do that, run the following command on `Git Bash`
 ```bash
 eval $(ssh-agent -s)
 ```
