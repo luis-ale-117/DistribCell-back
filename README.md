@@ -9,9 +9,21 @@ $ git
 $ Python10
 $ mysql or mariadb (For linux)
 ```
+### MySQL setup
+Once you have installed MySQL or MariaDB (recommended for linux) and you are able to connect to MySQL as `root` user, create a new user with
+```sql
+CREATE USER '<user>'@'localhost' IDENTIFIED BY '<password>';
+```
+Then grant this `new user` access to a `new database` with the following command
+```sql
+GRANT ALL PRIVILEGES ON <database-name>.* TO '<user>'@'localhost';
+```
+After that, login with the new `user` credentials to MySQL and create the database with
+```sql
+CREATE DATABASE <database-name>; 
+```
 ### Installation
 ***
-A little intro about the installation.
 
 First clone the repository of the project
 
@@ -27,7 +39,31 @@ Go to the project directory and create a virtual environment to install python p
 ```bash
 python -m venv .env
 ```
-The above command will create a directory called `.env` that will store the python version and packages for this project. To activate your virtual environment you must run the following command on every terminal you open for this project directory.
+The above command will create a directory called `.env` that will store the python version and packages for this project.
+
+Before activating your virtual environment, you need to set the database credentials on your python virtual environment. Go to `.env/bin/` (for linux) or `.env\Scripts\` (for windows). 
+
+For linux open the file `activate` and add the following lines at the bottom
+```bash
+export DB_USER=<user>
+export DB_PASSWORD=<password>
+export DB_NAME=<database-name>
+# export DB_HOST=<host> # Optional
+# export DB_PORT=<port> # Optional
+```
+For windows open the file `activate.bat` and add the following lines at the bottom
+```cmd
+set DB_USER=<user>
+set DB_PASSWORD=<password>
+set DB_NAME=<database-name>
+:: set DB_HOST=<host> :: Optional
+:: set DB_PORT=<port> :: Optional
+```
+> NOTE: If you don't set `DB_HOST` and `DB_PORT` the default values are `localhost` and `3306` respectively.
+
+> NOTE: Once you have saved the file, every time you activate your virtual environment the database credentials will be set on current terminal.
+
+To activate your virtual environment you must run the following command on every terminal you open for this project directory.
 
 For linux
 ```bash
@@ -37,6 +73,8 @@ For windows
 ```cmd
 .env\Scripts\activate.bat
 ```
+> NOTE: To deactivate the virtual environment run `deactivate` on the terminal.
+
 You may also need to install some headers and libraries in order to install `mysqlclient` library. For debian and ubuntu use
 ```bash
 sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
@@ -54,6 +92,10 @@ To start the project go to the `src` directory and run the following command
 ```bash
 python index.py
 ```
+> NOTE: This also create all the tables and relations needed for the project.
+
+> NOTE: To exit the program press `Ctrl + C` on the terminal.
+
 If you install or delete any library run the following command to update `requirements.txt`
 ```bash
 pip freeeze > requirements.txt
