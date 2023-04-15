@@ -79,7 +79,8 @@ You may also need to install some headers and libraries in order to install `mys
 ```bash
 sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
 ```
-For further information visit [pip reference](https://pypi.org/project/mysqlclient/).
+For further information visit [mysqlclient reference](https://pypi.org/project/mysqlclient/).
+
 Once the virtual environment is up, run the following command to update `pip` and install `wheel` and `setuptools` to avoid possible warnings and errors when installing the libraries.
 ```bash
 pip install wheel setuptools pip --upgrade
