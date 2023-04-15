@@ -16,7 +16,7 @@ First clone the repository of the project
 ```bash
 git clone https://github.com/luis-ale-117/DistribCell-back.git
 ```
-Go to the projecto directory and create a virtual environment to install python packages only for this project and don't affect your global installation
+Go to the project directory and create a virtual environment to install python packages only for this project and don't affect your global installation
 ```bash
 python -m venv .env
 ```
