@@ -1,5 +1,7 @@
+import os
+
 class Key():
-    key = 'MiContraseña'
+    key = os.getenv("PASSWORD_KEY","MiConstraseña")
     def __init__(self, key):
         self.key = key
     
