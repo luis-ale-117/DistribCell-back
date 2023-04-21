@@ -1,6 +1,6 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
-github.com/luis-ale-117/cella v0.0.0-20230417020039-ecf8ae4f19ec h1:0T79aW32HTj0IgUJxPG9nY22Cc0cxcfWC4o6TbyLk/E=
-github.com/luis-ale-117/cella v0.0.0-20230417020039-ecf8ae4f19ec/go.mod h1:8fxJVcdEOxgtpYapmvAhW3rQSqZ32M3A2fnNqzUC+l4=
+github.com/luis-ale-117/cella v0.0.0-20230421020456-11893639c279 h1:gJ5vPAsnPTuJIlNlnO7Uo9q/dvhCTj/iPiZkCdBXWKk=
+github.com/luis-ale-117/cella v0.0.0-20230421020456-11893639c279/go.mod h1:8fxJVcdEOxgtpYapmvAhW3rQSqZ32M3A2fnNqzUC+l4=
 github.com/maja42/goval v1.3.1 h1:F/3Qqi0DX0VO9pVGuzbPVVI9WDI5L8muzMt+OAjh1xw=
 github.com/maja42/goval v1.3.1/go.mod h1:LDMwF8ocOwIsMZdwoyHC/3UpV8ABDwEzalxkVV2z/rI=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
