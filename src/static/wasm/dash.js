@@ -2,6 +2,8 @@
 const playground = document.getElementById('grid');
 const btnStep = document.getElementById('btnStep');
 const caConfigForm = document.getElementById('ca-configForm')
+const caRulesForm = document.getElementById('ca-rulesForm')
+const caRulesList = document.getElementById('ca-rulesList')
 
 const go = new Go();
 fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
@@ -51,6 +53,32 @@ go.run(result.instance);
         fragment.appendChild(tableCA)
         playground.appendChild(fragment)
     }
+    const loadRulesOnUI = (rules) => {
+        while (caRulesList.firstChild) {
+            caRulesList.removeChild(caRulesList.firstChild);
+        }
+        fragment = document.createDocumentFragment()
+        for (let i = 0; i < rules.length; i++) {
+            rule = document.createElement('li')
+            condition = document.createElement('span')
+            state = document.createElement('span')
+            condition.textContent = rules[i].condition + " -> "
+            state.textContent = rules[i].state
+            rule.appendChild(condition)
+            rule.appendChild(state)
+            btnDelete = document.createElement('button')
+            btnDelete.textContent = "Borrar"
+            btnDelete.addEventListener('click', () => {
+                rules.splice(i, 1)
+                loadRulesOnUI(rules)
+                ca.setRules(rules)
+            })
+            rule.appendChild(btnDelete)
+            fragment.appendChild(rule)
+        }
+        caRulesList.appendChild(fragment)
+    }
+
     //////////////////
     let conf = {
         numStates: parseInt(caConfigForm.elements['ca-numStates'].value),
@@ -64,6 +92,7 @@ go.run(result.instance);
         Rule2d("n11 == 0 && s1 == 3", 1),
         Rule2d("0==0", 0)
     ]
+    loadRulesOnUI(rules)
     ca.setRules(rules)
     // Default a random matrix. TODO: Listen for user changes on UI
     err = ca.loadInitGrid(randomMatrix(conf.width, conf.height,conf.numStates))
@@ -103,6 +132,19 @@ go.run(result.instance);
         }
         cellMatrix = ca.getInitGrid()
         loadMatrixOnUI(cellMatrix)
+    })
+    caRulesForm.addEventListener('submit', (e) => {
+        e.preventDefault()
+        condition = caRulesForm.elements['ca-condition'].value
+        state = parseInt(caRulesForm.elements['ca-state'].value)
+        if (condition == "") {
+            return
+        }
+        rules.push(Rule2d(condition, state))
+        loadRulesOnUI(rules)
+        ca.setRules(rules)
+        caRulesForm.elements['ca-condition'].value = ""
+        caRulesForm.elements['ca-state'].value = ""
     })
 });
 } else {
