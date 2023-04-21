@@ -121,6 +121,21 @@ func CellularAumtomaton(this js.Value, args []js.Value) interface{} {
 		fmt.Println("Aux Right:", auxRight)
 		return nil
 	}))
+	jsCa.Set("updateConfig", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		// Create cellular automaton
+		numStates = args[0].Int()
+		width = args[1].Int()
+		height = args[2].Int()
+		ca = cella.NewCella2d(width, height, numStates)
+		ca.SetInitGrid(cella.NewGrid(width, height))
+		ca.SetNextGrid(cella.NewGrid(width, height))
+
+		// JavaScript object attributes
+		jsCa.Set("width", width)
+		jsCa.Set("height", height)
+		jsCa.Set("numStates", numStates)
+		return nil
+	}))
 
 	return jsCa
 }

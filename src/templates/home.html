@@ -2,7 +2,16 @@
 
 <body>
 	{% include './navbar.html' %}
-	<div class="container" id="cellular-automaton">
+	<div class="container" id="cellular-automaton" style="background-color: white;">
+		<form id="ca-configForm">
+			<label for="ca-width">Ancho</label>
+			<input id="ca-width" name="ca-width" type="number" min="3" step="1" value="10">
+			<label for="ca-height">Alto</label>
+			<input id="ca-height" name="ca-height" type="number" min="3" step="1" value="10">
+			<label for="ca-numStates">Numero de estados</label>
+			<input id="ca-numStates" name="ca-numStates" type="number" min="2" max="256" step="1" value="2">
+			<input type="submit" value="Cargar">
+		</form>
 		<button id="btnStep">Siguiente</button>
 		<div id="grid">
 			
