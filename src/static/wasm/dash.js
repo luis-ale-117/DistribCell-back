@@ -28,20 +28,7 @@ go.run(result.instance);
         }
         return matrix;
     }
-    const loadMatrixOnUI = (cellMatrix, justUpdate = false) => {
-        if (justUpdate) {
-            // Just update the matrix on the UI
-            table = playground.firstChild
-            rows = Array.from(table.children)
-            for (let i = 0; i < conf.height; i++) {
-                cells = Array.from(rows[i].children)
-                for (let j = 0; j < conf.width; j++) {
-                    cells[j].dataset.state = cellMatrix[i][j]
-                    cells[j].style.backgroundColor = statesColors[cellMatrix[i][j]]
-                }
-            }
-            return
-        }
+    const loadMatrixOnUI = (cellMatrix) => {
         // Remove all the children of the playground
         while (playground.firstChild) {
             playground.removeChild(playground.firstChild);
@@ -67,8 +54,13 @@ go.run(result.instance);
         }
         tableCA.addEventListener('click', (e) => {
             if (e.target.tagName == 'TD') {
-                cellMatrix[e.target.dataset.y][e.target.dataset.x] = parseInt(selectedState)
-                loadMatrixOnUI(cellMatrix,true) // Just update the matrix on the UI
+                newState = parseInt(selectedState)
+                x = parseInt(e.target.dataset.x)
+                y = parseInt(e.target.dataset.y)
+                e.target.dataset.state = newState
+                cellMatrix[y][x] = newState
+                ca.updateCellState(x, y, newState)
+                loadMatrixOnUI(cellMatrix) // Just update the matrix on the UI
             }
         })
         fragment.appendChild(tableCA)
@@ -129,7 +121,7 @@ go.run(result.instance);
             colorPicker.style.border = "1px solid black"
             colorPicker.addEventListener('change', () => {
                 statesColors[colorPicker.dataset.state] = colorPicker.value
-                loadMatrixOnUI(cellMatrix, true)
+                loadMatrixOnUI(cellMatrix)
             })
             color.appendChild(colorPicker)
             statesLabelRow.appendChild(state)
@@ -140,12 +132,12 @@ go.run(result.instance);
         caStatesColors.appendChild(fragment)
     }            
     //////////////////
-    let conf = {
+    const conf = {
         numStates: parseInt(caConfigForm.elements['ca-numStates'].value),
         width: parseInt(caConfigForm.elements['ca-width'].value),
         height: parseInt(caConfigForm.elements['ca-height'].value)
     }
-    let ca = CellularAumtomaton(conf.numStates, conf.width, conf.height)
+    const ca = CellularAumtomaton(conf.numStates, conf.width, conf.height)
     // Default (Conway's game of life) TODO: Load from USER
     let rules = [
         Rule2d("n11 == 1 && (s1 == 2 || s1 == 3)", 1),
@@ -182,7 +174,7 @@ go.run(result.instance);
         // Make a copy of the matrix to be able to modify it
         cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
         // Update the grid in the UI
-        loadMatrixOnUI(cellMatrix, true)
+        loadMatrixOnUI(cellMatrix)
     })
 
     caConfigForm.addEventListener('submit', (e) => {
