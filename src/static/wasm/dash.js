@@ -15,6 +15,8 @@ if (WebAssembly.validate(buffer)) {
 WebAssembly.instantiate(buffer, go.importObject).then(result => {
 go.run(result.instance);
     let statesColors = ["#000000", "#ffffff"]
+    let selectedState = 0
+    let selectedStateTD = null
     const randomMatrix = (width, height, numStates) => {
         let matrix = [];
         for (let i = 0; i < height; i++) {
@@ -38,21 +40,25 @@ go.run(result.instance);
             row = document.createElement('tr')
             for (let j = 0; j < conf.width; j++) {
                 cell = document.createElement('td')
-                cell.setAttribute('data-state', cellMatrix[i][j])
-                cell.setAttribute('data-x', i)
-                cell.setAttribute('data-y', j)
+                cell.dataset.state = cellMatrix[i][j]
+                cell.dataset.x = j
+                cell.dataset.y = i
                 //////// Only game of life by now
                 cell.style.width = "20px"
                 cell.style.height = "20px"
                 cell.style.border = "1px solid black"
-                console.log(cellMatrix[i][j])
-                console.log(statesColors)
                 cell.style.backgroundColor = statesColors[cellMatrix[i][j]]
                 //cell.textContent = cellMatrix[i][j]
                 row.appendChild(cell)
             }
             tableCA.appendChild(row)
         }
+        tableCA.addEventListener('click', (e) => {
+            if (e.target.tagName == 'TD') {
+                cellMatrix[e.target.dataset.y][e.target.dataset.x] = selectedState
+                loadMatrixOnUI(cellMatrix)
+            }
+        })
         fragment.appendChild(tableCA)
         playground.appendChild(fragment)
     }
@@ -93,6 +99,18 @@ go.run(result.instance);
             const color = document.createElement('td')
             const colorPicker = document.createElement('input')
             state.textContent = i
+            state.dataset.state = i
+            state.addEventListener('click', () => {
+                if (selectedStateTD != null) {
+                    selectedStateTD.style.backgroundColor = "" // Previous selected state background color reset
+                }
+                selectedStateTD = state
+                state.style.backgroundColor = "#aaff00" // Green bright
+                selectedState = state.dataset.state
+                console.log(selectedState)
+                console.log(selectedStateTD)
+
+            })
             colorPicker.setAttribute('type', 'color')
             colorPicker.value = statesColors[i]
             colorPicker.dataset.state = i
@@ -126,6 +144,9 @@ go.run(result.instance);
     ]
     loadRulesOnUI(rules)
     loadStatesColorsOnUI(statesColors)
+    selectedStateTD = caStatesColors.firstChild?.firstChild
+    selectedStateTD.style.backgroundColor = "#aaff00" // Green bright
+    console.log(selectedStateTD)
     ca.setRules(rules)
     // Default a random matrix. TODO: Listen for user changes on UI
     err = ca.loadInitGrid(randomMatrix(conf.width, conf.height,conf.numStates))
@@ -134,6 +155,8 @@ go.run(result.instance);
         return
     }
     cellMatrix = ca.getInitGrid()
+    // Make a copy of the matrix to be able to modify it
+    cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
     loadMatrixOnUI(cellMatrix)
 
     //////////////////////////////////////////////
@@ -146,6 +169,8 @@ go.run(result.instance);
             return
         }
         cellMatrix = ca.getInitGrid()
+        // Make a copy of the matrix to be able to modify it
+        cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
         // Update the grid in the UI
         loadMatrixOnUI(cellMatrix)
     })
@@ -164,6 +189,8 @@ go.run(result.instance);
             return
         }
         cellMatrix = ca.getInitGrid()
+        // Make a copy of the matrix to be able to modify it
+        cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
         loadMatrixOnUI(cellMatrix)
     })
     caRulesForm.addEventListener('submit', (e) => {
