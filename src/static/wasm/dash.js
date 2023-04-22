@@ -28,18 +28,31 @@ go.run(result.instance);
         }
         return matrix;
     }
-    const loadMatrixOnUI = (cellMatrix) => {
+    const loadMatrixOnUI = (cellMatrix, justUpdate = false) => {
+        if (justUpdate) {
+            // Just update the matrix on the UI
+            table = playground.firstChild
+            rows = Array.from(table.children)
+            for (let i = 0; i < conf.height; i++) {
+                cells = Array.from(rows[i].children)
+                for (let j = 0; j < conf.width; j++) {
+                    cells[j].dataset.state = cellMatrix[i][j]
+                    cells[j].style.backgroundColor = statesColors[cellMatrix[i][j]]
+                }
+            }
+            return
+        }
         // Remove all the children of the playground
         while (playground.firstChild) {
             playground.removeChild(playground.firstChild);
         }
-        fragment = document.createDocumentFragment()
-        tableCA = document.createElement('table')
+        const fragment = document.createDocumentFragment()
+        const tableCA = document.createElement('table')
         tableCA.style.backgroundColor = 'white'
         for (let i = 0; i < conf.height; i++) {
-            row = document.createElement('tr')
+            const row = document.createElement('tr')
             for (let j = 0; j < conf.width; j++) {
-                cell = document.createElement('td')
+                const cell = document.createElement('td')
                 cell.dataset.state = cellMatrix[i][j]
                 cell.dataset.x = j
                 cell.dataset.y = i
@@ -48,15 +61,14 @@ go.run(result.instance);
                 cell.style.height = "20px"
                 cell.style.border = "1px solid black"
                 cell.style.backgroundColor = statesColors[cellMatrix[i][j]]
-                //cell.textContent = cellMatrix[i][j]
                 row.appendChild(cell)
             }
             tableCA.appendChild(row)
         }
         tableCA.addEventListener('click', (e) => {
             if (e.target.tagName == 'TD') {
-                cellMatrix[e.target.dataset.y][e.target.dataset.x] = selectedState
-                loadMatrixOnUI(cellMatrix)
+                cellMatrix[e.target.dataset.y][e.target.dataset.x] = parseInt(selectedState)
+                loadMatrixOnUI(cellMatrix,true) // Just update the matrix on the UI
             }
         })
         fragment.appendChild(tableCA)
@@ -66,16 +78,16 @@ go.run(result.instance);
         while (caRulesList.firstChild) {
             caRulesList.removeChild(caRulesList.firstChild);
         }
-        fragment = document.createDocumentFragment()
+        const fragment = document.createDocumentFragment()
         for (let i = 0; i < rules.length; i++) {
-            rule = document.createElement('li')
-            condition = document.createElement('span')
-            state = document.createElement('span')
+            const rule = document.createElement('li')
+            const condition = document.createElement('span')
+            const state = document.createElement('span')
+            const btnDelete = document.createElement('button')
             condition.textContent = rules[i].condition + " -> "
             state.textContent = rules[i].state
             rule.appendChild(condition)
             rule.appendChild(state)
-            btnDelete = document.createElement('button')
             btnDelete.textContent = "Borrar"
             btnDelete.addEventListener('click', () => {
                 rules.splice(i, 1)
@@ -91,9 +103,9 @@ go.run(result.instance);
         while (caStatesColors.firstChild) {
             caStatesColors.removeChild(caStatesColors.firstChild);
         }
-        fragment = document.createDocumentFragment()
-        statesLabelRow = document.createElement('tr')
-        statesColorRow = document.createElement('tr')
+        const fragment = document.createDocumentFragment()
+        const statesLabelRow = document.createElement('tr')
+        const statesColorRow = document.createElement('tr')
         for (let i = 0; i < statesColors.length; i++) {
             const state = document.createElement('td')
             const color = document.createElement('td')
@@ -107,8 +119,6 @@ go.run(result.instance);
                 selectedStateTD = state
                 state.style.backgroundColor = "#aaff00" // Green bright
                 selectedState = state.dataset.state
-                console.log(selectedState)
-                console.log(selectedStateTD)
 
             })
             colorPicker.setAttribute('type', 'color')
@@ -119,7 +129,7 @@ go.run(result.instance);
             colorPicker.style.border = "1px solid black"
             colorPicker.addEventListener('change', () => {
                 statesColors[colorPicker.dataset.state] = colorPicker.value
-                loadMatrixOnUI(cellMatrix)
+                loadMatrixOnUI(cellMatrix, true)
             })
             color.appendChild(colorPicker)
             statesLabelRow.appendChild(state)
@@ -146,7 +156,6 @@ go.run(result.instance);
     loadStatesColorsOnUI(statesColors)
     selectedStateTD = caStatesColors.firstChild?.firstChild
     selectedStateTD.style.backgroundColor = "#aaff00" // Green bright
-    console.log(selectedStateTD)
     ca.setRules(rules)
     // Default a random matrix. TODO: Listen for user changes on UI
     err = ca.loadInitGrid(randomMatrix(conf.width, conf.height,conf.numStates))
@@ -157,6 +166,7 @@ go.run(result.instance);
     cellMatrix = ca.getInitGrid()
     // Make a copy of the matrix to be able to modify it
     cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
+    // First load of the matrix on the UI
     loadMatrixOnUI(cellMatrix)
 
     //////////////////////////////////////////////
@@ -172,7 +182,7 @@ go.run(result.instance);
         // Make a copy of the matrix to be able to modify it
         cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
         // Update the grid in the UI
-        loadMatrixOnUI(cellMatrix)
+        loadMatrixOnUI(cellMatrix, true)
     })
 
     caConfigForm.addEventListener('submit', (e) => {
