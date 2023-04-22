@@ -136,6 +136,13 @@ func CellularAumtomaton(this js.Value, args []js.Value) interface{} {
 		jsCa.Set("numStates", numStates)
 		return nil
 	}))
+	jsCa.Set("updateCellState", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		x := args[0].Int()
+		y := args[1].Int()
+		state := cella.Cell(args[2].Int())
+		ca.InitGrid.SetCell(x, y, state)
+		return nil
+	}))
 
 	return jsCa
 }
