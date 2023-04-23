@@ -5,6 +5,7 @@ const caConfigForm = document.getElementById('ca-configForm')
 const caRulesForm = document.getElementById('ca-rulesForm')
 const caRulesList = document.getElementById('ca-rulesList')
 const caStatesColors = document.getElementById('ca-statesColors')
+const caSpeed = document.getElementById('ca-speed')
 
 const go = new Go();
 fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
@@ -17,6 +18,7 @@ go.run(result.instance);
     let statesColors = ["#000000", "#ffffff"]
     let selectedState = 0
     let selectedStateTD = null
+    let excecutionSpeed = 1000
     const conf = {
         numStates: parseInt(caConfigForm.elements['ca-numStates'].value),
         width: parseInt(caConfigForm.elements['ca-width'].value),
@@ -195,7 +197,7 @@ go.run(result.instance);
                 continue
             }
             // sleep for 1 second
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, excecutionSpeed));
             err = ca.step()
             if (err != null) {
                 console.error("Error:", err)
@@ -271,6 +273,9 @@ go.run(result.instance);
         ca.setRules(rules)
         caRulesForm.elements['ca-condition'].value = ""
         caRulesForm.elements['ca-state'].value = ""
+    })
+    caSpeed.addEventListener('change', (e) => {
+        excecutionSpeed = parseInt(e.target.value)
     })
 });
 } else {
