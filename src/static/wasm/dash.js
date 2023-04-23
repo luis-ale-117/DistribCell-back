@@ -143,7 +143,49 @@ go.run(result.instance);
         fragment.appendChild(statesLabelRow)
         fragment.appendChild(statesColorRow)
         caStatesColors.appendChild(fragment)
-    }    
+    }
+    const hslToHex = (h, s, l) => {
+        // Convert hue to degrees
+        h /= 360;
+        // Convert saturation and lightness to 0-1 range
+        s /= 100;
+        l /= 100;
+        // Calculate RGB values
+        let r, g, b;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const hueToRgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hueToRgb(p, q, h + 1/3);
+            g = hueToRgb(p, q, h);
+            b = hueToRgb(p, q, h - 1/3);
+        }
+        // Convert RGB values to hex format
+        const toHex = (c) => {
+            const hex = Math.round(c * 255).toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        };
+        return "#" + toHex(r) + toHex(g) + toHex(b);
+    }
+    const assignRainbowColors = (numStates, saturation = 100, lightness = 50) => {
+        const hueIncrement = 360 / numStates
+        let hue = 0
+        statesColors = []
+        for (let i = 0; i < numStates; i++) {
+            const color = hslToHex(hue, saturation, lightness)
+            statesColors.push(color)
+            hue += hueIncrement
+        }
+    }
     const caExecute = async () => {
         // Execute the CA
         while (true) {
@@ -211,6 +253,10 @@ go.run(result.instance);
         cellMatrix = ca.getInitGrid()
         // Make a copy of the matrix to be able to modify it
         cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
+        assignRainbowColors(conf.numStates)
+        loadStatesColorsOnUI(statesColors)
+        selectedStateTD = caStatesColors.firstChild?.firstChild
+        selectedStateTD.style.backgroundColor = "#aaff00" // Green bright
         loadMatrixOnUI(cellMatrix)
     })
     caRulesForm.addEventListener('submit', (e) => {
