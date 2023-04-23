@@ -5,6 +5,7 @@ const caConfigForm = document.getElementById('ca-configForm')
 const caRulesForm = document.getElementById('ca-rulesForm')
 const caRulesList = document.getElementById('ca-rulesList')
 const caStatesColors = document.getElementById('ca-statesColors')
+const caSpeed = document.getElementById('ca-speed')
 
 const go = new Go();
 fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
@@ -17,6 +18,20 @@ go.run(result.instance);
     let statesColors = ["#000000", "#ffffff"]
     let selectedState = 0
     let selectedStateTD = null
+    let excecutionSpeed = 1000
+    const conf = {
+        numStates: parseInt(caConfigForm.elements['ca-numStates'].value),
+        width: parseInt(caConfigForm.elements['ca-width'].value),
+        height: parseInt(caConfigForm.elements['ca-height'].value)
+    }
+    const ca = CellularAumtomaton(conf.numStates, conf.width, conf.height)
+    // Default (Conway's game of life) TODO: Load from USER
+    let rules = [
+        Rule2d("n11 == 1 && (s1 == 2 || s1 == 3)", 1),
+        Rule2d("n11 == 0 && s1 == 3", 1),
+        Rule2d("0==0", 0)
+    ]
+    let caExecuteFlag = false
     const randomMatrix = (width, height, numStates) => {
         let matrix = [];
         for (let i = 0; i < height; i++) {
@@ -130,20 +145,74 @@ go.run(result.instance);
         fragment.appendChild(statesLabelRow)
         fragment.appendChild(statesColorRow)
         caStatesColors.appendChild(fragment)
-    }            
-    //////////////////
-    const conf = {
-        numStates: parseInt(caConfigForm.elements['ca-numStates'].value),
-        width: parseInt(caConfigForm.elements['ca-width'].value),
-        height: parseInt(caConfigForm.elements['ca-height'].value)
     }
-    const ca = CellularAumtomaton(conf.numStates, conf.width, conf.height)
-    // Default (Conway's game of life) TODO: Load from USER
-    let rules = [
-        Rule2d("n11 == 1 && (s1 == 2 || s1 == 3)", 1),
-        Rule2d("n11 == 0 && s1 == 3", 1),
-        Rule2d("0==0", 0)
-    ]
+    const hslToHex = (h, s, l) => {
+        // Convert hue to degrees
+        h /= 360;
+        // Convert saturation and lightness to 0-1 range
+        s /= 100;
+        l /= 100;
+        // Calculate RGB values
+        let r, g, b;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const hueToRgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hueToRgb(p, q, h + 1/3);
+            g = hueToRgb(p, q, h);
+            b = hueToRgb(p, q, h - 1/3);
+        }
+        // Convert RGB values to hex format
+        const toHex = (c) => {
+            const hex = Math.round(c * 255).toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        };
+        return "#" + toHex(r) + toHex(g) + toHex(b);
+    }
+    const assignRainbowColors = (numStates, saturation = 100, lightness = 50) => {
+        const hueIncrement = 360 / numStates
+        let hue = 0
+        statesColors = []
+        for (let i = 0; i < numStates; i++) {
+            const color = hslToHex(hue, saturation, lightness)
+            statesColors.push(color)
+            hue += hueIncrement
+        }
+    }
+    const caExecute = async () => {
+        // Execute the CA
+        while (true) {
+            if (!caExecuteFlag) {
+                // sleep for 100 ms
+                await new Promise(r => setTimeout(r, 100));
+                continue
+            }
+            // sleep for 1 second
+            await new Promise(r => setTimeout(r, excecutionSpeed));
+            err = ca.step()
+            if (err != null) {
+                console.error("Error:", err)
+                alert("Error when executing: " + err);
+                return
+            }
+            cellMatrix = ca.getInitGrid()
+            // Make a copy of the matrix to be able to modify it
+            cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
+            // Update the grid in the UI
+            loadMatrixOnUI(cellMatrix)
+        }
+    }
+    //////////////////
+    btnStep.textContent = caExecuteFlag ? "Pausa" : "Ejecuta"
     loadRulesOnUI(rules)
     loadStatesColorsOnUI(statesColors)
     selectedStateTD = caStatesColors.firstChild?.firstChild
@@ -161,20 +230,13 @@ go.run(result.instance);
     // First load of the matrix on the UI
     loadMatrixOnUI(cellMatrix)
 
+    // Execute the CA
+    caExecute()
+
     //////////////////////////////////////////////
     btnStep.addEventListener('click', () => {
-        // Execute one step of the CA
-        err = ca.step()
-        if (err != null) {
-            console.error("Error:", err)
-            alert("Error when executing: " + err);
-            return
-        }
-        cellMatrix = ca.getInitGrid()
-        // Make a copy of the matrix to be able to modify it
-        cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
-        // Update the grid in the UI
-        loadMatrixOnUI(cellMatrix)
+        caExecuteFlag = !caExecuteFlag
+        btnStep.textContent = caExecuteFlag ? "Pausa" : "Ejecuta"
     })
 
     caConfigForm.addEventListener('submit', (e) => {
@@ -193,6 +255,10 @@ go.run(result.instance);
         cellMatrix = ca.getInitGrid()
         // Make a copy of the matrix to be able to modify it
         cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
+        assignRainbowColors(conf.numStates)
+        loadStatesColorsOnUI(statesColors)
+        selectedStateTD = caStatesColors.firstChild?.firstChild
+        selectedStateTD.style.backgroundColor = "#aaff00" // Green bright
         loadMatrixOnUI(cellMatrix)
     })
     caRulesForm.addEventListener('submit', (e) => {
@@ -207,6 +273,9 @@ go.run(result.instance);
         ca.setRules(rules)
         caRulesForm.elements['ca-condition'].value = ""
         caRulesForm.elements['ca-state'].value = ""
+    })
+    caSpeed.addEventListener('change', (e) => {
+        excecutionSpeed = parseInt(e.target.value)
     })
 });
 } else {
