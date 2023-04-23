@@ -17,6 +17,19 @@ go.run(result.instance);
     let statesColors = ["#000000", "#ffffff"]
     let selectedState = 0
     let selectedStateTD = null
+    const conf = {
+        numStates: parseInt(caConfigForm.elements['ca-numStates'].value),
+        width: parseInt(caConfigForm.elements['ca-width'].value),
+        height: parseInt(caConfigForm.elements['ca-height'].value)
+    }
+    const ca = CellularAumtomaton(conf.numStates, conf.width, conf.height)
+    // Default (Conway's game of life) TODO: Load from USER
+    let rules = [
+        Rule2d("n11 == 1 && (s1 == 2 || s1 == 3)", 1),
+        Rule2d("n11 == 0 && s1 == 3", 1),
+        Rule2d("0==0", 0)
+    ]
+    let caExecuteFlag = false
     const randomMatrix = (width, height, numStates) => {
         let matrix = [];
         for (let i = 0; i < height; i++) {
@@ -130,20 +143,32 @@ go.run(result.instance);
         fragment.appendChild(statesLabelRow)
         fragment.appendChild(statesColorRow)
         caStatesColors.appendChild(fragment)
-    }            
-    //////////////////
-    const conf = {
-        numStates: parseInt(caConfigForm.elements['ca-numStates'].value),
-        width: parseInt(caConfigForm.elements['ca-width'].value),
-        height: parseInt(caConfigForm.elements['ca-height'].value)
+    }    
+    const caExecute = async () => {
+        // Execute the CA
+        while (true) {
+            if (!caExecuteFlag) {
+                // sleep for 100 ms
+                await new Promise(r => setTimeout(r, 100));
+                continue
+            }
+            // sleep for 1 second
+            await new Promise(r => setTimeout(r, 1000));
+            err = ca.step()
+            if (err != null) {
+                console.error("Error:", err)
+                alert("Error when executing: " + err);
+                return
+            }
+            cellMatrix = ca.getInitGrid()
+            // Make a copy of the matrix to be able to modify it
+            cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
+            // Update the grid in the UI
+            loadMatrixOnUI(cellMatrix)
+        }
     }
-    const ca = CellularAumtomaton(conf.numStates, conf.width, conf.height)
-    // Default (Conway's game of life) TODO: Load from USER
-    let rules = [
-        Rule2d("n11 == 1 && (s1 == 2 || s1 == 3)", 1),
-        Rule2d("n11 == 0 && s1 == 3", 1),
-        Rule2d("0==0", 0)
-    ]
+    //////////////////
+    btnStep.textContent = caExecuteFlag ? "Pausa" : "Ejecuta"
     loadRulesOnUI(rules)
     loadStatesColorsOnUI(statesColors)
     selectedStateTD = caStatesColors.firstChild?.firstChild
@@ -161,20 +186,13 @@ go.run(result.instance);
     // First load of the matrix on the UI
     loadMatrixOnUI(cellMatrix)
 
+    // Execute the CA
+    caExecute()
+
     //////////////////////////////////////////////
     btnStep.addEventListener('click', () => {
-        // Execute one step of the CA
-        err = ca.step()
-        if (err != null) {
-            console.error("Error:", err)
-            alert("Error when executing: " + err);
-            return
-        }
-        cellMatrix = ca.getInitGrid()
-        // Make a copy of the matrix to be able to modify it
-        cellMatrix = JSON.parse(JSON.stringify(cellMatrix))
-        // Update the grid in the UI
-        loadMatrixOnUI(cellMatrix)
+        caExecuteFlag = !caExecuteFlag
+        btnStep.textContent = caExecuteFlag ? "Pausa" : "Ejecuta"
     })
 
     caConfigForm.addEventListener('submit', (e) => {
