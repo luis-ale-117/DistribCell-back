@@ -1,0 +1,14 @@
+.about {
+    width: 80%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.about .title {
+    width: auto;
+    height: auto;
+    background: transparent;
+    text-align: center;
+    color: tomato;
+    font-family: 'Times New Roman', serif;
+}
