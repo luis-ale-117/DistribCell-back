@@ -58,7 +58,7 @@ a:hover {
     height: 350px;
     width: 350px;
     background-size: 150%;
-    background-position: -200% 50%;
+    background-position: -205% 50%;
     box-shadow: 0px 0px 10px 10px #900C3F;
 }
 
@@ -86,6 +86,8 @@ a:hover {
 .para {
     color: white;
     padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
     opacity: 0;
     font-size: 15px;
     transition: 1s;
