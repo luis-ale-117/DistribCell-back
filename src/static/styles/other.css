@@ -1,14 +1,111 @@
-.about {
-    width: 80%;
-    height: auto;
-    border-radius: 10px;
+a:link {
+    color: white
 }
 
-.about .title {
-    width: auto;
-    height: auto;
-    background: transparent;
+a:visited {
+    color: white;
+}
+
+a:hover {
+    color: #3498DB;
+}
+
+.about {
+    position: relative;
+    width: 90%;
+    height: 450px;
+    background-color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    overflow: hidden;
+    transform: scale(1);
+}
+
+.title {
+    position: absolute;
+    top: 15px;
+    height: 20px;
+    width: 100%;
+    background: none;
+    color: black;
+    font-size: 25px;
     text-align: center;
-    color: tomato;
-    font-family: 'Times New Roman', serif;
+}
+
+.picsbox {
+    height: 320px;
+    width: 320px;
+    border-radius: 10px;
+    padding:5px 10px;
+    background-color: black;
+    box-sizing: border-box;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    transition: 0.5s;
+    box-shadow: 0px 0px 5px 1px black;
+    position: relative;
+    cursor: pointer;
+    text-align: justify;
+    bottom: -30px;
+}
+
+.picsbox:hover {
+    height: 350px;
+    width: 350px;
+    background-size: 150%;
+    background-position: -205% 50%;
+    box-shadow: 0px 0px 10px 10px #900C3F;
+}
+
+.picsbox:hover .names {
+    opacity: 1;
+}
+
+.picsbox:hover .para {
+    opacity: 1;
+}
+
+.picsbox:hover .icon2 {
+    opacity: 1;
+}
+
+.names {
+    text-align: center;
+    color: white;
+    padding-top: 15px;
+    opacity: 0;
+    font-size: 25px;
+    transition: 1s;
+}
+
+.para {
+    color: white;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    opacity: 0;
+    font-size: 15px;
+    transition: 1s;
+}
+
+.contact {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    text-align: center;
+    width: 100%;
+    padding: 5px 0px;
+}
+
+.icon2 {
+    color: white;
+    margin: 0px 5px;
+    font-size: 25px;
+    transition: 1s;
+    opacity: 0;
 }
