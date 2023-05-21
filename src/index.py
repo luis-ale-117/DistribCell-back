@@ -13,4 +13,4 @@ with app.app_context():
 #Iniciamos
 if __name__ == "__main__":
     app.secret_key = os.getenv("APP_SECRET","luisillo")
-    app.run(host="0.0.0.0",debug = True)
+    app.run(debug = True)

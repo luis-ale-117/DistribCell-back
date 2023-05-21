@@ -6,133 +6,75 @@
 }
 
 body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
     background: url('../imgs/black.jpg');
     background-size: cover;
     background-position: center;
-    width: 100%;
-    height: 100%;
 }
 
-.div-config {
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 100px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    z-index: 99;
 }
-.container {
-    background-color: black;
-    position: flex;
-    color: rgb(0, 0, 0);
+
+.logo {
+    font-size: 2em;
+    color: #fff;
+    user-select: none;
+}
+
+.navegation .link{
+    position: relative;
+    font-size: 1.1em;
+    color: #fff;
+    font-weight: 500;
+    margin-left: 40px;
+    text-decoration: none;
+}
+
+.navegation .link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
     width: 100%;
-    height: 100%;
-    margin: 0 auto;
-
-}
-.forms {
-    background-color: white;
-}
-.form-container {
-    display: none;
-    position: absolute;
-    top: 45.5%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px;
-    height: 500px;
-    background-color: white;
-    border-radius: 20px;
-    border-top-left-radius:20px ;
-    border-top-right-radius:20px ;
-    justify-self: center;
-    transition: all .5s;
-    z-index: 1;
+    height: 3px;
+    background: #fff;
+    border-radius: 5px;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform .5s;
 }
 
-.close {
-    position: absolute;
-    top: 20px;
-    right: -30px;
-    transform: translate(-50%, -50%);
-    display: inline-block;
-    padding: 10px 20px;
+.navegation .link:hover::after {
+    transform-origin: left;
+    transform: scaleX(1);
+}
+
+.navegation .btnLogin-popup {
+    width: 130px;
+    height: 50px;
     background: transparent;
-    border: 1px solid #000000;
-    border-top-right-radius: 20px;
+    border: 2px solid #fff;
+    outline: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all .3s;
+    font-size: 1.1em;
+    color: #fff;
+    margin-left: 40px;
 }
 
-.close:hover {
-    background-color: black;
-    color: white;
-}
-
-.ca-configForm, .ca-rulesForm {
-    margin-top: 30px;
-    text-align: center;
-    width: 300px;
-    height: 300px;
-    float: left;
-    background:transparent;
-}
-.ca-statesColors {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-.rules{
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-.inputForm {
-    margin-bottom: 10px;
-}
-.inputForm label{
-    display: block;
-    font-weight: bold;
-}
-.inputForm input {
-    width: 30%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.inputFormCondition {
-    margin-bottom: 10px;
-}
-.inputFormCondition label{
-    display: block;
-    font-weight: bold;
-}
-.inputFormCondition input{
-    width: 60%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.grid{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: black;
-}
-
-.btnForm {
-    width: fit-content;
-    padding: 0px 10px;
-    height: 30px;
-    background: rgb(255, 255, 255);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    color: rgb(0, 0, 0);
-}
-.btnForm:hover {
-    background: rgb(0, 0, 0);
-    border: none;
-    color: rgb(255, 255, 255);
-    margin-bottom: 10px;
+.navegation .btnLogin-popup:hover {
+    background: #fff;
+    color: #162938;
 }

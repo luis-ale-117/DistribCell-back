@@ -1,11 +1,5 @@
-.login {
-    display: grid;
-    align-items: center;
-    width: 100%;
-    text-align:center;
-}
 .wrapper {
-    position: static;
+    position: relative;
     width: 400px;
     height: 440px;
     background: white;
@@ -19,8 +13,6 @@
     overflow: hidden;
     transform: scale(1);
     transition: transform .5s ease, heigh .2s ease;
-    margin: 0 auto;
-    margin-top: 10px;
 }
 
 .wrapper.active {
@@ -148,8 +140,6 @@
 }
 
 .divBtn{
-    margin-left: 10px;
-    margin-right: 10px;
     background: transparent;
     display: flex;
     align-items: center;
@@ -157,7 +147,7 @@
 }
 
 .btn {
-    width: 180px;
+    width: 50%;
     height: 40px;
     background: rgb(255, 255, 255);
     border: none;
@@ -194,3 +184,4 @@
 .loginRegister p a:hover {
     text-decoration: underline;
 }
+
