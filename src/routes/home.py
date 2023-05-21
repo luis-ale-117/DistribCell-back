@@ -21,4 +21,4 @@ home_blueprint = Blueprint('home', __name__)
 def home():
     #Si recibe GET renderisa el templae home.html
     if request.method == 'GET':
-        return render_template('home.html')    
+        return render_template('home.html')
