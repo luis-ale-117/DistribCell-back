@@ -9,7 +9,6 @@ from routes.home import home_blueprint              #ruta home
 from routes.dashboard import dashboard_blueprint    #ruta dashboard
 from routes.users import users_blueprint             #ruta users
 from routes.aboutus import aboutus_blueprint        #ruta aboutus
-from routes.abtproject import abtproject_blueprint  #ruta abtproject
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 from utils.db import db
@@ -45,4 +44,3 @@ app.register_blueprint(signup_blueprint)
 app.register_blueprint(dashboard_blueprint)
 app.register_blueprint(users_blueprint)
 app.register_blueprint(aboutus_blueprint)
-app.register_blueprint(abtproject_blueprint)
