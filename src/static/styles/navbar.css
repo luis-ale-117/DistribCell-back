@@ -1,0 +1,172 @@
+nav {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+    background-color: black;
+    height: 75px;
+}
+
+.logo {
+    font-size: 2em;
+    color: #fff;
+    user-select: none;
+}
+
+.nav-ul {
+    float: right;
+}
+.nav-li {
+    display: inline-block;
+    line-height: 80px;
+    margin: 0;
+}
+
+.navigation .link{
+    position: relative;
+    font-size: 1.1em;
+    color: #fff;
+    font-weight: 500;
+    margin-left: 40px;
+    text-decoration: none;
+}
+
+.navigation .link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    border-radius: 5px;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform .5s;
+}
+
+.navigation .link:hover::after {
+    transform-origin: left;
+    transform: scaleX(1);
+}
+
+.navigation .btnLogin-popup {
+    width: 130px;
+    height: 50px;
+    background: transparent;
+    border: 2px solid #fff;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: #fff;
+    margin-left: 40px;
+}
+
+.navigation .btnLogin-popup:hover {
+    background: #fff;
+    color: #162938;
+}
+
+.toggle {
+    color: #ffffff;
+    font-size: 25px;
+    transform: rotate(90deg);
+    cursor: pointer;
+    transition: .3s;
+    margin-left: 5px;
+}
+.btnToggle {
+    display: none;
+    position: absolute;
+    right: 50px;
+    width: 50px;
+    background: transparent;
+    border: 2px solid #fff;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: #fff;
+    margin-left: 40px;
+}
+.btnToggle:hover {
+    .toggle{
+        color: black;
+    }
+    background: white;
+}
+
+@media screen and (max-width: 952px){
+    .nav-ul {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        background-color: white;
+        top:75px;
+        left: 100%;
+        text-align: center;
+        transition: all 0.5s;
+    }
+    .nav-ul .active {
+        left: 100%;
+    }
+    .nav-ul .nav-li {
+        display: block;
+        margin: 50px 0;
+        line-height: 30px;
+    }
+    .navigation .link{
+        position: relative;
+        font-size: 1.1em;
+        color: #000000;
+        font-weight: 500;
+        margin-left: 40px;
+        text-decoration: none;
+    }
+    .navigation .link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -6px;
+        width: 100%;
+        height: 3px;
+        background: #000000;
+        border-radius: 5px;
+        transform-origin: right;
+        transform: scaleX(0);
+        transition: transform .5s;
+    }
+    
+    .navigation .link:hover::after {
+        transform-origin: left;
+        transform: scaleX(1);
+    }
+    
+    .navigation .btnLogin-popup {
+        width: 130px;
+        height: 50px;
+        background: transparent;
+        border: 2px solid #000000;
+        outline: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1.1em;
+        color: #000000;
+        margin-left: 40px;
+    }
+    
+    .navigation .btnLogin-popup:hover {
+        background: #000000;
+        color: #ffffff;
+    }
+    .btnToggle {
+        display: block;
+    }
+
+}
