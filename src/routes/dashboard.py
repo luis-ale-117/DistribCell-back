@@ -18,6 +18,7 @@ from models.Key import Key
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        print(session['email'])
         if 'email' not in session:
             return redirect('/login')
         return f(*args, **kwargs)

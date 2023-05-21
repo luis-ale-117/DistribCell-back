@@ -1,10 +1,24 @@
-var configuration = document.getElementById('btnConfiguration')
-var popup = document.getElementById('form-container')
-var closeConfig = document.getElementById('closeConfig')
-console.log(configuration, popup, closeConfig)
-configuration.addEventListener('click', () => {
-    popup.style.display = 'block';
+const wrapper = document.querySelector('.wrapper');
+const signInLink = document.querySelector('.SigninLink');
+const signUpLink = document.querySelector('.SignupLink');
+const iconClose = document.querySelector('.icon-close');
+//const iconClose = document.querySelector('iconClose');
+const login = document.getElementById('btnLogin-popup');
+
+
+signUpLink.addEventListener('click', () => {
+    wrapper.classList.add('active');
 });
-closeConfig.addEventListener('click', () => {
-    popup.style.display = 'none';
-})
+
+signInLink.addEventListener('click', () => {
+    wrapper.classList.remove('active');
+});
+
+login.addEventListener('click', () => {
+    wrapper.classList.add('active-popup');
+});
+
+iconClose.addEventListener('click', () => {
+    console.log(remove)
+    wrapper.classList.remove('active-popup');
+});
