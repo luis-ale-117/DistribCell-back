@@ -107,17 +107,19 @@ The required libraries are in the `requirements.txt` file, to install them run t
 ```bash
 pip install -r requirements.txt
 ```
-To start the project go to the `src` directory and run the following command
+To start the project go to the root directory and run the following command (you can also set environment variables as `FLASK_APP=app.py` and `FLASK_DEBUG=1` to enable debugging). Setting `host=0.0.0.0` enables your app to be accessed in all your local network.
 ```bash
-python app.py
-```
-or (if you set an environment variable called `FLASK_APP=app.py` and `FLASK_DEBUG=1` to enable debugging)
-```bash
-flask run
+FLASK_APP=app.py FLASK_DEBUG=1 flask run --host=0.0.0.0
 ```
 > NOTE: This also create all the tables and relations needed for the project.
 
 > NOTE: To exit the program press `Ctrl + C` on the terminal.
+
+
+Finally, to check that everything is ready for deployment, use `gunicorn` to check that everything works as it should be on a production environment. The app will run at http://127.0.0.1:8000.
+```bash
+gunicorn app:app
+```
 
 If you install or delete any library run the following command to update `requirements.txt`
 ```bash

@@ -18,7 +18,7 @@ def signup():
         name = res["user"]["name"]
         lastname = res["user"]["lastname"]
         email = res["user"]["email"]
-        password = None  # Usar werafvasfd
+        password = res["user"]["password"]  # Usar werafvasfd
         stmt = db.select(User.email).where(User.email == email)
         resultado = db.session.execute(stmt).fetchone()
         if resultado is None:

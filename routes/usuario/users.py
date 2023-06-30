@@ -14,12 +14,11 @@ def delete():
     email = session["email"]
     db.session.query(User).filter(User.email == email).delete()
     db.session.commit()
-    print("va a regresar")
     return redirect("/logout")
 
 
 def update():
     """ABC"""
-    email = session["email"]
-    user = db.session.query(User).filter(User.email == email)
-    print(user)
+    # email = session["email"]
+    # user = db.session.query(User).filter(User.email == email)
+    return "ok"
