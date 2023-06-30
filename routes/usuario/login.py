@@ -1,14 +1,14 @@
 """
     login.py
 """
-from flask import Blueprint, redirect, render_template, request, session
+from flask import redirect, render_template, request, session, Blueprint
 from models.user import User
 from utils.db import db
 
-login_blueprint = Blueprint("login", __name__)
+blueprint = Blueprint("login", __name__)
 
 
-@login_blueprint.route("/login", methods=["GET", "POST", "DELETE"])
+@blueprint.route("/login", methods=["GET", "POST", "DELETE"])
 def login():
     """ABC"""
     if request.method == "GET":
@@ -32,7 +32,7 @@ def login():
     return {"otra": "cosa"}
 
 
-@login_blueprint.route("/logout", methods=["GET", "DELETE"])
+@blueprint.route("/logout", methods=["GET", "DELETE"])
 def logout():
     """ABC"""
     session.pop("email", None)

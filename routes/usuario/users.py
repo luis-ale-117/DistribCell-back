@@ -1,15 +1,14 @@
 """
     users.py
 """
-from flask import Blueprint, redirect, session
+from flask import redirect, session, Blueprint
 from models.user import User
 from utils.db import db
 
+blueprint = Blueprint("users", __name__)
 
-users_blueprint = Blueprint("users", __name__)
 
-
-@users_blueprint.route("/delete", methods=["GET", "POST", "DELETE"])
+@blueprint.route("/delete", methods=["GET", "POST", "DELETE"])
 def delete():
     """ABC"""
     email = session["email"]

@@ -1,15 +1,14 @@
 """
     signup.py
 """
-from flask import Blueprint, render_template, request
+from flask import render_template, request, Blueprint
 from models.user import User
 from utils.db import db
 
+blueprint = Blueprint("signup", __name__)
 
-signup_blueprint = Blueprint("signup", __name__)
 
-
-@signup_blueprint.route("/signup", methods=["GET", "POST"])
+@blueprint.route("/signup", methods=["GET", "POST"])
 def signup():
     """ABC"""
     if request.method == "GET":
