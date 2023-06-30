@@ -52,6 +52,11 @@ Go to the project directory and create a virtual environment to install python p
 ```bash
 python -m venv .env
 ```
+or (Recommended)
+```bash
+python -m venv venv
+```
+
 The above command will create a directory called `.env` that will store the python version and packages for this project.
 
 Before activating your virtual environment, you need to set the database credentials on your python virtual environment. Go to `.env/bin/` (for linux) or `.env\Scripts\` (for windows). 
@@ -104,7 +109,11 @@ pip install -r requirements.txt
 ```
 To start the project go to the `src` directory and run the following command
 ```bash
-python index.py
+python app.py
+```
+or (if you set an environment variable called `FLASK_APP=app.py` and `FLASK_DEBUG=1` to enable debugging)
+```bash
+flask run
 ```
 > NOTE: This also create all the tables and relations needed for the project.
 

@@ -1,7 +1,12 @@
+"""
+user.py
+"""
 from utils.db import db
 
 
 class User(db.Model):
+    """User"""
+
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -15,3 +20,9 @@ class User(db.Model):
         self.password = password
         self.name = name
         self.lastname = lastname
+
+    def nothing(self):
+        return
+
+    def nothing2(self):
+        return
