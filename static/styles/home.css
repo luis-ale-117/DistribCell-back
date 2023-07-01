@@ -136,3 +136,11 @@ body {
     color: rgb(255, 255, 255);
     margin-bottom: 10px;
 }
+
+.invisible {
+    display: none;
+}
+
+.visible {
+    display: block;
+}

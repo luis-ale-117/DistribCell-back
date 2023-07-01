@@ -1,7 +1,7 @@
 """
     home.py
 """
-from flask import render_template, request, Blueprint
+from flask import render_template, request, Blueprint, flash
 
 blueprint = Blueprint("home", __name__)
 
@@ -10,6 +10,7 @@ blueprint = Blueprint("home", __name__)
 def home():
     """ABC"""
     if request.method == "GET":
-        return render_template("home.html")
+        flash("un mensaje", "info")
+        return render_template("inicio.html")
 
     return None

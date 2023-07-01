@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 const playground = document.getElementById('grid');
 const btnStep = document.getElementById('btnStep');
 const caConfigForm = document.getElementById('ca-configForm')

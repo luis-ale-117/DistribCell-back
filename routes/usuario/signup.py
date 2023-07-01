@@ -12,7 +12,7 @@ blueprint = Blueprint("signup", __name__)
 def signup():
     """ABC"""
     if request.method == "GET":
-        return render_template("signup.html")
+        return render_template("registro_usuario.html")
     if request.method == "POST":
         res = request.get_json("signup")
         name = res["user"]["name"]

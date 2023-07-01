@@ -1,3 +1,4 @@
+// @ts-nocheck
 const form = document.querySelector('.register-form');
 const notMatch = document.getElementById('error');
 

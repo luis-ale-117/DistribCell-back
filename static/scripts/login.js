@@ -1,3 +1,4 @@
+// @ts-nocheck
 const form = document.querySelector('.login-form');
 const error = document.querySelector('.error');
 

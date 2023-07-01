@@ -10,5 +10,5 @@ blueprint = Blueprint("abtproject", __name__)
 def abtproject():
     """ABC"""
     if request.method == "GET":
-        return render_template("proyect.html")
+        return render_template("sobre_el_proyecto.html")
     return None

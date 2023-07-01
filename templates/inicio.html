@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Automatas celulares{% endblock %}
+
+{% block gowasm %}<script src="{{ url_for('static', filename='wasm/wasm_exec.js') }}"></script>{% endblock %}
+
+{% block contenido %}
+<div class="div-config">
+    <div class="divBtn">
+        <button id="btnConfiguration" type="button" class="btn">
+            <h4>Configuracion</h4>
+        </button>
+    </div>
+    <div class="divBtn">
+        <button button id="btnStep"  class=" btn btnForm">
+            <h4>Ejecuta</h4>
+        </button>
+    </div>
+</div>
+<div class="container" id="cellular-automaton">
+    <div class="form-container" id="form-container">
+        <span id="closeConfig" class="close">X</span>
+        <div class="forms">
+            <form id="ca-configForm" class="ca-configForm">
+                <div class="inputForm">
+                    <label for="ca-width">Ancho</label>
+                    <input id="ca-width" name="ca-width" type="number" min="3" step="1" value="10">
+                </div>
+                <div class="inputForm">
+                    <label for="ca-height">Alto</label>
+                    <input id="ca-height" name="ca-height" type="number" min="3" step="1" value="10">
+                </div>
+                <div class="inputForm">
+                    <label for="ca-numStates">No. de estados</label>
+                <input id="ca-numStates" name="ca-numStates" type="number" min="2" max="256" step="1" value="2">
+                </div>
+                <input type="submit" class="btnForm" value="Cargar">
+            </form>
+            
+            <form id="ca-rulesForm" class="ca-rulesForm">
+                <table id="ca-statesColors" class="ca-statesColors">
+                </table>
+                <div class="inputFormCondition">
+                    <label for="ca-condition">Condicion</label>
+                    <input id="ca-condition" name="ca-condition" type="text" value="" placeholder="Regla">
+                </div>
+                <div class="inputForm">
+                    <label for="ca-state">Resultado</label>
+                    <input id="ca-state" name="ca-state" type="number" min="0" max="255" step="1" value="0">
+                </div>
+                <input type="submit" class="btnForm" value="Agregar regla">
+            </form>
+        </div>
+        <div class="rules">
+            <ul id="ca-rulesList">
+            </ul>
+            <br>
+            <div class="inputForm">
+                <label for="ca-speed">Velocidad (ms)</label>
+                <input id="ca-speed" name="ca-speed" type="number" min="1" max="1000" step="1" value="1000">
+            </div>			
+        </div>
+    </div>
+    <br>
+    <div id="grid" class="grid">
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block gojs %}<script src="{{ url_for('static', filename='wasm/dash.js') }}"></script>{% endblock %}

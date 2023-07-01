@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block titulo %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round"
+		rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/home.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/other.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/navbar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/mensajes.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.png') }}">
+    {% block gowasm %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <h2 class="logo">Logo</h2>
+        <div class="navigation">
+            <ul id="navOpciones" class="nav-ul">
+                <li class="nav-li"><a class="link" href="/">Home</a></li>
+                <li class="nav-li"><a class="link" href="/abtproject">Sobre el proyecto</a></li>
+                <li class="nav-li"><a class="link" href="/aboutus">Nosotros</a></li>    
+                <li class="nav-li"><a href="/login"><button id="btnLogin-popup" class="btnLogin-popup">Inicia Sesion</button></a></li>   
+            </ul>
+        </div>
+        <button id="btnHamburguesa" class="btnToggle"><div class="toggle"> ||| </div> </button>
+    </nav>
+
+    <div id="mensajes">
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+        {% for categoria, mensaje in mensajes %}
+            {% if categoria == "exito" %}
+            <div class="alerta exito">
+            {% elif categoria == "advertencia" %}
+            <div class="alerta advertencia">
+            {% elif categoria == "error" %}
+            <div class="alerta error">
+            {% else %}
+            <div class="alerta info">
+            {% endif %}
+                {{ mensaje }}
+                <button class="cerrar-mensaje">Cerrar</button>
+            </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    {% block contenido %}
+    {% endblock %}
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="{{ url_for('static', filename='scripts/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/home.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/mensajes.js') }}"></script>
+    {% block gojs %}{% endblock %}
+</body>
+</html>

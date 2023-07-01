@@ -12,7 +12,7 @@ blueprint = Blueprint("login", __name__)
 def login():
     """ABC"""
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("inicio_sesion.html")
     if request.method == "POST":
         email = request.form["email"]
         password = None
@@ -28,7 +28,7 @@ def login():
             )
         return None
     if request.method == "DELETE":
-        return render_template("login.html", error="Algo no esta bien")
+        return render_template("inicio_sesion.html", error="Algo no esta bien")
     return {"otra": "cosa"}
 
 
