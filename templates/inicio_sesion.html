@@ -7,8 +7,7 @@
     <div class="wrapper">
         <div class="formBox login">
             <h2>Login</h2>
-            <form method="POST">
-                <span class="error">{{ error }}</span>
+            <form id="form-inicio-sesion" action="{{ url_for('sesion.genera_sesion') }}" method="POST">
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
                     <input type="text" id="email" name="email" required>
@@ -26,12 +25,11 @@
                 </div>
                 <div class="divBtn">
                     <button type="submit" class="btn">
-                        <h4>Login</h4>
+                        <h4>Inica sesión</h4>
                     </button>
                 </div>
-        
                 <div class="loginRegister">
-                    <p>¿No tienes cuenta? <a href="/signup" class="SignupLink">Regístrate</a></p>
+                    <p>¿No tienes cuenta? <a href="{{ url_for('registro.pagina_registro_usuario') }}" class="SignupLink">Regístrate</a></p>
                 </div>
             </form>
         </div>

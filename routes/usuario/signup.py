@@ -1,30 +1,59 @@
 """
     signup.py
 """
-from flask import render_template, request, Blueprint
+from flask import (
+    render_template,
+    request,
+    session,
+    redirect,
+    url_for,
+    flash,
+    Blueprint,
+)
 from models.user import User
 from utils.db import db
 
-blueprint = Blueprint("signup", __name__)
+blueprint = Blueprint("registro", __name__)
 
 
-@blueprint.route("/signup", methods=["GET", "POST"])
-def signup():
-    """ABC"""
-    if request.method == "GET":
-        return render_template("registro_usuario.html")
-    if request.method == "POST":
-        res = request.get_json("signup")
-        name = res["user"]["name"]
-        lastname = res["user"]["lastname"]
-        email = res["user"]["email"]
-        password = res["user"]["password"]  # Usar werafvasfd
-        stmt = db.select(User.email).where(User.email == email)
-        resultado = db.session.execute(stmt).fetchone()
-        if resultado is None:
-            new_user = User(email, password, name, lastname)
-            db.session.add(new_user)
-            db.session.commit()
-            return {"Mensaje": "Usuario registrado"}
-        return {"Mensaje": "Usuario ya registrado, intenta con otro correo"}
-    return {"otra": "cosa"}
+@blueprint.route("/registro_usuario", methods=["GET"])
+def pagina_registro_usuario():
+    """Regresa la pagina de registro de usuario"""
+    if "usuario_id" in session:
+        return redirect(url_for("inicio"))
+    return render_template("registro_usuario.html")
+
+
+@blueprint.route("/registro_usuario", methods=["POST"])
+def crea_usuario():
+    """Crea el usuario"""
+    if "usuario_id" in session:
+        return redirect(url_for("inicio"))
+    name = request.form["name"]
+    lastname = request.form["lastname"]
+    email = request.form["email"]
+    password = request.form["password"]
+
+    # Validar campos
+    # Flash error
+    # return redirect(url_for("pagina_registro_usuario"))
+
+    usuario = User.query.filter_by(email=email).first()
+    if usuario:  # and usuario.confirmado
+        flash("Correo no dispoible", "advertencia")
+        return redirect(url_for("pagina_registro_usuario"))
+    # Si el usuario esta sin confirmar, actualiza los campos
+    # nombre, contrasena, etc
+    else:
+        usuario = User(
+            email=email,
+            password=password,
+            name=name,
+            lastname=lastname,
+        )
+    db.session.add(usuario)
+    db.session.commit()
+    # Genera el token de confirmacion de correo electronico
+    # Envia el token
+    flash("Registrado. Te enviamos un correo de confirmacion.", "exito")
+    return redirect(url_for("pagina_registro_usuario"))

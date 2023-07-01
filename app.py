@@ -2,8 +2,8 @@
     app.py
 """
 import os
+from datetime import timedelta
 from flask import Flask
-
 from routes.ejecucion import home
 from routes.info import aboutus, abtproject
 from routes.proyectos import proyectos
@@ -13,6 +13,7 @@ from utils.db import db
 
 app = Flask(__name__)
 app.secret_key = os.getenv("APP_SECRET", "luisillo")
+app.permanent_session_lifetime = timedelta(days=1)
 
 DB_URI = os.getenv("DB_URI")
 if DB_URI is None:
