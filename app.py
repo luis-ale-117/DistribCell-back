@@ -21,8 +21,7 @@ if DB_URI is None:
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_PORT = os.getenv("DB_PORT", "3306")
     DB_NAME = os.getenv("DB_NAME", "tt")
-    DB_URI = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}\
-        @{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    DB_URI = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
