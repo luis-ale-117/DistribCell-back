@@ -1,5 +1,7 @@
 """
-    aboutus.py
+sobre_el_equipo.py
+Modulo para mostrar inforamcion sobre los integrantes
+del equipo
 """
 from flask import render_template, request, Blueprint
 

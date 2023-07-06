@@ -4,10 +4,7 @@
 import os
 from datetime import timedelta
 from flask import Flask
-from routes.ejecucion import home
-from routes.info import aboutus, abtproject
-from routes.proyectos import proyectos
-from routes.usuario import login, signup, users
+from routes import home, aboutus, abtproject, proyectos, login, signup, users
 from utils.db import db
 
 
