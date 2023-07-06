@@ -6,6 +6,7 @@ de la aplicacion web principal
 import os
 from datetime import timedelta
 from flask import Flask
+from flask_migrate import Migrate
 from routes import (
     inicio,
     inicio_sesion,
@@ -46,6 +47,7 @@ app.register_blueprint(usuarios.blueprint)
 
 # Creamos la base de datos si no ha sido creada
 db.init_app(app)
+migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 

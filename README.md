@@ -126,6 +126,20 @@ If you install or delete any library run the following command to update `requir
 pip freeeze > requirements.txt
 ```
 
+To create and apply any changes to the database we use `Flask Migrate` (check this tutorial [video](https://youtu.be/ca-Vj6kwK7M)), a tool that allows to make
+changes automatically from our models to the database (Something called "migration"). To apply the changes use:
+```bash
+flask db upgrade
+```
+
+If change something in the models, use the following command to generate the code needed to make
+the migration:
+```bash
+flask db migrate -m "<A message describing the changes>"
+```
+
+Once the migration files are created, apply the changes with `flask db upgrade`
+
 ## Contribution
 For contributing to this repository and send your changes, first you need to create a `new branch` where you can save your changes without affecting `main`. To create a new branch use
 ```bash
