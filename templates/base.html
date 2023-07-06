@@ -20,9 +20,9 @@
         <h2 class="logo">Logo</h2>
         <div class="navigation">
             <ul id="navOpciones" class="nav-ul">
-                <li class="nav-li"><a class="link" href="/">Home</a></li>
-                <li class="nav-li"><a class="link" href="/abtproject">Sobre el proyecto</a></li>
-                <li class="nav-li"><a class="link" href="/aboutus">Nosotros</a></li>
+                <li class="nav-li"><a class="link" href="{{ url_for('inicio.pagina_inicio') }}">Inicio</a></li>
+                <li class="nav-li"><a class="link" href="{{ url_for('sobre_el_proyecto.pagina_sobre_el_proyecto') }}">Sobre el proyecto</a></li>
+                <li class="nav-li"><a class="link" href="{{ url_for('sobre_el_equipo.pagina_sobre_el_equipo') }}">Nosotros</a></li>
                 {% if usuario %}
                 <li class="nav-li"><a href="#"><button id="btnLogin-popup" class="btnLogin-popup">Mi cuenta</button></a></li>   
                 {% else %}

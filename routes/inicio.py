@@ -1,14 +1,16 @@
 """
-    home.py
+inicio.py
+Pagina principal de bienvenidad del proyecto. Tambien
+es la pagina principal de ejecucion de los automatas
 """
 from flask import render_template, Blueprint, session
 from models.user import User
 
-blueprint = Blueprint("home", __name__)
+blueprint = Blueprint("inicio", __name__)
 
 
 @blueprint.route("/", methods=["GET"])
-def inicio():
+def pagina_inicio():
     """Muestra la pagina de inicio"""
     usuario = None
     if "usuario_id" in session:

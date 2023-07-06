@@ -1,5 +1,7 @@
 """
-    login.py
+inicio_sesion.py
+Modulo para el manejo de sesiones de usuarios
+que ya estan registrados y confirmados
 """
 from flask import (
     redirect,
@@ -19,7 +21,7 @@ blueprint = Blueprint("sesion", __name__)
 def pagina_inicio_de_sesion():
     """Regresa la pagina de inicio de sesion"""
     if "usuario_id" in session:
-        return redirect(url_for("inicio"))
+        return redirect(url_for("pagina_inicio"))
     return render_template("inicio_sesion.html")
 
 
@@ -27,7 +29,7 @@ def pagina_inicio_de_sesion():
 def genera_sesion():
     """Genera la sesion del usuario"""
     if "usuario_id" in session:
-        return redirect(url_for("inicio"))
+        return redirect(url_for("pagina_inicio"))
     correo = request.form["email"]
     contrasena = request.form["password"]
     usuario = User.query.filter_by(email=correo).first_or_404()
@@ -36,7 +38,7 @@ def genera_sesion():
         return redirect(url_for("pagina_inicio_de_sesion"))
     session.permanent = True
     session["usuario_id"] = usuario.id
-    return redirect(url_for("inicio"))
+    return redirect(url_for("pagina_inicio"))
 
 
 @blueprint.route("/cierra_sesion", methods=["GET"])
@@ -46,4 +48,4 @@ def cierra_sesion():
         return redirect(url_for("pagina_inicio_de_sesion"))
     session.pop("usuario_id", None)
     flash("Sesion finalizada", "exito")
-    return redirect(url_for("inicio"))
+    return redirect(url_for("pagina_inicio"))

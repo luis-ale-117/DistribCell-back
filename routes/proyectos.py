@@ -1,30 +1,25 @@
 """
-    proyectos.py
+proyectos.py
+SIN IMPLEMENTAR
 """
-from flask import request, Blueprint
+from flask import Blueprint
 
 blueprint = Blueprint("proyectos", __name__)
 
 
-@blueprint.route("/new", methods=["POST"])
-def new():
+@blueprint.route("/crear_proyecto", methods=["POST"])
+def crear_proyecto():
     """ABC"""
-    if request.method == "POST":
-        return "NEW"
-    return None
+    return "NEW"
 
 
-@blueprint.route("/update", methods=["POST"])
-def update():
+@blueprint.route("/actualizar_proyecto", methods=["POST"])
+def actualizar_proyecto():
     """ABC"""
-    if request.method == "POST":
-        return "UPDATE"
-    return None
+    return "UPDATE"
 
 
-@blueprint.route("/delete", methods=["POST"])
-def delete():
+@blueprint.route("/borrar_proyecto", methods=["POST"])
+def borrar_proyecto():
     """ABC"""
-    if request.method == "POST":
-        return "DELETE"
-    return None
+    return "DELETE"

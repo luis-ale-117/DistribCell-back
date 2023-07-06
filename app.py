@@ -1,10 +1,20 @@
 """
-    app.py
+app.py
+Modulo de configuracion e inicio de ejecucion
+de la aplicacion web principal
 """
 import os
 from datetime import timedelta
 from flask import Flask
-from routes import home, aboutus, abtproject, proyectos, login, signup, users
+from routes import (
+    inicio,
+    inicio_sesion,
+    proyectos,
+    registro_usuario,
+    sobre_el_equipo,
+    sobre_el_proyecto,
+    usuarios,
+)
 from utils.db import db
 
 
@@ -26,13 +36,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 
 # Routes
-app.register_blueprint(home.blueprint)
-app.register_blueprint(aboutus.blueprint)
-app.register_blueprint(abtproject.blueprint)
+app.register_blueprint(inicio.blueprint)
+app.register_blueprint(sobre_el_equipo.blueprint)
+app.register_blueprint(sobre_el_proyecto.blueprint)
 app.register_blueprint(proyectos.blueprint)
-app.register_blueprint(login.blueprint)
-app.register_blueprint(signup.blueprint)
-app.register_blueprint(users.blueprint)
+app.register_blueprint(inicio_sesion.blueprint)
+app.register_blueprint(registro_usuario.blueprint)
+app.register_blueprint(usuarios.blueprint)
 
 # Creamos la base de datos si no ha sido creada
 db.init_app(app)

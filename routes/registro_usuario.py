@@ -1,5 +1,6 @@
 """
-    signup.py
+registro_usuario.py
+Modulo para el registro de nuevos usuarios
 """
 from flask import (
     render_template,
@@ -13,14 +14,14 @@ from flask import (
 from models.user import User
 from utils.db import db
 
-blueprint = Blueprint("registro", __name__)
+blueprint = Blueprint("registro_usuario", __name__)
 
 
 @blueprint.route("/registro_usuario", methods=["GET"])
 def pagina_registro_usuario():
     """Regresa la pagina de registro de usuario"""
     if "usuario_id" in session:
-        return redirect(url_for("inicio"))
+        return redirect(url_for("pagina_inicio"))
     return render_template("registro_usuario.html")
 
 
@@ -28,7 +29,7 @@ def pagina_registro_usuario():
 def crea_usuario():
     """Crea el usuario"""
     if "usuario_id" in session:
-        return redirect(url_for("inicio"))
+        return redirect(url_for("pagina_inicio"))
     name = request.form["name"]
     lastname = request.form["lastname"]
     email = request.form["email"]
