@@ -4,7 +4,7 @@ Modulo para mostrar inforamcion sobre los integrantes
 del equipo
 """
 from flask import render_template, session, Blueprint
-from models.usuarios import Usuarios
+from models import Usuarios
 
 blueprint = Blueprint("sobre_el_equipo", __name__)
 
@@ -14,5 +14,5 @@ def pagina_sobre_el_equipo():
     """Regresa la pagina de informacion del equipo"""
     usuario = None
     if "usuario_id" in session:
-        usuario = Usuarios.query.get_or_404(session["usuario_id"])
+        usuario = Usuarios.query.get(session["usuario_id"])
     return render_template("sobre_el_equipo.html", usuario=usuario)

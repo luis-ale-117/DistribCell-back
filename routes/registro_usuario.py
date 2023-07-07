@@ -11,7 +11,7 @@ from flask import (
     flash,
     Blueprint,
 )
-from models.usuarios import Usuarios
+from models import Usuarios
 from utils.db import db
 
 blueprint = Blueprint("registro_usuario", __name__)

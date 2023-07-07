@@ -12,7 +12,7 @@ from flask import (
     flash,
     Blueprint,
 )
-from models.usuarios import Usuarios
+from models import Usuarios
 
 blueprint = Blueprint("sesion", __name__)
 
