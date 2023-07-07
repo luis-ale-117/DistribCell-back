@@ -12,7 +12,7 @@ from flask import (
     flash,
     Blueprint,
 )
-from models.user import User
+from models.usuarios import Usuarios
 
 blueprint = Blueprint("sesion", __name__)
 
@@ -32,7 +32,7 @@ def genera_sesion():
         return redirect(url_for("pagina_inicio"))
     correo = request.form["email"]
     contrasena = request.form["password"]
-    usuario = User.query.filter_by(email=correo).first_or_404()
+    usuario = Usuarios.query.filter_by(correo=correo).first_or_404()
     if usuario is None or not usuario.checa_contrasena(contrasena):
         flash("Usuario o contrasena incorrecta, intenta de nuevo", "error")
         return redirect(url_for("pagina_inicio_de_sesion"))

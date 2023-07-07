@@ -11,7 +11,7 @@ from flask import (
     flash,
     Blueprint,
 )
-from models.user import User
+from models.usuarios import Usuarios
 from utils.db import db
 
 blueprint = Blueprint("registro_usuario", __name__)
@@ -30,28 +30,23 @@ def crea_usuario():
     """Crea el usuario"""
     if "usuario_id" in session:
         return redirect(url_for("pagina_inicio"))
-    name = request.form["name"]
-    lastname = request.form["lastname"]
-    email = request.form["email"]
-    password = request.form["password"]
+    nombre = request.form["name"]
+    apellido = request.form["lastname"]
+    correo = request.form["email"]
+    contrasena = request.form["password"]
 
     # Validar campos
     # Flash error
     # return redirect(url_for("pagina_registro_usuario"))
 
-    usuario = User.query.filter_by(email=email).first()
+    usuario = Usuarios.query.filter_by(correo=correo).first()
     if usuario:  # and usuario.confirmado
         flash("Correo no dispoible", "advertencia")
         return redirect(url_for("pagina_registro_usuario"))
     # Si el usuario esta sin confirmar, actualiza los campos
     # nombre, contrasena, etc
     else:
-        usuario = User(
-            email=email,
-            password=password,
-            name=name,
-            lastname=lastname,
-        )
+        usuario = Usuarios(nombre, apellido, correo, contrasena)
     db.session.add(usuario)
     db.session.commit()
     # Genera el token de confirmacion de correo electronico
