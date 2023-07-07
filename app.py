@@ -45,7 +45,6 @@ app.register_blueprint(inicio_sesion.blueprint)
 app.register_blueprint(registro_usuario.blueprint)
 app.register_blueprint(usuarios.blueprint)
 
-# Creamos la base de datos si no ha sido creada
 db.init_app(app)
 migrate = Migrate(app, db)
 with app.app_context():

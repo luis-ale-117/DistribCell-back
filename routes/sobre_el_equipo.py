@@ -3,7 +3,8 @@ sobre_el_equipo.py
 Modulo para mostrar inforamcion sobre los integrantes
 del equipo
 """
-from flask import render_template, Blueprint
+from flask import render_template, session, Blueprint
+from models.usuarios import Usuarios
 
 blueprint = Blueprint("sobre_el_equipo", __name__)
 
@@ -11,4 +12,7 @@ blueprint = Blueprint("sobre_el_equipo", __name__)
 @blueprint.route("/sobre_el_equipo", methods=["GET"])
 def pagina_sobre_el_equipo():
     """Regresa la pagina de informacion del equipo"""
-    return render_template("sobre_el_equipo.html")
+    usuario = None
+    if "usuario_id" in session:
+        usuario = Usuarios.query.get_or_404(session["usuario_id"])
+    return render_template("sobre_el_equipo.html", usuario=usuario)

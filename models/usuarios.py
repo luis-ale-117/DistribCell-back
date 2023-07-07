@@ -15,9 +15,6 @@ class Usuarios(db.Model):
     correo = db.Column(db.String(128), nullable=False, unique=True)
     contrasena_hash = db.Column(db.String(128), nullable=False)
     confirmado = db.Column(db.Boolean, nullable=False, default=False)
-    simulaciones = db.relationship(
-        "Simulaciones", cascade="all, delete", backref="usuarios", lazy=True
-    )
 
     def __init__(
         self,

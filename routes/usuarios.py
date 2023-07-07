@@ -12,9 +12,9 @@ blueprint = Blueprint("usuarios", __name__)
 def pagina_datos_usuario():
     """ABC"""
     if "usuario_id" not in session:
-        return redirect(url_for("inicio"))
+        return redirect(url_for("inicio.pagina_inicio"))
     Usuarios.query.get_or_404(session["usuario_id"])
-    return redirect(url_for("inicio"))
+    return redirect(url_for("inicio.pagina_inicio"))
 
 
 def update():
