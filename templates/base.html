@@ -24,7 +24,7 @@
                 <li class="nav-li"><a class="link" href="{{ url_for('sobre_el_proyecto.pagina_sobre_el_proyecto') }}">Sobre el proyecto</a></li>
                 <li class="nav-li"><a class="link" href="{{ url_for('sobre_el_equipo.pagina_sobre_el_equipo') }}">Nosotros</a></li>
                 {% if usuario %}
-                <li class="nav-li"><a href="#"><button id="btnLogin-popup" class="btnLogin-popup">Mi cuenta</button></a></li>   
+                <li class="nav-li"><a href="{{ url_for('usuarios.pagina_datos_usuario') }}"><button id="btnLogin-popup" class="btnLogin-popup">Mi cuenta</button></a></li>   
                 {% else %}
                 <li class="nav-li"><a href="{{ url_for('sesion.pagina_inicio_de_sesion') }}"><button id="btnLogin-popup" class="btnLogin-popup">Inicia Sesion</button></a></li>   
                 {% endif %}

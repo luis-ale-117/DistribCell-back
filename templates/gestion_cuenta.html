@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Mi cuenta{% endblock %}
+
+{% block contenido %}
+<div class="login">
+    <div class="wrapper active">
+        <div class="formBox signup">
+            <h2>Mi cuenta</h2>
+            <a href="{{ url_for('sesion.cierra_sesion') }}">
+                <button id="btnActualizar" type="button" class="btn">
+                    Cerrar sesion
+                </button>
+            </a>
+            <form id="form-datos-cuenta" action="{{ url_for('usuarios.actualiza_datos_usuario') }}" method="POST"
+                class="register-form">
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
+                    <input type="text" name="nombre" required value="{{ usuario.nombre }}">
+                    <label for="nombre">Nombres</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="person-add-outline"></ion-icon></span>
+                    <input type="text" name="apellido" required value="{{ usuario.apellido }}">
+                    <label for="apellido">Apellidos</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
+                    <input type="email" name="correo" required value="{{ usuario.correo }}">
+                    <label for="correo">Apellidos</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+                    <input type="password" name="nuevaContrasena">
+                    <label for="contrasena">Nueva contraseña</label>
+                </div>
+                <div id="divRepiteNuevaContrasena" class="inputBox invisible">
+                    <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+                    <input type="password" name="nuevaContrasena2" required>
+                    <label for="contrasena2">Repite la nueva contraseña</label>
+                </div>
+                <div id="divContrasenaActual" class="inputBox invisible">
+                    <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+                    <input type="password" name="contrasena" required>
+                    <label for="contrasena">Escribe la contraseña actual</label>
+                </div>
+                <div id="divActualizar" class="divBtn invisible">
+                    <button id="btnActualizar" type="submit" class="btn">
+                        <h4>Actualizar</h4>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scriptEspecial %}
+<script src="{{ url_for('static', filename='scripts/gestion_cuenta.js') }}"></script>
+{% endblock %}
