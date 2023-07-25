@@ -78,5 +78,4 @@ def crea_usuario():
     # Genera el token de confirmacion de correo electronico
     # Envia el token
     flash("Registrado. Te enviamos un correo de confirmacion.", "exito")
-    print(url_for("inicio.pagina_inicio"))
     return redirect(url_for("inicio.pagina_inicio"))

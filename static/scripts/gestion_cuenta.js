@@ -21,13 +21,13 @@ const sinCambiosEnCampos = form =>  {
   if (!form) return false;
   return datosOriginales.nombre === form.nombre.value &&
     datosOriginales.apellido === form.apellido.value &&
-    datosOriginales.correo === form.correo.value &&
     datosOriginales.nuevaContrasena === form.nuevaContrasena.value
 }
 const sinCambiosEnConstrasena = form =>  {
   if (!form) return false;
   return datosOriginales.nuevaContrasena === form.nuevaContrasena.value
 }
+
 camposForm.forEach(campo => {
   if (campo.type === 'submit') return;
   campo.addEventListener('input', _ => {
@@ -69,6 +69,7 @@ const validar_datos = form => {
   const correo = form.correo.value
   const nuevaContrasena = form.nuevaContrasena.value
   const nuevaContrasena2 = form.nuevaContrasena2.value
+  const contrasenaActual = form.contrasenaActual.value
 
   if (nombre === '') {
     alert('Nombre requerido')
@@ -82,22 +83,26 @@ const validar_datos = form => {
     alert('No se puede cambiar el correo')
     return false
   }
-  if (nuevaContrasena === '') {
-    alert('Contraseña requerida')
-    return false
+  if (nuevaContrasena !== '') {
+    if (nuevaContrasena !== nuevaContrasena2) {
+      alert('Las contraseñas no son iguales')
+      return false
+    }
+    if (contrasenaActual === '') {
+      alert('Escribe la contraseña actual')
+      return false
+    }
   }
-  if (nuevaContrasena !== nuevaContrasena2) {
-    alert('Las contraseñas no son iguales')
-    return false
-  }
-
   return true
 }
 
-form?.addEventListener('submit', e => {
+form?.addEventListener('submit',  e => {
   e.preventDefault();
-  if (!validar_datos(form)) {
+  if (!validar_datos(form)){
     return
   }
-
+  // @ts-ignore
+  form.correo.value = ''
+  // @ts-ignore
+  form.submit()
 })

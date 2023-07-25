@@ -42,6 +42,12 @@ class Usuarios(db.Model):
         """
         return check_password_hash(self.contrasena_hash, contrasena)
 
+    def asigna_contrasena(self, contrasena: str):
+        """
+        Asigna la nueva contrasena al usuario seleccionado
+        """
+        self.contrasena_hash = generate_password_hash(contrasena)
+
 
 class Simulaciones(db.Model):
     """

@@ -8,7 +8,7 @@
         <div class="formBox signup">
             <h2>Mi cuenta</h2>
             <a href="{{ url_for('sesion.cierra_sesion') }}">
-                <button id="btnActualizar" type="button" class="btn">
+                <button type="button" class="btn">
                     Cerrar sesion
                 </button>
             </a>
@@ -32,17 +32,17 @@
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
                     <input type="password" name="nuevaContrasena">
-                    <label for="contrasena">Nueva contraseña</label>
+                    <label for="nuevaContrasena">Nueva contraseña</label>
                 </div>
                 <div id="divRepiteNuevaContrasena" class="inputBox invisible">
                     <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
-                    <input type="password" name="nuevaContrasena2" required>
-                    <label for="contrasena2">Repite la nueva contraseña</label>
+                    <input type="password" name="nuevaContrasena2">
+                    <label for="nuevaContrasena2">Repite la nueva contraseña</label>
                 </div>
                 <div id="divContrasenaActual" class="inputBox invisible">
                     <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
-                    <input type="password" name="contrasena" required>
-                    <label for="contrasena">Escribe la contraseña actual</label>
+                    <input type="password" name="contrasenaActual">
+                    <label for="contrasenaActual">Escribe la contraseña actual</label>
                 </div>
                 <div id="divActualizar" class="divBtn invisible">
                     <button id="btnActualizar" type="submit" class="btn">
