@@ -2,7 +2,10 @@
 
 {% block titulo %}Automatas celulares{% endblock %}
 
-{% block headEspecial %}<script src="{{ url_for('static', filename='wasm/wasm_exec.js') }}"></script>{% endblock %}
+{% block headEspecial %}
+<script src="{{ url_for('static', filename='wasm/wasm_exec.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/cellular.css') }}"></>
+{% endblock %}
 
 {% block contenido %}
 <div class="div-config">
@@ -61,10 +64,10 @@
             </div>			
         </div>
     </div>
-    <br>
     <div id="grid" class="grid">
         
     </div>
+    
 </div>
 {% endblock %}
 

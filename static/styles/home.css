@@ -6,28 +6,20 @@
 }
 
 body {
-    min-height: 100vh;
-    background: url('../imgs/black.jpg');
-    background-size: cover;
-    background-position: center;
-    width: 100%;
-    height: 100%;
+    background-color: #000000;
 }
 
 .div-config {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 25px;
 }
 .container {
     background-color: black;
-    position: flex;
-    color: rgb(0, 0, 0);
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-
+    display: grid;
+    place-items: center;
+    height: 50vh; /*Adjust the height to center within the parent container */
 }
 .forms {
     background-color: white;
@@ -111,13 +103,6 @@ body {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-.grid{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: black;
 }
 
 .btnForm {
