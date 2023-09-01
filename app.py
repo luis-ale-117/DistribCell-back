@@ -10,7 +10,7 @@ from flask_migrate import Migrate
 from routes import (
     inicio,
     inicio_sesion,
-    proyectos,
+    simulaciones,
     registro_usuario,
     sobre_el_equipo,
     sobre_el_proyecto,
@@ -40,7 +40,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.register_blueprint(inicio.blueprint)
 app.register_blueprint(sobre_el_equipo.blueprint)
 app.register_blueprint(sobre_el_proyecto.blueprint)
-app.register_blueprint(proyectos.blueprint)
+app.register_blueprint(simulaciones.blueprint)
 app.register_blueprint(inicio_sesion.blueprint)
 app.register_blueprint(registro_usuario.blueprint)
 app.register_blueprint(usuarios.blueprint)

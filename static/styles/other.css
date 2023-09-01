@@ -10,7 +10,7 @@ a:hover {
     color: #3498DB;
 }
 
-.contenedor{
+.contenedor {
     height: auto;
     width: auto;
     display: flex;
@@ -51,7 +51,7 @@ a:hover {
     height: 320px;
     width: 320px;
     border-radius: 10px;
-    padding:5px 10px;
+    padding: 5px 10px;
     background-color: black;
     box-sizing: border-box;
     background-size: 100%;
@@ -103,7 +103,7 @@ a:hover {
     transition: 1s;
 }
 
-.para2{
+.para2 {
     text-align: justify;
     color: white;
     padding-left: 30px;
@@ -127,4 +127,134 @@ a:hover {
     font-size: 25px;
     transition: 1s;
     opacity: 0;
+}
+
+.sim {
+    position: relative;
+    width: 95%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    overflow: hidden;
+    bottom: -70px;
+}
+
+.sim .tab {
+    position: relative;
+    border-collapse: collapse;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+.sim .tab-th {
+    padding: 10px;
+    text-align: center;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+}
+
+.sim .tab-td {
+    padding: 10px;
+    text-align: center;
+    background-color: white;
+    color: black;
+}
+
+
+.infosim {
+    color: white;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 17px;
+}
+
+.contsim {
+    position: relative;
+    width: 70%;
+    background-color: black;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+    bottom: -70px;
+    overflow: hidden;
+}
+
+.whitelink {
+    position: relative;
+    font-size: 1.1em;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.whitelink:link {
+    color: white;
+}
+
+.whitelink:visited {
+    color: white;
+}
+
+.whitelink:hover {
+    color: white;
+}
+
+.whitelink::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    background: white;
+    border-radius: 5px;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform .5s;
+}
+
+.whitelink:hover::after {
+    transform-origin: left;
+    transform: scaleX(1);
+}
+
+.blacklink {
+    position: relative;
+    font-size: 1.1em;
+    color: black;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.blacklink:link {
+    color: black;
+}
+
+.blacklink:visited {
+    color: black;
+}
+
+.blacklink:hover {
+    color: black;
+}
+
+.blacklink::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    background: black;
+    border-radius: 5px;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform .5s;
+}
+
+.blacklink:hover::after {
+    transform-origin: left;
+    transform: scaleX(1);
 }

@@ -22,7 +22,7 @@ def validar_campos(nombre: str, apellido: str, correo: str) -> str | None:
 
 @blueprint.route("/mi_cuenta", methods=["GET"])
 def pagina_datos_usuario():
-    """ABC"""
+    """Muestra los datos del usuario"""
     if "usuario_id" not in session:
         return redirect(url_for("inicio.pagina_inicio"))
     usuario = Usuarios.query.get(session["usuario_id"])

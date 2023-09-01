@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Simulacion{% endblock %}
+
+{% block contenido %}
+<div class="contenedor">
+    <div class="title">
+        <h2>{{ simulacion.nombre }}</h2>
+    </div>
+    <div class="contsim infosim">
+        <br>
+        <p>Descripcion: {{ simulacion.descripcion }}</p>
+        <br>
+        <p>Anchura (columnas): {{ simulacion.anchura }}</p>
+        <br>
+        <p>Altura (filas): {{ simulacion.altura }}</p>
+        <br>
+        <p>Numero de estados: {{ simulacion.estados }}</p>
+        <br>
+        <p>Tipo: {{ simulacion.tipo }}</p>
+        <br>
+        <p>Numero de generaciones: {{ simulacion.numero_generaciones() }}</p>
+        <br>
+        {% for regla in simulacion.reglas %}
+        <p>Regla: {{ regla }}</p>
+        <br>
+        {% endfor %}
+        <a class="whitelink" href="{{ url_for('simulaciones.borrar_simulacion', simulacion_id=simulacion.id) }}">Borrar
+            simulacion</a>
+        <br>
+        <br>
+    </div>
+</div>
+{% endblock %}

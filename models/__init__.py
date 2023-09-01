@@ -67,6 +67,10 @@ class Simulaciones(db.Model):
         "Generaciones", cascade="all, delete", backref="simulaciones", lazy=True
     )
 
+    def numero_generaciones(self):
+        """Numero de generaciones de la simulacion"""
+        return len(self.generaciones)
+
 
 class Generaciones(db.Model):
     """

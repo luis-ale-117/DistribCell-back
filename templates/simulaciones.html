@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Simulaciones{% endblock %}
+
+
+{% block contenido %}
+<div class="contenedor">
+    <div class="title">
+        <h2>Simulaciones</h2>
+    </div>
+    <div class="sim">
+        <table class="tab">
+            <tr>
+                <th class="tab-th">Nombre</th>
+                <th class="tab-th">Descripcion</th>
+                <th class="tab-th">Anchura</th>
+                <th class="tab-th">Altura</th>
+                <th class="tab-th">Estados</th>
+                <th class="tab-th">Tipo</th>
+                <th class="tab-th">Generaciones</th>
+            </tr>
+            {% if simulaciones %}
+            {% for simulacion in simulaciones %}
+            <tr>
+                <td class="tab-td">
+                    <a class="blacklink"
+                        href="{{ url_for('simulaciones.pagina_simulacion', simulacion_id=simulacion.id) }}">
+                        {{ simulacion.nombre }}
+                    </a>
+                </td>
+                <td class="tab-td">{{ simulacion.descripcion }}</td>
+                <td class="tab-td">{{ simulacion.anchura }}</td>
+                <td class="tab-td">{{ simulacion.altura }}</td>
+                <td class="tab-td">{{ simulacion.tipo }}</td>
+                <td class="tab-td">{{ simulacion.generaciones|length }}</td>
+            </tr>
+
+            {% endfor %}
+            {% else %}
+            <tr class="tab-td">
+                <td colspan="8">No hay simulaciones</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+{% endblock %}
