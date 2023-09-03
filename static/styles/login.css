@@ -156,7 +156,7 @@
     justify-content: center;
 }
 
-.btn {
+.boton {
     width: 180px;
     height: 40px;
     background: rgb(255, 255, 255);
@@ -169,8 +169,8 @@
     font-weight: 500;
 }
 
-.btn:hover {
-    background: url(../imgs/btn.gif);
+.boton:hover {
+    background: url(../imgs/boton.gif);
     color: black;
     border-color: black;
     border-width: 3px;

@@ -60,7 +60,7 @@ body {
     color: white;
 }
 
-.ca-configForm, .ca-rulesForm {
+.formConfiguracion, .formReglas {
     margin-top: 30px;
     text-align: center;
     width: 300px;
@@ -68,7 +68,7 @@ body {
     float: left;
     background:transparent;
 }
-.ca-statesColors {
+.tabColorEstados {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
@@ -105,7 +105,7 @@ body {
     border-radius: 4px;
 }
 
-.btnForm {
+.botonFrom {
     width: fit-content;
     padding: 0px 10px;
     height: 30px;
@@ -115,7 +115,7 @@ body {
     font-size: 1em;
     color: rgb(0, 0, 0);
 }
-.btnForm:hover {
+.botonFrom:hover {
     background: rgb(0, 0, 0);
     border: none;
     color: rgb(255, 255, 255);
