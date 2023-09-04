@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: #000000;
+    background-color: gray;
 }
 
 .div-config {
@@ -16,7 +16,7 @@ body {
     margin-bottom: 25px;
 }
 .container {
-    background-color: black;
+    background-color: gray;
     display: grid;
     place-items: center;
     height: 50vh; /*Adjust the height to center within the parent container */

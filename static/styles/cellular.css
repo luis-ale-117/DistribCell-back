@@ -2,15 +2,15 @@
     display: grid;
     place-items: center;
 
-    max-width: 100vw;
+    max-width: 95vw;
     /* Tamaño fijo del contenedor */
     height: 50vh;
     /* Tamaño fijo del contenedor */
     overflow: auto;
     /* Muestra las barras de desplazamiento cuando sea necesario */
+
 }
 
-td {
-    min-width: 20px; /* Fixed width for each cell */
-    height: 20px; /* Fixed height for each cell */
+canvas {
+   display: block;
 }

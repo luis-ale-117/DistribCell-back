@@ -7,6 +7,13 @@ const listaReglas = document.getElementById('listaReglas')
 const tabColorEstados = document.getElementById('tabColorEstados')
 const selecVelocidad = document.getElementById('selecVelocidad')
 
+/**
+ * @type {HTMLCanvasElement}
+ */
+const canvasGrid = document.getElementById('canvasGrid');
+const ctx = canvasGrid.getContext('2d');
+const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
+
 const go = new Go();
 fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
     .then(response => response.arrayBuffer())
@@ -42,6 +49,19 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         matrix.push(row);
                     }
                     return matrix;
+                }
+                const dibujaMatrizInterfaz = (matrizCelulas) => {
+                    if (matrizCelulas.length * TAM_CELDA > canvasGrid.width || matrizCelulas[0].length * TAM_CELDA > canvasGrid.height) {
+                        canvasGrid.width = conf.anchura * TAM_CELDA
+                        canvasGrid.height =  conf.altura * TAM_CELDA
+                    }
+                    ctx.clearRect(0, 0, canvasGrid.width, canvasGrid.height);
+                    for (let fila = 0; fila < matrizCelulas.length; fila++) {
+                        for (let columna = 0; columna < matrizCelulas[0].length; columna++) {
+                            ctx.fillStyle = colorEstados[matrizCelulas[fila][columna]];
+                            ctx.fillRect(columna * TAM_CELDA, fila * TAM_CELDA, TAM_CELDA, TAM_CELDA);
+                        }
+                    }
                 }
                 const cargarMatrizInterfaz = (matrizCelulas) => {
                     // Remove all the children of the divGrid
@@ -136,7 +156,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         colorPicker.style.border = "1px solid black"
                         colorPicker.addEventListener('change', () => {
                             colorEstados[colorPicker.dataset.estado] = colorPicker.value
-                            cargarMatrizInterfaz(matrizCelulas)
+                            dibujaMatrizInterfaz(matrizCelulas)
                         })
                         color.appendChild(colorPicker)
                         filaEtiquetaEstados.appendChild(estado)
@@ -208,7 +228,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         // Make a copy of the matrix to be able to modify it
                         matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
                         // Update the grid in the UI
-                        cargarMatrizInterfaz(matrizCelulas)
+                        dibujaMatrizInterfaz(matrizCelulas)
                     }
                 }
                 //////////////////
@@ -218,17 +238,19 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
                 estadoSeleccionadoTD.style.backgroundColor = "#aaff00" // Green bright
                 automata.setRules(reglas)
-                // Default a random matrix. TODO: Listen for user changes on UI
+                // Por defecto haz una matriz aleatoria
                 err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                 if (err != null) {
-                    alert("An error occurred when loading initial matrix" + err);
+                    alert("Ocurrio un error al cargar la matriz inicial" + err);
                     return
                 }
                 matrizCelulas = automata.getInitGrid()
-                // Make a copy of the matrix to be able to modify it
+                // Haz una copia de la matriz para poder modificarla
                 matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
-                // First load of the matrix on the UI
-                cargarMatrizInterfaz(matrizCelulas)
+                // Carga la matriz en la interfaz por primera vez
+                canvasGrid.width = conf.anchura * TAM_CELDA
+                canvasGrid.height = conf.altura * TAM_CELDA
+                dibujaMatrizInterfaz(matrizCelulas)
 
                 // Execute the CA
                 ejecutaAutomata()
@@ -241,9 +263,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
 
                 formConfiguracion.addEventListener('submit', (e) => {
                     e.preventDefault()
-                    conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value),
-                        conf.anchura = parseInt(formConfiguracion.elements['anchura'].value),
-                        conf.altura = parseInt(formConfiguracion.elements['altura'].value)
+                    conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value)
+                    conf.anchura = parseInt(formConfiguracion.elements['anchura'].value)
+                    conf.altura = parseInt(formConfiguracion.elements['altura'].value)
                     automata.updateConfig(conf.numEstados, conf.anchura, conf.altura)
                     // Default (Conway's game of life) TODO: Load from USER
                     automata.setRules(reglas)
@@ -259,7 +281,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     cargarColorEstadosInterfaz(colorEstados)
                     estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
                     estadoSeleccionadoTD.style.backgroundColor = "#aaff00" // Green bright
-                    cargarMatrizInterfaz(matrizCelulas)
+                    dibujaMatrizInterfaz(matrizCelulas)
                 })
                 formReglas.addEventListener('submit', (e) => {
                     e.preventDefault()
@@ -277,6 +299,15 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 selecVelocidad.addEventListener('change', (e) => {
                     velocidadEjecucion = parseInt(e.target.value)
                 })
+                canvasGrid.addEventListener('mousedown', (e) => {
+                    const x = Math.floor(e.offsetX / TAM_CELDA)
+                    const y = Math.floor(e.offsetY / TAM_CELDA)
+                    nuevoEstado = parseInt(estadoSeleccionado)
+                    matrizCelulas[y][x] = nuevoEstado
+                    automata.updateCellState(x, y, nuevoEstado)
+                    ctx.fillStyle = colorEstados[nuevoEstado];
+                    ctx.fillRect(x * TAM_CELDA, y * TAM_CELDA, TAM_CELDA, TAM_CELDA);
+                });
             });
         } else {
             console.error('Invalid WebAssembly binary file');
