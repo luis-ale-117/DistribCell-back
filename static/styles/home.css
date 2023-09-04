@@ -8,18 +8,20 @@
 body {
     background-color: gray;
 }
-
-.div-config {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 25px;
-}
-.container {
-    background-color: gray;
+.inicioContenedor {
+    margin: 5px;
     display: grid;
-    place-items: center;
-    height: 50vh; /*Adjust the height to center within the parent container */
+    gap: 10px;
+}
+#formConfiguracion {
+    display: grid;
+    grid-template-columns: 50px repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+#formReglas {
+    display: grid;
+    grid-template-columns: minmax(100px, 4fr) minmax(50px, 2fr) minmax(50px, 1fr);
+    gap: 10px;
 }
 .forms {
     background-color: white;
@@ -68,39 +70,21 @@ body {
     float: left;
     background:transparent;
 }
-.tabColorEstados {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
 .rules{
     text-align: center;
     margin-bottom: 5px;
 }
 
 .inputForm {
-    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-end;
 }
 .inputForm label{
-    display: block;
+    margin-right: 5px;
     font-weight: bold;
 }
 .inputForm input {
-    width: 30%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.inputFormCondition {
-    margin-bottom: 10px;
-}
-.inputFormCondition label{
-    display: block;
-    font-weight: bold;
-}
-.inputFormCondition input{
-    width: 60%;
-    padding: 10px;
+    width: 100%;
     border: 1px solid #ccc;
     border-radius: 4px;
 }

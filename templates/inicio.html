@@ -8,63 +8,61 @@
 {% endblock %}
 
 {% block contenido %}
-<div class="div-config">
-    <div class="divBtn">
-        <button id="btnConfiguration" type="button" class="boton">
-            <h4>Configuracion</h4>
-        </button>
-    </div>
-    <div class="divBtn">
-        <button id="botonPausa"  class=" boton botonFrom">
-            <h4>Ejecuta</h4>
-        </button>
-    </div>
-</div>
-<div class="container" id="cellular-automaton">
-    <div class="form-container" id="form-container">
-        <span id="closeConfig" class="close">X</span>
-        <div class="forms">
-            <form id="formConfiguracion" class="formConfiguracion">
-                <div class="inputForm">
-                    <label for="anchura">Ancho</label>
-                    <input id="anchura" name="anchura" type="number" min="3" step="1" value="10">
-                </div>
-                <div class="inputForm">
-                    <label for="altura">Alto</label>
-                    <input id="altura" name="altura" type="number" min="3" step="1" value="10">
-                </div>
-                <div class="inputForm">
-                    <label for="numEstados">No. de estados</label>
+<div class="inicioContenedor">
+    <div>
+        <form id="formConfiguracion" class="herramientas">
+            <div class="inputForm">
+                <button type="button" id="botonPausa">
+                    <h4>Ejecuta</h4>
+                </button>
+            </div>
+            <div class="inputForm">
+                <label for="anchura">Ancho</label>
+                <input id="anchura" name="anchura" type="number" min="3" step="1" value="10">
+            </div>
+            <div class="inputForm">
+                <label for="altura">Alto</label>
+                <input id="altura" name="altura" type="number" min="3" step="1" value="10">
+            </div>
+            <div class="inputForm">
+                <label for="numEstados">No. de estados</label>
                 <input id="numEstados" name="numEstados" type="number" min="2" max="256" step="1" value="2">
-                </div>
-                <input type="submit" class="botonFrom" value="Cargar">
-            </form>
-            
-            <form id="formReglas" class="formReglas">
-                <table id="tabColorEstados" class="tabColorEstados">
-                </table>
-                <div class="inputFormCondition">
-                    <label for="condicion">Condicion</label>
-                    <input id="condicion" name="condicion" type="text" value="" placeholder="Regla">
-                </div>
-                <div class="inputForm">
-                    <label for="estado">Resultado</label>
-                    <input id="estado" name="estado" type="number" min="0" max="255" step="1" value="0">
-                </div>
-                <input type="submit" class="botonFrom" value="Agregar regla">
-            </form>
-        </div>
-        <div class="rules">
-            <ul id="listaReglas">
-            </ul>
-            <br>
+            </div>
+            <div class="inputForm">
+                <button type="submit">Cargar</button>
+            </div>
             <div class="inputForm">
                 <label for="selecVelocidad">Velocidad (ms)</label>
                 <input id="selecVelocidad" name="selecVelocidad" type="number" min="1" max="1000" step="1" value="1000">
-            </div>			
-        </div>
+            </div>
+        </form>
     </div>
-    <div class="grid">
+    <div>
+        <table id="tabColorEstados" class="tabColorEstados">
+        </table>
+    </div>
+    <div>
+        <form id="formReglas" class="herramientas">
+            <div class="inputForm">
+                <label for="condicion">Condicion</label>
+                <input id="condicion" name="condicion" type="text" value="" placeholder="Regla">
+            </div>
+            <div class="inputForm">
+                <label for="estado">Resultado</label>
+                <input id="estado" name="estado" type="number" min="0" max="255" step="1" value="0">
+            </div>
+            <div>
+                <button type="submit">Agregar regla</button>
+            </div>
+        </form>
+    </div>
+    <div>
+        <ul id="listaReglas">
+        </ul>
+        <br>
+    </div>
+
+    <div class="divGrid">
         <canvas id="canvasGrid"></canvas>
     </div>
     
