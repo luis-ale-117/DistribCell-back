@@ -15,13 +15,19 @@ body {
 }
 #formConfiguracion {
     display: grid;
-    grid-template-columns: 50px repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: 50px repeat(auto-fill, minmax(170px, 1fr));
     gap: 10px;
 }
 #formReglas {
     display: grid;
     grid-template-columns: minmax(100px, 4fr) minmax(50px, 2fr) minmax(50px, 1fr);
     gap: 10px;
+}
+#botonPausa {
+    background-color: white;
+    border: 0px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 .forms {
     background-color: white;

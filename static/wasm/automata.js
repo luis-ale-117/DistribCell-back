@@ -6,6 +6,7 @@ const formReglas = document.getElementById('formReglas')
 const listaReglas = document.getElementById('listaReglas')
 const tabColorEstados = document.getElementById('tabColorEstados')
 const selecVelocidad = document.getElementById('selecVelocidad')
+const imgPausa = document.getElementById('imgPausa')
 
 /**
  * @type {HTMLCanvasElement}
@@ -51,10 +52,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     return matrix;
                 }
                 const dibujaMatrizInterfaz = (matrizCelulas) => {
-                    if (matrizCelulas.length * TAM_CELDA > canvasGrid.width || matrizCelulas[0].length * TAM_CELDA > canvasGrid.height) {
-                        canvasGrid.width = conf.anchura * TAM_CELDA
-                        canvasGrid.height =  conf.altura * TAM_CELDA
-                    }
                     ctx.clearRect(0, 0, canvasGrid.width, canvasGrid.height);
                     for (let fila = 0; fila < matrizCelulas.length; fila++) {
                         for (let columna = 0; columna < matrizCelulas[0].length; columna++) {
@@ -232,7 +229,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     }
                 }
                 //////////////////
-                botonPausa.textContent = ejecutando ? "Pausa" : "Ejecuta"
+                imgPausa.src = ejecutando ? "/static/imgs/boton-de-pausa.png" : "/static/imgs/boton-de-play.png"
                 cargarReglasInterfaz(reglas)
                 cargarColorEstadosInterfaz(colorEstados)
                 estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
@@ -258,7 +255,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 //////////////////////////////////////////////
                 botonPausa.addEventListener('click', () => {
                     ejecutando = !ejecutando
-                    botonPausa.textContent = ejecutando ? "Pausa" : "Ejecuta"
+                    imgPausa.src = ejecutando ? "/static/imgs/boton-de-pausa.png" : "/static/imgs/boton-de-play.png"
                 })
 
                 formConfiguracion.addEventListener('submit', (e) => {
@@ -281,6 +278,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     cargarColorEstadosInterfaz(colorEstados)
                     estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
                     estadoSeleccionadoTD.style.backgroundColor = "#aaff00" // Green bright
+                    canvasGrid.width = conf.anchura * TAM_CELDA
+                    canvasGrid.height = conf.altura * TAM_CELDA
                     dibujaMatrizInterfaz(matrizCelulas)
                 })
                 formReglas.addEventListener('submit', (e) => {
