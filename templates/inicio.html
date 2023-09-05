@@ -12,8 +12,8 @@
     <div>
         <form id="formConfiguracion" class="herramientas">
             <div class="inputForm">
-                <button type="button" id="botonPausa">
-                    <img id="imgPausa" src="{{ url_for('static', filename='imgs/boton-de-play.png') }}" alt="boton-de-pausa.png" width="40px" height="40px"></img>
+                <button type="button" id="botonPausa" title="Inicia/Pausa">
+                    <img id="imgPausa" src="{{ url_for('static', filename='imgs/boton-de-play.png') }}" alt="boton-de-pausa.png"></img>
                 </button>
             </div>
             <div class="inputForm">
@@ -25,15 +25,15 @@
                 <input id="altura" name="altura" type="number" min="3" step="1" value="10">
             </div>
             <div class="inputForm">
-                <label for="numEstados">No. de estados</label>
+                <label for="numEstados">Estados</label>
                 <input id="numEstados" name="numEstados" type="number" min="2" max="256" step="1" value="2">
             </div>
             <div class="inputForm">
-                <button type="submit">Cargar</button>
+                <button type="submit" class="botonCarga">Cargar</button>
             </div>
             <div class="inputForm">
-                <label for="selecVelocidad">Velocidad (ms)</label>
-                <input id="selecVelocidad" name="selecVelocidad" type="number" min="1" max="1000" step="1" value="1000">
+                <label for="selecVelocidad">Velocidad</label>
+                <input id="selecVelocidad" name="selecVelocidad" type="range" min="0" max="1000" step="100" value="1000">
             </div>
         </form>
     </div>
@@ -52,7 +52,7 @@
                 <input id="estado" name="estado" type="number" min="0" max="255" step="1" value="0">
             </div>
             <div>
-                <button type="submit">Agregar regla</button>
+                <button type="submit" class="botonCarga">Agregar regla</button>
             </div>
         </form>
     </div>

@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: gray;
+    background-color: black;
 }
 .inicioContenedor {
     margin: 5px;
@@ -15,7 +15,7 @@ body {
 }
 #formConfiguracion {
     display: grid;
-    grid-template-columns: 50px repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-columns: 50px repeat(auto-fill, minmax(180px, 1fr));
     gap: 10px;
 }
 #formReglas {
@@ -28,7 +28,29 @@ body {
     border: 0px;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+#imgPausa {
+    width: 35px;
+    height: 35px;
+    border: 0px;
+    border-radius: 5px;
+    /* Imagen png sin fondo blanca */
+    /* Centrar imagen */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    /* Centrar imagen */
+}
+
+#imgPausa:hover {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+    background-color: white;
+}
+
 .forms {
     background-color: white;
 }
@@ -88,29 +110,72 @@ body {
 .inputForm label{
     margin-right: 5px;
     font-weight: bold;
+    color: white;
 }
 .inputForm input {
     width: 100%;
-    border: 1px solid #ccc;
+    border: 2px solid white;
     border-radius: 4px;
+    background-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-size: 1em;
+    padding-left: 3px;
 }
 
-.botonFrom {
-    width: fit-content;
-    padding: 0px 10px;
-    height: 30px;
-    background: rgb(255, 255, 255);
-    border-radius: 8px;
+.inputForm input::-webkit-outer-spin-button,
+.inputForm input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.inputForm input[type=number] {
+    -moz-appearance: textfield;
+}
+.inputForm input[type=number]:focus {
+    background-color: white;
+    color: black;
+    outline: none;
+}
+
+.inputForm input[type=text]:focus {
+    background-color: white;
+    color: black;
+    outline: none;
+}
+
+.inputForm input[type=range] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: grab;
+    height: 6px;
+    border-radius: 3px;
+    background: white;
+    outline: none;
+    direction: rtl;
+}
+
+.inputForm input[type=range]:active {
+    cursor: grabbing;
+}
+
+.botonCarga {
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 1em;
-    color: rgb(0, 0, 0);
+    font-weight: bold;
+    color: black;
+    padding: 3px;
 }
-.botonFrom:hover {
-    background: rgb(0, 0, 0);
-    border: none;
-    color: rgb(255, 255, 255);
-    margin-bottom: 10px;
+.botonCarga:hover {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    color: white;
 }
+
 
 .invisible {
     display: none;
