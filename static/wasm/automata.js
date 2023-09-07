@@ -139,11 +139,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         estado.addEventListener('click', () => {
                             if (estadoSeleccionadoTD != null) {
                                 estadoSeleccionadoTD.classList.remove('seleccionado')
-                                // estadoSeleccionadoTD.style.backgroundColor = "" // Previous selected estado background color reset
                             }
                             estadoSeleccionadoTD = estado
                             estado.classList.add('seleccionado')
-                            // estado.style.backgroundColor = "#aaff00" // Green bright
                             estadoSeleccionado = estado.dataset.estado
 
                         })
@@ -233,7 +231,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 cargarColorEstadosInterfaz(colorEstados)
                 estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
                 estadoSeleccionadoTD.classList.add('seleccionado')
-                // estadoSeleccionadoTD.style.backgroundColor = "#aaff00" // Green bright
                 automata.setRules(reglas)
                 // Por defecto haz una matriz aleatoria
                 err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
@@ -278,7 +275,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     cargarColorEstadosInterfaz(colorEstados)
                     estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
                     estadoSeleccionadoTD.classList.add('seleccionado')
-                    // estadoSeleccionadoTD.style.backgroundColor = "#aaff00" // Green bright
                     canvasGrid.width = conf.anchura * TAM_CELDA
                     canvasGrid.height = conf.altura * TAM_CELDA
                     dibujaMatrizInterfaz(matrizCelulas)
