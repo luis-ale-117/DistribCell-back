@@ -36,12 +36,9 @@
     height: 35px;
     border: 0px;
     border-radius: 5px;
-    /* Imagen png sin fondo blanca */
-    /* Centrar imagen */
     display: block;
     margin-left: auto;
     margin-right: auto;
-    /* Centrar imagen */
 }
 
 #imgPausa:hover {
@@ -152,22 +149,20 @@
     color: white;
 }
 
-#divTabEstados {
-    /* display: grid;
-    place-items: center; */
+.divTabEstados {
     max-width: 100%;
     overflow: auto;
     color: white;
     font-weight: bold;
 }
 
-#divTabEstados table {
+.divTabEstados table {
     border: none;
     border-spacing: 3px;
     font-size: 1em;
 }
 
-#divTabEstados table td {
+.divTabEstados table td {
     padding: 0;
     margin: 0;
     border: 2px solid white;
@@ -180,15 +175,60 @@
     min-height: 27px;
 }
 
-#divTabEstados table tr .seleccionado {
+.divTabEstados table tr .seleccionado {
     color: black;
     background-color: white;
 }
 
-#divTabEstados table input[type=color] {
+.divTabEstados table input[type=color] {
     border: none;
     vertical-align: middle;
     width: 100%;
     height: 100%;
     cursor: pointer;
+}
+
+/* Para sobreescribir el estilo de divTabEstados */
+.divListaReglas table tr {
+    width: 1000px;
+    height: 27px;
+    min-width: 100px;
+    min-height: 27px;
+}
+
+.divListaReglas table td {
+    width: auto;
+    height: auto;
+    min-width: 70px;
+    max-width: 700px;
+    padding-left: 5px;
+    padding-right: 5px;
+    cursor: default;
+}
+
+.divListaReglas table td[data-tipo="borrar"]{
+    cursor: pointer;
+}
+
+.divListaReglas table td[data-tipo="borrar"] img{
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+    background-color: white;
+    width: 23px;
+    height: 23px;
+    border: 0px;
+    border-radius: 5px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.divListaReglas table td[data-tipo="borrar"]:hover {
+    background-color: white;
+}
+
+.divListaReglas table td[data-tipo="borrar"]:hover img{
+    background-color: white;
+    -webkit-filter: none;
+    filter: none;
 }

@@ -102,23 +102,40 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     while (listaReglas.firstChild) {
                         listaReglas.removeChild(listaReglas.firstChild);
                     }
+
                     const fragment = document.createDocumentFragment()
+                    const tituloCondicion = document.createElement('th')
+                    const tituloEstado = document.createElement('th')
+                    const tituloBorrar = document.createElement('th')
+                    tituloCondicion.textContent = "Condición"
+                    tituloEstado.textContent = "Estado"
+                    tituloBorrar.textContent = "Borrar"
+                    const filaTitulo = document.createElement('tr')
+                    filaTitulo.appendChild(tituloCondicion)
+                    filaTitulo.appendChild(tituloEstado)
+                    filaTitulo.appendChild(tituloBorrar)
+                    fragment.appendChild(filaTitulo)
+
                     for (let i = 0; i < reglas.length; i++) {
-                        const regla = document.createElement('li')
-                        const condicion = document.createElement('span')
-                        const estado = document.createElement('span')
-                        const botonBorrar = document.createElement('button')
-                        condicion.textContent = reglas[i].condition + " -> "
+                        const regla = document.createElement('tr')
+                        const condicion = document.createElement('td')
+                        const estado = document.createElement('td')
+                        const tdBotonBorrar = document.createElement('td')
+                        condicion.textContent = reglas[i].condition
                         estado.textContent = reglas[i].state
                         regla.appendChild(condicion)
                         regla.appendChild(estado)
-                        botonBorrar.textContent = "Borrar"
-                        botonBorrar.addEventListener('click', () => {
+                        const imgCerrar = document.createElement('img')
+                        imgCerrar.src = "/static/imgs/cerrar.png"
+                        imgCerrar.dataset.tipo = "borrar"
+                        tdBotonBorrar.dataset.tipo = "borrar"
+                        tdBotonBorrar.appendChild(imgCerrar)
+                        tdBotonBorrar.addEventListener('click', () => {
                             reglas.splice(i, 1)
                             cargarReglasInterfaz(reglas)
                             automata.setRules(reglas)
                         })
-                        regla.appendChild(botonBorrar)
+                        regla.appendChild(tdBotonBorrar)
                         fragment.appendChild(regla)
                     }
                     listaReglas.appendChild(fragment)
