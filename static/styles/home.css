@@ -8,10 +8,20 @@
 body {
     background-color: black;
 }
+
+.invisible {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
 .inicioContenedor {
-    margin: 5px;
+    margin: 20px;
     display: grid;
     gap: 10px;
+    color: white;
 }
 #formConfiguracion {
     display: grid;
@@ -71,25 +81,6 @@ body {
     z-index: 1;
 }
 
-.close {
-    position: absolute;
-    top: 20px;
-    right: -30px;
-    transform: translate(-50%, -50%);
-    display: inline-block;
-    padding: 10px 20px;
-    background: transparent;
-    border: 1px solid #000000;
-    border-top-right-radius: 20px;
-    cursor: pointer;
-    transition: all .3s;
-}
-
-.close:hover {
-    background-color: black;
-    color: white;
-}
-
 .formConfiguracion, .formReglas {
     margin-top: 30px;
     text-align: center;
@@ -97,10 +88,6 @@ body {
     height: 300px;
     float: left;
     background:transparent;
-}
-.rules{
-    text-align: center;
-    margin-bottom: 5px;
 }
 
 .inputForm {
@@ -176,11 +163,43 @@ body {
     color: white;
 }
 
-
-.invisible {
-    display: none;
+#divTabEstados {
+    /* display: grid;
+    place-items: center; */
+    max-width: 100%;
+    overflow: auto;
+    color: white;
+    font-weight: bold;
 }
 
-.visible {
-    display: block;
+#divTabEstados table {
+    border: none;
+    border-spacing: 3px;
+    font-size: 1em;
+}
+
+#divTabEstados table td {
+    padding: 0;
+    margin: 0;
+    border: 2px solid white;
+    border-radius: 2px;
+    cursor: pointer;
+    text-align: center;
+    width: 35px;
+    height: 27px;
+    min-width: 35px;
+    min-height: 27px;
+}
+
+#divTabEstados table tr .seleccionado {
+    color: black;
+    background-color: white;
+}
+
+#divTabEstados table input[type=color] {
+    border: none;
+    vertical-align: middle;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
 }
