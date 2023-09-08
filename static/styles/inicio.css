@@ -196,6 +196,16 @@
     min-height: 27px;
 }
 
+.divListaReglas table .seleccionado {
+    color: black;
+    background-color: white;
+    opacity: 0.6;
+}
+
+.divListaReglas table .opaco {
+    opacity: 0.4;
+}
+
 .divListaReglas table td {
     width: auto;
     height: auto;
@@ -203,7 +213,7 @@
     max-width: 700px;
     padding-left: 5px;
     padding-right: 5px;
-    cursor: default;
+    cursor: grab;
 }
 
 .divListaReglas table td[data-tipo="borrar"]{

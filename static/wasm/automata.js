@@ -15,6 +15,11 @@ const canvasGrid = document.getElementById('canvasGrid');
 const ctx = canvasGrid.getContext('2d');
 const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
 
+// Metodo para mover un elemento en un array
+Array.prototype.move = function (from, to) {
+    this.splice(to, 0, this.splice(from, 1)[0]);
+}
+
 const go = new Go();
 fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
     .then(response => response.arrayBuffer())
@@ -117,24 +122,30 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     fragment.appendChild(filaTitulo)
 
                     for (let i = 0; i < reglas.length; i++) {
-                        const regla = document.createElement('tr')
-                        const condicion = document.createElement('td')
-                        const estado = document.createElement('td')
-                        const tdBotonBorrar = document.createElement('td')
+                        const regla = document.createElement('tr');
+                        regla.setAttribute('draggable', 'true')
+                        regla.id = 'regla-' + i.toString()
+
+                        const condicion = document.createElement('td');
                         condicion.textContent = reglas[i].condition
-                        estado.textContent = reglas[i].state
                         regla.appendChild(condicion)
+
+                        const estado = document.createElement('td')
+                        estado.textContent = reglas[i].state
                         regla.appendChild(estado)
+
+                        const tdBotonBorrar = document.createElement('td')
+                        tdBotonBorrar.dataset.tipo = "borrar"
+
                         const imgCerrar = document.createElement('img')
                         imgCerrar.src = "/static/imgs/cerrar.png"
-                        imgCerrar.dataset.tipo = "borrar"
-                        tdBotonBorrar.dataset.tipo = "borrar"
                         tdBotonBorrar.appendChild(imgCerrar)
                         tdBotonBorrar.addEventListener('click', () => {
                             reglas.splice(i, 1)
                             cargarReglasInterfaz(reglas)
                             automata.setRules(reglas)
                         })
+
                         regla.appendChild(tdBotonBorrar)
                         fragment.appendChild(regla)
                     }
@@ -262,7 +273,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 canvasGrid.width = conf.anchura * TAM_CELDA
                 canvasGrid.height = conf.altura * TAM_CELDA
                 dibujaMatrizInterfaz(matrizCelulas)
-
                 // Execute the CA
                 ejecutaAutomata()
 
@@ -320,6 +330,63 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     automata.updateCellState(x, y, nuevoEstado)
                     ctx.fillStyle = colorEstados[nuevoEstado];
                     ctx.fillRect(x * TAM_CELDA, y * TAM_CELDA, TAM_CELDA, TAM_CELDA);
+                });
+                listaReglas.addEventListener('dragstart', (e) => {
+                    e.dataTransfer?.setData('text/plain', e.target.id);
+                    const elementosHermanos = Array.from(e.target?.parentNode?.children);
+                    const indiceElemento = elementosHermanos.indexOf(e.target);
+                });
+                listaReglas.addEventListener('drag', (e) => {
+                    e.target.classList.add('opaco');
+                });
+                listaReglas.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('opaco');
+                });
+                listaReglas.addEventListener('dragenter', (e) => {
+                    if(e.target.tagName === 'TD') {
+                        e.target.parentNode.classList.add('seleccionado');
+                    }
+                    else if (e.target.tagName === 'TR'){
+                        e.target.classList.add('seleccionado');
+                    }
+                });
+                listaReglas.addEventListener('dragleave', (e) => {
+                    if(e.target.tagName === 'TD') {
+                        e.target.parentNode.classList.remove('seleccionado');
+                    }
+                    else if (e.target.tagName === 'TR'){
+                        e.target.classList.remove('seleccionado');
+                    }
+                });
+                listaReglas.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                listaReglas.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (e.target.tagName !== 'TD' && e.target.tagName !== 'TR') {
+                        return;
+                    }
+                    let destino;
+                    if(e.target.tagName === 'TD') {
+                        e.target.parentNode.classList.remove('seleccionado');
+                        destino = e.target.parentNode;
+                    }
+                    else{
+                        e.target.classList.remove('seleccionado');
+                        destino = e.target;
+                    }
+                    const elemento = document.getElementById(e.dataTransfer?.getData('text/plain'));
+                    const elementosHermanos = Array.from(destino?.parentNode?.children);
+                    const indiceElemento = elementosHermanos.indexOf(elemento);
+                    const indiceDestino = elementosHermanos.indexOf(destino);
+                    if ( indiceElemento < indiceDestino) {
+                        destino.after(elemento);
+                    }
+                    else{
+                        destino.before(elemento);
+                    }
+                    reglas.move(indiceElemento-1, indiceDestino-1) // -1 porque el primer elemento es el titulo
+                    automata.setRules(reglas)
                 });
             });
         } else {
