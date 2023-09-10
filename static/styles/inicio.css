@@ -19,7 +19,7 @@
 }
 #formReglas {
     display: grid;
-    grid-template-columns: minmax(100px, 4fr) minmax(50px, 2fr) minmax(50px, 1fr);
+    grid-template-columns: minmax(200px, 4fr) minmax(150px, 2fr) minmax(150px, 1fr);
     gap: 10px;
 }
 #formControl {
