@@ -30,7 +30,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 go.run(result.instance);
                 let colorEstados = ["#000000", "#ffffff"]
                 let estadoSeleccionado = "0"
-                let estadoSeleccionadoTD = null
+                let estadoSeleccionadoInterfaz = null
                 let velocidadEjecucion = 1000
                 const conf = {
                     numEstados: parseInt(formConfiguracion.elements['numEstados'].value),
@@ -65,44 +65,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         }
                     }
                 }
-                const cargarMatrizInterfaz = (matrizCelulas) => {
-                    // Remove all the children of the divGrid
-                    while (divGrid.firstChild) {
-                        divGrid.removeChild(divGrid.firstChild);
-                    }
-                    const fragment = document.createDocumentFragment()
-                    const tabAutomata = document.createElement('table')
-                    tabAutomata.style.backgroundColor = 'white'
-                    for (let i = 0; i < conf.altura; i++) {
-                        const row = document.createElement('tr')
-                        for (let j = 0; j < conf.anchura; j++) {
-                            const cell = document.createElement('td')
-                            cell.dataset.estado = matrizCelulas[i][j]
-                            cell.dataset.x = j
-                            cell.dataset.y = i
-                            //////// Only game of life by now
-                            cell.style.width = "20px"
-                            cell.style.height = "20px"
-                            cell.style.border = "1px solid black"
-                            cell.style.backgroundColor = colorEstados[matrizCelulas[i][j]]
-                            row.appendChild(cell)
-                        }
-                        tabAutomata.appendChild(row)
-                    }
-                    tabAutomata.addEventListener('click', (e) => {
-                        if (e.target.tagName == 'TD') {
-                            newState = parseInt(estadoSeleccionado)
-                            x = parseInt(e.target.dataset.x)
-                            y = parseInt(e.target.dataset.y)
-                            e.target.dataset.estado = newState
-                            matrizCelulas[y][x] = newState
-                            automata.updateCellState(x, y, newState)
-                            cargarMatrizInterfaz(matrizCelulas) // Just update the matrix on the UI
-                        }
-                    })
-                    fragment.appendChild(tabAutomata)
-                    divGrid.appendChild(fragment)
-                }
                 const cargarReglasInterfaz = (reglas) => {
                     while (listaReglas.firstChild) {
                         listaReglas.removeChild(listaReglas.firstChild);
@@ -115,6 +77,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     tituloCondicion.textContent = "Condición"
                     tituloEstado.textContent = "Estado"
                     tituloBorrar.textContent = "Borrar"
+
                     const filaTitulo = document.createElement('tr')
                     filaTitulo.appendChild(tituloCondicion)
                     filaTitulo.appendChild(tituloEstado)
@@ -136,15 +99,11 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
 
                         const tdBotonBorrar = document.createElement('td')
                         tdBotonBorrar.dataset.tipo = "borrar"
+                        tdBotonBorrar.dataset.posicion = i
 
                         const imgCerrar = document.createElement('img')
                         imgCerrar.src = "/static/imgs/cerrar.png"
                         tdBotonBorrar.appendChild(imgCerrar)
-                        tdBotonBorrar.addEventListener('click', () => {
-                            reglas.splice(i, 1)
-                            cargarReglasInterfaz(reglas)
-                            automata.setRules(reglas)
-                        })
 
                         regla.appendChild(tdBotonBorrar)
                         fragment.appendChild(regla)
@@ -155,24 +114,27 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     while (tabColorEstados.firstChild) {
                         tabColorEstados.removeChild(tabColorEstados.firstChild);
                     }
-                    const fragment = document.createDocumentFragment()
+
                     const filaEtiquetaEstados = document.createElement('tr')
                     const filaColorEstados = document.createElement('tr')
                     for (let i = 0; i < colorEstados.length; i++) {
                         const estado = document.createElement('td')
-                        const color = document.createElement('td')
-                        const colorPicker = document.createElement('input')
                         estado.textContent = i
                         estado.dataset.estado = i
                         estado.addEventListener('click', () => {
-                            if (estadoSeleccionadoTD != null) {
-                                estadoSeleccionadoTD.classList.remove('seleccionado')
+                            if (estadoSeleccionadoInterfaz != null) {
+                                // Quita la clase seleccionado al estado seleccionado anteriormente
+                                estadoSeleccionadoInterfaz.classList.remove('seleccionado')
                             }
-                            estadoSeleccionadoTD = estado
+                            // Añade la clase seleccionado al estado seleccionado
+                            estadoSeleccionadoInterfaz = estado
                             estado.classList.add('seleccionado')
                             estadoSeleccionado = estado.dataset.estado
 
                         })
+
+                        const colorPicker = document.createElement('input')
+                        colorPicker.id = 'colorPicker-' + i.toString()
                         colorPicker.setAttribute('type', 'color')
                         colorPicker.value = colorEstados[i]
                         colorPicker.dataset.estado = i
@@ -180,10 +142,13 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                             colorEstados[colorPicker.dataset.estado] = colorPicker.value
                             dibujaMatrizInterfaz(matrizCelulas)
                         })
+
+                        const color = document.createElement('td')
                         color.appendChild(colorPicker)
                         filaEtiquetaEstados.appendChild(estado)
                         filaColorEstados.appendChild(color)
                     }
+                    const fragment = document.createDocumentFragment()
                     fragment.appendChild(filaEtiquetaEstados)
                     fragment.appendChild(filaColorEstados)
                     tabColorEstados.appendChild(fragment)
@@ -257,8 +222,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 imgPausa.src = ejecutando ? "/static/imgs/boton-de-pausa.png" : "/static/imgs/boton-de-play.png"
                 cargarReglasInterfaz(reglas)
                 cargarColorEstadosInterfaz(colorEstados)
-                estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
-                estadoSeleccionadoTD.classList.add('seleccionado')
+                estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
+                estadoSeleccionadoInterfaz.classList.add('seleccionado')
                 automata.setRules(reglas)
                 // Por defecto haz una matriz aleatoria
                 err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
@@ -292,7 +257,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     automata.setRules(reglas)
                     err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                     if (err != null) {
-                        alert("An error occurred when loading initial matrix" + err);
+                        alert("Ocurrio un error cargando la matriz" + err);
                         return
                     }
                     matrizCelulas = automata.getInitGrid()
@@ -300,8 +265,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
                     asignaColorArcoiris(conf.numEstados)
                     cargarColorEstadosInterfaz(colorEstados)
-                    estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
-                    estadoSeleccionadoTD.classList.add('seleccionado')
+                    estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
+                    estadoSeleccionadoInterfaz.classList.add('seleccionado')
                     canvasGrid.width = conf.anchura * TAM_CELDA
                     canvasGrid.height = conf.altura * TAM_CELDA
                     dibujaMatrizInterfaz(matrizCelulas)
@@ -387,6 +352,23 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     }
                     reglas.move(indiceElemento-1, indiceDestino-1) // -1 porque el primer elemento es el titulo
                     automata.setRules(reglas)
+                });
+                listaReglas.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'IMG' && e.target.tagName !== 'TD') {
+                        return;
+                    }
+                    let borrar;
+                    if(e.target.tagName === 'IMG') {
+                        borrar = e.target.parentNode;
+                    }
+                    else{
+                        borrar = e.target;
+                    }
+                    if (borrar.dataset.tipo === "borrar") {
+                        reglas.splice(parseInt(e.target.dataset.posicion), 1);
+                        cargarReglasInterfaz(reglas);
+                        automata.setRules(reglas);
+                    }
                 });
             });
         } else {
