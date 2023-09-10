@@ -13,11 +13,6 @@
     <div>
         <form id="formConfiguracion">
             <div class="inputForm">
-                <button id="botonPausa" type="button" title="Inicia/Pausa">
-                    <img id="imgPausa" src="{{ url_for('static', filename='imgs/boton-de-play.png') }}" alt="boton-de-pausa.png"></img>
-                </button>
-            </div>
-            <div class="inputForm">
                 <label for="anchura">Ancho</label>
                 <input id="anchura" name="anchura" type="number" min="3" step="1" value="10" autocomplete="off">
             </div>
@@ -31,10 +26,6 @@
             </div>
             <div class="inputForm">
                 <button type="submit" class="botonCarga">Cargar</button>
-            </div>
-            <div class="inputForm">
-                <label for="rangoVelocidad">Velocidad</label>
-                <input id="rangoVelocidad" name="rangoVelocidad" type="range" min="0" max="1000" step="100" value="1000" autocomplete="off">
             </div>
         </form>
     </div>
@@ -64,7 +55,17 @@
         <table id="listaReglas">
         </table>
     </div>
-
+    <div id="formControl">
+        <div class="inputForm">
+            <button id="botonPausa" type="button" title="Inicia/Pausa">
+                <img id="imgPausa" src="{{ url_for('static', filename='imgs/boton-de-play.png') }}" alt="boton-de-pausa.png"></img>
+            </button>
+        </div>
+        <div class="inputForm">
+            <label for="rangoVelocidad">Velocidad</label>
+            <input id="rangoVelocidad" name="rangoVelocidad" type="range" min="0" max="1000" step="100" value="1000" autocomplete="off">
+        </div>
+    </div>
     <div>
         <h4 id="labelRangoHistorialAutomata">Generación 0 de 0</h4>
         <br>

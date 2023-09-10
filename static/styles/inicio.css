@@ -14,12 +14,17 @@
 }
 #formConfiguracion {
     display: grid;
-    grid-template-columns: 50px repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 10px;
 }
 #formReglas {
     display: grid;
     grid-template-columns: minmax(100px, 4fr) minmax(50px, 2fr) minmax(50px, 1fr);
+    gap: 10px;
+}
+#formControl {
+    display: grid;
+    grid-template-columns: 50px minmax(200px, 700px);
     gap: 10px;
 }
 #botonPausa {
@@ -45,26 +50,6 @@
     -webkit-filter: invert(100%);
     filter: invert(100%);
     background-color: white;
-}
-
-.forms {
-    background-color: white;
-}
-.form-container {
-    display: none;
-    position: absolute;
-    top: 45.5%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px;
-    height: 500px;
-    background-color: white;
-    border-radius: 20px;
-    border-top-left-radius:20px ;
-    border-top-right-radius:20px ;
-    justify-self: center;
-    transition: all .5s;
-    z-index: 1;
 }
 
 .formConfiguracion, .formReglas {

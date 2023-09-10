@@ -401,16 +401,16 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         automata.setRules(reglas);
                     }
                 });
-                rangoHistorialAutomata.addEventListener('change', (e) => {
-                    const indice = parseInt(e.target.value)
-                    const matrizCelulas = historialAutomata[indice]
-                    if (matrizCelulas === undefined) {
-                        alert("No hay un historial para esa generacion")
-                        return
-                    }
-                    labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
-                    dibujaMatrizInterfaz(matrizCelulas)
-                });
+                // rangoHistorialAutomata.addEventListener('change', (e) => {
+                //     const indice = parseInt(e.target.value)
+                //     const matrizCelulas = historialAutomata[indice]
+                //     if (matrizCelulas === undefined) {
+                //         alert("No hay un historial para esa generacion")
+                //         return
+                //     }
+                //     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
+                //     dibujaMatrizInterfaz(matrizCelulas)
+                // });
                 rangoHistorialAutomata.addEventListener('input', (e) => {
                     const indice = parseInt(e.target.value)
                     const matrizCelulas = historialAutomata[indice]
@@ -419,6 +419,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         return
                     }
                     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
+                    dibujaMatrizInterfaz(matrizCelulas)
                 });
             });
         } else {
