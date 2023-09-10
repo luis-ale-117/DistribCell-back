@@ -132,6 +132,10 @@
     cursor: grabbing;
 }
 
+.inputForm #rangoHistorialAutomata{
+    direction: ltr;
+}
+
 .botonCarga {
     background-color: white;
     border: 1px solid white;

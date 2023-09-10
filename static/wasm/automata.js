@@ -1,12 +1,17 @@
 // @ts-nocheck
 const divGrid = document.getElementById('grid');
 const botonPausa = document.getElementById('botonPausa');
-const formConfiguracion = document.getElementById('formConfiguracion')
-const formReglas = document.getElementById('formReglas')
-const listaReglas = document.getElementById('listaReglas')
-const tabColorEstados = document.getElementById('tabColorEstados')
-const selecVelocidad = document.getElementById('selecVelocidad')
-const imgPausa = document.getElementById('imgPausa')
+const formConfiguracion = document.getElementById('formConfiguracion');
+const formReglas = document.getElementById('formReglas');
+const listaReglas = document.getElementById('listaReglas');
+const tabColorEstados = document.getElementById('tabColorEstados');
+const rangoVelocidad = document.getElementById('rangoVelocidad');
+const imgPausa = document.getElementById('imgPausa');
+const rangoHistorialAutomata = document.getElementById('rangoHistorialAutomata');
+const labelRangoHistorialAutomata = document.getElementById('labelRangoHistorialAutomata');
+
+const IMAGEN_PAUSA = "/static/imgs/boton-de-pausa.png";
+const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
 
 /**
  * @type {HTMLCanvasElement}
@@ -32,6 +37,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 let estadoSeleccionado = "0"
                 let estadoSeleccionadoInterfaz = null
                 let velocidadEjecucion = 1000
+                let historialAutomata = []
                 const conf = {
                     numEstados: parseInt(formConfiguracion.elements['numEstados'].value),
                     anchura: parseInt(formConfiguracion.elements['anchura'].value),
@@ -195,8 +201,20 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         hue += hueIncrement
                     }
                 }
+                const agregaHistorial = (matrizCelulas) => {
+                    historialAutomata.push(matrizCelulas)
+                    rangoHistorialAutomata.max = historialAutomata.length - 1
+                    rangoHistorialAutomata.value = historialAutomata.length - 1
+                    labelRangoHistorialAutomata.textContent = `Generación ${historialAutomata.length - 1} de ${historialAutomata.length - 1} `
+                }
+                const reiniciaHistorial = () => {
+                    historialAutomata = []
+                    rangoHistorialAutomata.max = 0
+                    rangoHistorialAutomata.value = 0
+                    labelRangoHistorialAutomata.textContent = `Generación 0 de 0 `
+                }
                 const ejecutaAutomata = async () => {
-                    // Execute the CA
+                    // Ejecuta el automata
                     while (true) {
                         if (!ejecutando) {
                             // Espera 100ms si no se está ejecutando
@@ -211,18 +229,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                             // TODO: Error como mensaje, no como alert
                             alert("Ocurrio un error, revisa tus reglas: " + err);
                             ejecutando = false;
-                            imgPausa.src = "/static/imgs/boton-de-play.png"
+                            imgPausa.src = IMAGEN_PLAY
                             continue
                         }
                         matrizCelulas = automata.getInitGrid()
-                        // Make a copy of the matrix to be able to modify it
                         matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
-                        // Update the grid in the UI
+                        agregaHistorial(matrizCelulas)
+
                         dibujaMatrizInterfaz(matrizCelulas)
                     }
                 }
                 //////////////////
-                imgPausa.src = ejecutando ? "/static/imgs/boton-de-pausa.png" : "/static/imgs/boton-de-play.png"
+                imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
                 cargarReglasInterfaz(reglas)
                 cargarColorEstadosInterfaz(colorEstados)
                 estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
@@ -241,13 +259,14 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 canvasGrid.width = conf.anchura * TAM_CELDA
                 canvasGrid.height = conf.altura * TAM_CELDA
                 dibujaMatrizInterfaz(matrizCelulas)
-                // Execute the CA
+                agregaHistorial(matrizCelulas)
+
                 ejecutaAutomata()
 
                 //////////////////////////////////////////////
                 botonPausa.addEventListener('click', () => {
                     ejecutando = !ejecutando
-                    imgPausa.src = ejecutando ? "/static/imgs/boton-de-pausa.png" : "/static/imgs/boton-de-play.png"
+                    imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
                 })
 
                 formConfiguracion.addEventListener('submit', (e) => {
@@ -261,13 +280,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                     if (err != null) {
                         alert("Ocurrio un error cargando la matriz" + err);
+                        ejecutando = false;
                         return
                     }
                     matrizCelulas = automata.getInitGrid()
-                    // Make a copy of the matrix to be able to modify it
                     matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+
+                    reiniciaHistorial()
+                    agregaHistorial(matrizCelulas)
+
                     asignaColorArcoiris(conf.numEstados)
                     cargarColorEstadosInterfaz(colorEstados)
+
                     estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
                     estadoSeleccionadoInterfaz.classList.add('seleccionado')
                     canvasGrid.width = conf.anchura * TAM_CELDA
@@ -286,8 +310,12 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     automata.setRules(reglas)
                     formReglas.elements['condicion'].value = ""
                     formReglas.elements['estado'].value = ""
+                    let matrizCelulas = automata.getInitGrid()
+                    matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+                    reiniciaHistorial()
+                    agregaHistorial(matrizCelulas)
                 })
-                selecVelocidad.addEventListener('change', (e) => {
+                rangoVelocidad.addEventListener('change', (e) => {
                     velocidadEjecucion = parseInt(e.target.value)
                 })
                 canvasGrid.addEventListener('mousedown', (e) => {
@@ -372,6 +400,25 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         cargarReglasInterfaz(reglas);
                         automata.setRules(reglas);
                     }
+                });
+                rangoHistorialAutomata.addEventListener('change', (e) => {
+                    const indice = parseInt(e.target.value)
+                    const matrizCelulas = historialAutomata[indice]
+                    if (matrizCelulas === undefined) {
+                        alert("No hay un historial para esa generacion")
+                        return
+                    }
+                    labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
+                    dibujaMatrizInterfaz(matrizCelulas)
+                });
+                rangoHistorialAutomata.addEventListener('input', (e) => {
+                    const indice = parseInt(e.target.value)
+                    const matrizCelulas = historialAutomata[indice]
+                    if (matrizCelulas === undefined) {
+                        alert("No hay un historial para esa generacion")
+                        return
+                    }
+                    labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
                 });
             });
         } else {
