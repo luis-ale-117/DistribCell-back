@@ -199,17 +199,20 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     // Execute the CA
                     while (true) {
                         if (!ejecutando) {
-                            // sleep for 100 ms
+                            // Espera 100ms si no se está ejecutando
                             await new Promise(r => setTimeout(r, 100));
                             continue
                         }
-                        // sleep for 1 second
+                        // Espera de acuerdo a la velocidad de ejecución
                         await new Promise(r => setTimeout(r, velocidadEjecucion));
                         err = automata.step()
                         if (err != null) {
                             console.error("Error:", err)
-                            alert("Error when executing: " + err);
-                            return
+                            // TODO: Error como mensaje, no como alert
+                            alert("Ocurrio un error, revisa tus reglas: " + err);
+                            ejecutando = false;
+                            imgPausa.src = "/static/imgs/boton-de-play.png"
+                            continue
                         }
                         matrizCelulas = automata.getInitGrid()
                         // Make a copy of the matrix to be able to modify it
