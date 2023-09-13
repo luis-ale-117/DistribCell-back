@@ -1,16 +1,22 @@
-.grid{
+.divGrid{
     display: grid;
     place-items: center;
 
     max-width: 100vw;
     /* Tamaño fijo del contenedor */
-    height: 50vh;
+    height: 55vh;
     /* Tamaño fijo del contenedor */
     overflow: auto;
     /* Muestra las barras de desplazamiento cuando sea necesario */
 }
 
-td {
-    min-width: 20px; /* Fixed width for each cell */
-    height: 20px; /* Fixed height for each cell */
+canvas {
+    border: 1px solid white;
+    display: block;
 }
+
+/* 
+    Pausa: <a href="https://www.flaticon.es/iconos-gratis/pausa" title="pausa iconos">Pausa iconos creados por Slidicon - Flaticon</a>
+    Play: <a href="https://www.flaticon.es/iconos-gratis/video" title="vídeo iconos">Vídeo iconos creados por Apikke - Flaticon</a>
+    Cerrar: <a href="https://www.flaticon.es/iconos-gratis/cerca" title="cerca iconos">Cerca iconos creados por Pixel perfect - Flaticon</a>
+*/

@@ -1,0 +1,233 @@
+.invisible {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+.inicioContenedor {
+    margin: 20px;
+    display: grid;
+    gap: 10px;
+    color: white;
+}
+#formConfiguracion {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+}
+#formReglas {
+    display: grid;
+    grid-template-columns: minmax(200px, 4fr) minmax(150px, 2fr) minmax(150px, 1fr);
+    gap: 10px;
+}
+#formControl {
+    display: grid;
+    grid-template-columns: 50px minmax(200px, 700px);
+    gap: 10px;
+}
+#botonPausa {
+    background-color: white;
+    border: 0px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#imgPausa {
+    width: 35px;
+    height: 35px;
+    border: 0px;
+    border-radius: 5px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#imgPausa:hover {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+    background-color: white;
+}
+
+.formConfiguracion, .formReglas {
+    margin-top: 30px;
+    text-align: center;
+    width: 300px;
+    height: 300px;
+    float: left;
+    background:transparent;
+}
+
+.inputForm {
+    display: flex;
+    align-items: flex-end;
+}
+.inputForm label{
+    margin-right: 5px;
+    font-weight: bold;
+    color: white;
+}
+.inputForm input {
+    width: 100%;
+    border: 2px solid white;
+    border-radius: 4px;
+    background-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-size: 1em;
+    padding-left: 3px;
+}
+
+.inputForm input::-webkit-outer-spin-button,
+.inputForm input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.inputForm input[type=number] {
+    -moz-appearance: textfield;
+}
+.inputForm input[type=number]:focus {
+    background-color: white;
+    color: black;
+    outline: none;
+}
+
+.inputForm input[type=text]:focus {
+    background-color: white;
+    color: black;
+    outline: none;
+}
+
+.inputForm input[type=range] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: grab;
+    height: 6px;
+    border-radius: 3px;
+    background: white;
+    outline: none;
+    direction: rtl;
+}
+
+.inputForm input[type=range]:active {
+    cursor: grabbing;
+}
+
+.inputForm #rangoHistorialAutomata{
+    direction: ltr;
+}
+
+.botonCarga {
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    color: black;
+    padding: 3px;
+}
+.botonCarga:hover {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 4px;
+    color: white;
+}
+
+.divTabEstados {
+    max-width: 100%;
+    overflow: auto;
+    color: white;
+    font-weight: bold;
+}
+
+.divTabEstados table {
+    border: none;
+    border-spacing: 3px;
+    font-size: 1em;
+}
+
+.divTabEstados table td {
+    padding: 0;
+    margin: 0;
+    border: 2px solid white;
+    border-radius: 2px;
+    cursor: pointer;
+    text-align: center;
+    width: 35px;
+    height: 27px;
+    min-width: 35px;
+    min-height: 27px;
+}
+
+.divTabEstados table tr .seleccionado {
+    color: black;
+    background-color: white;
+}
+
+.divTabEstados table input[type=color] {
+    border: none;
+    vertical-align: middle;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* Para sobreescribir el estilo de divTabEstados */
+.divListaReglas table tr {
+    width: 1000px;
+    height: 27px;
+    min-width: 100px;
+    min-height: 27px;
+}
+
+.divListaReglas table .seleccionado {
+    color: black;
+    background-color: white;
+    opacity: 0.6;
+}
+
+.divListaReglas table .opaco {
+    opacity: 0.4;
+}
+
+.divListaReglas table td {
+    width: auto;
+    height: auto;
+    min-width: 70px;
+    max-width: 700px;
+    padding-left: 5px;
+    padding-right: 5px;
+    cursor: grab;
+}
+
+.divListaReglas table td[data-tipo="borrar"]{
+    cursor: pointer;
+}
+
+.divListaReglas table td[data-tipo="borrar"] img{
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+    background-color: white;
+    width: 23px;
+    height: 23px;
+    border: 0px;
+    border-radius: 5px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.divListaReglas table td[data-tipo="borrar"]:hover {
+    background-color: white;
+}
+
+.divListaReglas table td[data-tipo="borrar"]:hover img{
+    background-color: white;
+    -webkit-filter: none;
+    filter: none;
+}

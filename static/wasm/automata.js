@@ -1,11 +1,29 @@
 // @ts-nocheck
 const divGrid = document.getElementById('grid');
 const botonPausa = document.getElementById('botonPausa');
-const formConfiguracion = document.getElementById('formConfiguracion')
-const formReglas = document.getElementById('formReglas')
-const listaReglas = document.getElementById('listaReglas')
-const tabColorEstados = document.getElementById('tabColorEstados')
-const selecVelocidad = document.getElementById('selecVelocidad')
+const formConfiguracion = document.getElementById('formConfiguracion');
+const formReglas = document.getElementById('formReglas');
+const listaReglas = document.getElementById('listaReglas');
+const tabColorEstados = document.getElementById('tabColorEstados');
+const rangoVelocidad = document.getElementById('rangoVelocidad');
+const imgPausa = document.getElementById('imgPausa');
+const rangoHistorialAutomata = document.getElementById('rangoHistorialAutomata');
+const labelRangoHistorialAutomata = document.getElementById('labelRangoHistorialAutomata');
+
+const IMAGEN_PAUSA = "/static/imgs/boton-de-pausa.png";
+const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
+
+/**
+ * @type {HTMLCanvasElement}
+ */
+const canvasGrid = document.getElementById('canvasGrid');
+const ctx = canvasGrid.getContext('2d');
+const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
+
+// Metodo para mover un elemento en un array
+Array.prototype.move = function (from, to) {
+    this.splice(to, 0, this.splice(from, 1)[0]);
+}
 
 const go = new Go();
 fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
@@ -17,8 +35,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 go.run(result.instance);
                 let colorEstados = ["#000000", "#ffffff"]
                 let estadoSeleccionado = "0"
-                let estadoSeleccionadoTD = null
+                let estadoSeleccionadoInterfaz = null
                 let velocidadEjecucion = 1000
+                let historialAutomata = []
                 const conf = {
                     numEstados: parseInt(formConfiguracion.elements['numEstados'].value),
                     anchura: parseInt(formConfiguracion.elements['anchura'].value),
@@ -43,65 +62,56 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     }
                     return matrix;
                 }
-                const cargarMatrizInterfaz = (matrizCelulas) => {
-                    // Remove all the children of the divGrid
-                    while (divGrid.firstChild) {
-                        divGrid.removeChild(divGrid.firstChild);
-                    }
-                    const fragment = document.createDocumentFragment()
-                    const tabAutomata = document.createElement('table')
-                    tabAutomata.style.backgroundColor = 'white'
-                    for (let i = 0; i < conf.altura; i++) {
-                        const row = document.createElement('tr')
-                        for (let j = 0; j < conf.anchura; j++) {
-                            const cell = document.createElement('td')
-                            cell.dataset.estado = matrizCelulas[i][j]
-                            cell.dataset.x = j
-                            cell.dataset.y = i
-                            //////// Only game of life by now
-                            cell.style.width = "20px"
-                            cell.style.height = "20px"
-                            cell.style.border = "1px solid black"
-                            cell.style.backgroundColor = colorEstados[matrizCelulas[i][j]]
-                            row.appendChild(cell)
+                const dibujaMatrizInterfaz = (matrizCelulas) => {
+                    ctx.clearRect(0, 0, canvasGrid.width, canvasGrid.height);
+                    for (let fila = 0; fila < matrizCelulas.length; fila++) {
+                        for (let columna = 0; columna < matrizCelulas[0].length; columna++) {
+                            ctx.fillStyle = colorEstados[matrizCelulas[fila][columna]];
+                            ctx.fillRect(columna * TAM_CELDA, fila * TAM_CELDA, TAM_CELDA, TAM_CELDA);
                         }
-                        tabAutomata.appendChild(row)
                     }
-                    tabAutomata.addEventListener('click', (e) => {
-                        if (e.target.tagName == 'TD') {
-                            newState = parseInt(estadoSeleccionado)
-                            x = parseInt(e.target.dataset.x)
-                            y = parseInt(e.target.dataset.y)
-                            e.target.dataset.estado = newState
-                            matrizCelulas[y][x] = newState
-                            automata.updateCellState(x, y, newState)
-                            cargarMatrizInterfaz(matrizCelulas) // Just update the matrix on the UI
-                        }
-                    })
-                    fragment.appendChild(tabAutomata)
-                    divGrid.appendChild(fragment)
                 }
                 const cargarReglasInterfaz = (reglas) => {
                     while (listaReglas.firstChild) {
                         listaReglas.removeChild(listaReglas.firstChild);
                     }
+
                     const fragment = document.createDocumentFragment()
+                    const tituloCondicion = document.createElement('th')
+                    const tituloEstado = document.createElement('th')
+                    const tituloBorrar = document.createElement('th')
+                    tituloCondicion.textContent = "Condición"
+                    tituloEstado.textContent = "Estado"
+                    tituloBorrar.textContent = "Borrar"
+
+                    const filaTitulo = document.createElement('tr')
+                    filaTitulo.appendChild(tituloCondicion)
+                    filaTitulo.appendChild(tituloEstado)
+                    filaTitulo.appendChild(tituloBorrar)
+                    fragment.appendChild(filaTitulo)
+
                     for (let i = 0; i < reglas.length; i++) {
-                        const regla = document.createElement('li')
-                        const condicion = document.createElement('span')
-                        const estado = document.createElement('span')
-                        const botonBorrar = document.createElement('button')
-                        condicion.textContent = reglas[i].condition + " -> "
-                        estado.textContent = reglas[i].state
+                        const regla = document.createElement('tr');
+                        regla.setAttribute('draggable', 'true')
+                        regla.id = 'regla-' + i.toString()
+
+                        const condicion = document.createElement('td');
+                        condicion.textContent = reglas[i].condition
                         regla.appendChild(condicion)
+
+                        const estado = document.createElement('td')
+                        estado.textContent = reglas[i].state
                         regla.appendChild(estado)
-                        botonBorrar.textContent = "Borrar"
-                        botonBorrar.addEventListener('click', () => {
-                            reglas.splice(i, 1)
-                            cargarReglasInterfaz(reglas)
-                            automata.setRules(reglas)
-                        })
-                        regla.appendChild(botonBorrar)
+
+                        const tdBotonBorrar = document.createElement('td')
+                        tdBotonBorrar.dataset.tipo = "borrar"
+                        tdBotonBorrar.dataset.posicion = i
+
+                        const imgCerrar = document.createElement('img')
+                        imgCerrar.src = "/static/imgs/cerrar.png"
+                        tdBotonBorrar.appendChild(imgCerrar)
+
+                        regla.appendChild(tdBotonBorrar)
                         fragment.appendChild(regla)
                     }
                     listaReglas.appendChild(fragment)
@@ -110,38 +120,41 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     while (tabColorEstados.firstChild) {
                         tabColorEstados.removeChild(tabColorEstados.firstChild);
                     }
-                    const fragment = document.createDocumentFragment()
+
                     const filaEtiquetaEstados = document.createElement('tr')
                     const filaColorEstados = document.createElement('tr')
                     for (let i = 0; i < colorEstados.length; i++) {
                         const estado = document.createElement('td')
-                        const color = document.createElement('td')
-                        const colorPicker = document.createElement('input')
                         estado.textContent = i
                         estado.dataset.estado = i
                         estado.addEventListener('click', () => {
-                            if (estadoSeleccionadoTD != null) {
-                                estadoSeleccionadoTD.style.backgroundColor = "" // Previous selected estado background color reset
+                            if (estadoSeleccionadoInterfaz != null) {
+                                // Quita la clase seleccionado al estado seleccionado anteriormente
+                                estadoSeleccionadoInterfaz.classList.remove('seleccionado')
                             }
-                            estadoSeleccionadoTD = estado
-                            estado.style.backgroundColor = "#aaff00" // Green bright
+                            // Añade la clase seleccionado al estado seleccionado
+                            estadoSeleccionadoInterfaz = estado
+                            estado.classList.add('seleccionado')
                             estadoSeleccionado = estado.dataset.estado
 
                         })
+
+                        const colorPicker = document.createElement('input')
+                        colorPicker.id = 'colorPicker-' + i.toString()
                         colorPicker.setAttribute('type', 'color')
                         colorPicker.value = colorEstados[i]
                         colorPicker.dataset.estado = i
-                        colorPicker.style.width = "20px"
-                        colorPicker.style.height = "20px"
-                        colorPicker.style.border = "1px solid black"
                         colorPicker.addEventListener('change', () => {
                             colorEstados[colorPicker.dataset.estado] = colorPicker.value
-                            cargarMatrizInterfaz(matrizCelulas)
+                            dibujaMatrizInterfaz(matrizCelulas)
                         })
+
+                        const color = document.createElement('td')
                         color.appendChild(colorPicker)
                         filaEtiquetaEstados.appendChild(estado)
                         filaColorEstados.appendChild(color)
                     }
+                    const fragment = document.createDocumentFragment()
                     fragment.appendChild(filaEtiquetaEstados)
                     fragment.appendChild(filaColorEstados)
                     tabColorEstados.appendChild(fragment)
@@ -188,78 +201,102 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         hue += hueIncrement
                     }
                 }
+                const agregaHistorial = (matrizCelulas) => {
+                    historialAutomata.push(matrizCelulas)
+                    rangoHistorialAutomata.max = historialAutomata.length - 1
+                    rangoHistorialAutomata.value = historialAutomata.length - 1
+                    labelRangoHistorialAutomata.textContent = `Generación ${historialAutomata.length - 1} de ${historialAutomata.length - 1} `
+                }
+                const reiniciaHistorial = () => {
+                    historialAutomata = []
+                    rangoHistorialAutomata.max = 0
+                    rangoHistorialAutomata.value = 0
+                    labelRangoHistorialAutomata.textContent = `Generación 0 de 0 `
+                }
                 const ejecutaAutomata = async () => {
-                    // Execute the CA
+                    // Ejecuta el automata
                     while (true) {
                         if (!ejecutando) {
-                            // sleep for 100 ms
+                            // Espera 100ms si no se está ejecutando
                             await new Promise(r => setTimeout(r, 100));
                             continue
                         }
-                        // sleep for 1 second
+                        // Espera de acuerdo a la velocidad de ejecución
                         await new Promise(r => setTimeout(r, velocidadEjecucion));
                         err = automata.step()
                         if (err != null) {
                             console.error("Error:", err)
-                            alert("Error when executing: " + err);
-                            return
+                            // TODO: Error como mensaje, no como alert
+                            alert("Ocurrio un error, revisa tus reglas: " + err);
+                            ejecutando = false;
+                            imgPausa.src = IMAGEN_PLAY
+                            continue
                         }
                         matrizCelulas = automata.getInitGrid()
-                        // Make a copy of the matrix to be able to modify it
                         matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
-                        // Update the grid in the UI
-                        cargarMatrizInterfaz(matrizCelulas)
+                        agregaHistorial(matrizCelulas)
+
+                        dibujaMatrizInterfaz(matrizCelulas)
                     }
                 }
                 //////////////////
-                botonPausa.textContent = ejecutando ? "Pausa" : "Ejecuta"
+                imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
                 cargarReglasInterfaz(reglas)
                 cargarColorEstadosInterfaz(colorEstados)
-                estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
-                estadoSeleccionadoTD.style.backgroundColor = "#aaff00" // Green bright
+                estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
+                estadoSeleccionadoInterfaz.classList.add('seleccionado')
                 automata.setRules(reglas)
-                // Default a random matrix. TODO: Listen for user changes on UI
+                // Por defecto haz una matriz aleatoria
                 err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                 if (err != null) {
-                    alert("An error occurred when loading initial matrix" + err);
+                    alert("Ocurrio un error al cargar la matriz inicial" + err);
                     return
                 }
                 matrizCelulas = automata.getInitGrid()
-                // Make a copy of the matrix to be able to modify it
+                // Haz una copia de la matriz para poder modificarla
                 matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
-                // First load of the matrix on the UI
-                cargarMatrizInterfaz(matrizCelulas)
+                // Carga la matriz en la interfaz por primera vez
+                canvasGrid.width = conf.anchura * TAM_CELDA
+                canvasGrid.height = conf.altura * TAM_CELDA
+                dibujaMatrizInterfaz(matrizCelulas)
+                agregaHistorial(matrizCelulas)
 
-                // Execute the CA
                 ejecutaAutomata()
 
                 //////////////////////////////////////////////
                 botonPausa.addEventListener('click', () => {
                     ejecutando = !ejecutando
-                    botonPausa.textContent = ejecutando ? "Pausa" : "Ejecuta"
+                    imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
                 })
 
                 formConfiguracion.addEventListener('submit', (e) => {
                     e.preventDefault()
-                    conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value),
-                        conf.anchura = parseInt(formConfiguracion.elements['anchura'].value),
-                        conf.altura = parseInt(formConfiguracion.elements['altura'].value)
+                    conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value)
+                    conf.anchura = parseInt(formConfiguracion.elements['anchura'].value)
+                    conf.altura = parseInt(formConfiguracion.elements['altura'].value)
                     automata.updateConfig(conf.numEstados, conf.anchura, conf.altura)
                     // Default (Conway's game of life) TODO: Load from USER
                     automata.setRules(reglas)
                     err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                     if (err != null) {
-                        alert("An error occurred when loading initial matrix" + err);
+                        alert("Ocurrio un error cargando la matriz" + err);
+                        ejecutando = false;
                         return
                     }
                     matrizCelulas = automata.getInitGrid()
-                    // Make a copy of the matrix to be able to modify it
                     matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+
+                    reiniciaHistorial()
+                    agregaHistorial(matrizCelulas)
+
                     asignaColorArcoiris(conf.numEstados)
                     cargarColorEstadosInterfaz(colorEstados)
-                    estadoSeleccionadoTD = tabColorEstados.firstChild?.firstChild
-                    estadoSeleccionadoTD.style.backgroundColor = "#aaff00" // Green bright
-                    cargarMatrizInterfaz(matrizCelulas)
+
+                    estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
+                    estadoSeleccionadoInterfaz.classList.add('seleccionado')
+                    canvasGrid.width = conf.anchura * TAM_CELDA
+                    canvasGrid.height = conf.altura * TAM_CELDA
+                    dibujaMatrizInterfaz(matrizCelulas)
                 })
                 formReglas.addEventListener('submit', (e) => {
                     e.preventDefault()
@@ -273,10 +310,107 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     automata.setRules(reglas)
                     formReglas.elements['condicion'].value = ""
                     formReglas.elements['estado'].value = ""
+                    let matrizCelulas = automata.getInitGrid()
+                    matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+                    reiniciaHistorial()
+                    agregaHistorial(matrizCelulas)
                 })
-                selecVelocidad.addEventListener('change', (e) => {
+                rangoVelocidad.addEventListener('change', (e) => {
                     velocidadEjecucion = parseInt(e.target.value)
                 })
+                canvasGrid.addEventListener('mousedown', (e) => {
+                    const x = Math.floor(e.offsetX / TAM_CELDA)
+                    const y = Math.floor(e.offsetY / TAM_CELDA)
+                    nuevoEstado = parseInt(estadoSeleccionado)
+                    matrizCelulas[y][x] = nuevoEstado
+                    automata.updateCellState(x, y, nuevoEstado)
+                    ctx.fillStyle = colorEstados[nuevoEstado];
+                    ctx.fillRect(x * TAM_CELDA, y * TAM_CELDA, TAM_CELDA, TAM_CELDA);
+                });
+                listaReglas.addEventListener('dragstart', (e) => {
+                    e.dataTransfer?.setData('text/plain', e.target.id);
+                    const elementosHermanos = Array.from(e.target?.parentNode?.children);
+                    const indiceElemento = elementosHermanos.indexOf(e.target);
+                });
+                listaReglas.addEventListener('drag', (e) => {
+                    e.target.classList.add('opaco');
+                });
+                listaReglas.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('opaco');
+                });
+                listaReglas.addEventListener('dragenter', (e) => {
+                    if(e.target.tagName === 'TD') {
+                        e.target.parentNode.classList.add('seleccionado');
+                    }
+                    else if (e.target.tagName === 'TR'){
+                        e.target.classList.add('seleccionado');
+                    }
+                });
+                listaReglas.addEventListener('dragleave', (e) => {
+                    if(e.target.tagName === 'TD') {
+                        e.target.parentNode.classList.remove('seleccionado');
+                    }
+                    else if (e.target.tagName === 'TR'){
+                        e.target.classList.remove('seleccionado');
+                    }
+                });
+                listaReglas.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                listaReglas.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (e.target.tagName !== 'TD' && e.target.tagName !== 'TR') {
+                        return;
+                    }
+                    let destino;
+                    if(e.target.tagName === 'TD') {
+                        e.target.parentNode.classList.remove('seleccionado');
+                        destino = e.target.parentNode;
+                    }
+                    else{
+                        e.target.classList.remove('seleccionado');
+                        destino = e.target;
+                    }
+                    const elemento = document.getElementById(e.dataTransfer?.getData('text/plain'));
+                    const elementosHermanos = Array.from(destino?.parentNode?.children);
+                    const indiceElemento = elementosHermanos.indexOf(elemento);
+                    const indiceDestino = elementosHermanos.indexOf(destino);
+                    if ( indiceElemento < indiceDestino) {
+                        destino.after(elemento);
+                    }
+                    else{
+                        destino.before(elemento);
+                    }
+                    reglas.move(indiceElemento-1, indiceDestino-1) // -1 porque el primer elemento es el titulo
+                    automata.setRules(reglas)
+                });
+                listaReglas.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'IMG' && e.target.tagName !== 'TD') {
+                        return;
+                    }
+                    let borrar;
+                    if(e.target.tagName === 'IMG') {
+                        borrar = e.target.parentNode;
+                    }
+                    else{
+                        borrar = e.target;
+                    }
+                    if (borrar.dataset.tipo === "borrar") {
+                        reglas.splice(parseInt(e.target.dataset.posicion), 1);
+                        cargarReglasInterfaz(reglas);
+                        automata.setRules(reglas);
+                    }
+                });
+                rangoHistorialAutomata.addEventListener('input', (e) => {
+                    const indice = parseInt(e.target.value)
+                    const matrizCelulas = historialAutomata[indice]
+                    if (matrizCelulas === undefined) {
+                        alert("No hay un historial para esa generacion")
+                        return
+                    }
+                    labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
+                    dibujaMatrizInterfaz(matrizCelulas)
+                });
             });
         } else {
             console.error('Invalid WebAssembly binary file');

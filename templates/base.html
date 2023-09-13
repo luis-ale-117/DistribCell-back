@@ -7,7 +7,7 @@
     <title>{% block titulo %}{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round"
 		rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/home.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/default.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/login.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/other.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/navbar.css') }}">
@@ -61,7 +61,6 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script src="{{ url_for('static', filename='scripts/navbar.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/home.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/mensajes.js') }}"></script>
     {% block scriptEspecial %}{% endblock %}
 </body>
