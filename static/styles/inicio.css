@@ -24,10 +24,11 @@
 }
 #formControl {
     display: grid;
-    grid-template-columns: 50px minmax(200px, 700px);
+    grid-template-columns: 50px 50px minmax(200px, 700px);
     gap: 10px;
 }
-#botonPausa {
+
+.botonImagen {
     background-color: white;
     border: 0px;
     border-radius: 5px;
@@ -36,7 +37,7 @@
     margin-right: auto;
 }
 
-#imgPausa {
+.botonImagen img {
     width: 35px;
     height: 35px;
     border: 0px;
@@ -46,11 +47,13 @@
     margin-right: auto;
 }
 
-#imgPausa:hover {
+.botonImagen img:hover {
     -webkit-filter: invert(100%);
     filter: invert(100%);
     background-color: white;
 }
+
+
 
 .formConfiguracion, .formReglas {
     margin-top: 30px;
