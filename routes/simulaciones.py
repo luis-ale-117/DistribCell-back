@@ -124,3 +124,46 @@ def anadir_generaciones(simulacion_id: int):
     db.session.commit()
 
     return {"status": "created"}, 201
+
+
+@blueprint.route("/simulaciones/<int:simulacion_id>/generaciones", methods=["GET"])
+def obtener_generaciones(simulacion_id: int):
+    """Añade un bloque de generaciones a la simulacion"""
+    if "usuario_id" not in session:
+        flash("Por favor, inicia sesion.", "info")
+        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+    usuario = Usuarios.query.get(session["usuario_id"])
+    if usuario is None:
+        session.pop("usuario_id", None)
+        flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
+        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+
+    simulacion: Simulaciones = Simulaciones.query.filter_by(
+        usuario_id=usuario.id, id=simulacion_id
+    ).first_or_404()
+
+    gen_inicio = request.args.get("inicio", default=0, type=int)
+    gen_fin = request.args.get("fin", default=10, type=int)
+
+    generaciones: Generaciones = simulacion.generaciones
+
+    if generaciones is None:
+        return {"mensaje": "Simulacion sin generaciones"}, 200
+
+    generaciones = generaciones[gen_inicio:gen_fin]
+
+    matrices: list[list[list[int]]] = []
+    filas: int = simulacion.altura
+    columnas: int = simulacion.anchura
+
+    for generacion in generaciones:
+        matriz: list[list[int]] = []
+        for fila in range(filas):
+            matriz_fila: list[int] = []
+            for columna in range(columnas):
+                num = generacion.contenido[fila * columnas + columna]
+                matriz_fila.append(num)
+            matriz.append(matriz_fila)
+        matrices.append(matriz)
+
+    return matrices, 200

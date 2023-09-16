@@ -2,33 +2,82 @@
 
 {% block titulo %}Simulacion{% endblock %}
 
+{% block headEspecial %}
+<script src="{{ url_for('static', filename='wasm/wasm_exec.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/inicio.css') }}"></>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/cellular.css') }}"></>
+{% endblock %}
+
 {% block contenido %}
-<div class="contenedor">
-    <div class="title">
-        <h2>{{ simulacion.nombre }}</h2>
+<div class="inicioContenedor">
+    <div>
+        <h3>{{ simulacion.nombre }}</h3>
     </div>
-    <div class="contsim infosim">
-        <br>
-        <p>Descripcion: {{ simulacion.descripcion }}</p>
-        <br>
-        <p>Anchura (columnas): {{ simulacion.anchura }}</p>
-        <br>
-        <p>Altura (filas): {{ simulacion.altura }}</p>
-        <br>
-        <p>Numero de estados: {{ simulacion.estados }}</p>
-        <br>
-        <p>Tipo: {{ simulacion.tipo }}</p>
-        <br>
-        <p>Numero de generaciones: {{ simulacion.numero_generaciones() }}</p>
-        <br>
-        {% for regla in simulacion.reglas %}
-        <p>Regla: {{ regla }}</p>
-        <br>
-        {% endfor %}
-        <a class="whitelink" href="{{ url_for('simulaciones.borrar_simulacion', simulacion_id=simulacion.id) }}">Borrar
-            simulacion</a>
-        <br>
-        <br>
+    <div>
+        <p>{{ simulacion.descripcion }}</p>
     </div>
+    <div>
+        <form id="formConfiguracion">
+            <div class="inputForm">
+                <label for="anchura">Ancho</label>
+                <input id="anchura" name="anchura" type="number" min="3" step="1" value="{{ simulacion.anchura }}" autocomplete="off" readonly>
+            </div>
+            <div class="inputForm">
+                <label for="altura">Alto</label>
+                <input id="altura" name="altura" type="number" min="3" step="1" value="{{ simulacion.altura }}" autocomplete="off" readonly>
+            </div>
+            <div class="inputForm">
+                <label for="numEstados">Estados</label>
+                <input id="numEstados" name="numEstados" type="number" min="2" max="256" step="1" value="{{ simulacion.estados }}" autocomplete="off" readonly>
+            </div>
+        </form>
+    </div>
+    <div>
+        <h4>Selecciona colores</h4>
+    </div>
+    <div class="divTabEstados">
+        <table id="tabColorEstados">
+        </table>
+    </div>
+    <div class="divTabEstados divListaReglas">
+        <table id="listaReglas">
+            <tr>
+                <th>Condicion</th>
+                <th>Estado</th>
+            </tr>
+            {% for regla in simulacion.reglas %}
+            <tr>
+                <td>{{ regla['condition'] }}</td>
+                <td>{{ regla['state'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div id="formControl">
+        <div class="inputForm">
+            <button id="botonPausa" class="botonImagen" type="button" title="Inicia/Pausa">
+                <img id="imgPausa" src="{{ url_for('static', filename='imgs/boton-de-play.png') }}" alt="boton-de-pausa.png"></img>
+            </button>
+        </div>
+        <div class="inputForm">
+            <label for="rangoVelocidad">Velocidad</label>
+            <input id="rangoVelocidad" name="rangoVelocidad" type="range" min="0" max="1000" step="100" value="1000" autocomplete="off">
+        </div>
+    </div>
+    <div>
+        <h4 id="labelRangoHistorialAutomata">Generación 0 de 0</h4>
+        <br>
+        <div class="inputForm">
+            <input id="rangoHistorialAutomata" name="rangoHistorialAutomata" class="historial" type="range" min="0" max="0" step="1" value="0" autocomplete="off">
+        </div>
+    </div>
+    <div class="divGrid">
+        <canvas id="canvasGrid" width="{{ simulacion.anchura * 20 }}" height="{{ simulacion.altura * 20 }}"></canvas>
+    </div>
+    
 </div>
+{% endblock %}
+
+{% block scriptEspecial %}
+<script src="{{ url_for('static', filename='wasm/simulacion.js') }}"></script>
 {% endblock %}
