@@ -4,6 +4,8 @@ const tabColorEstados = document.getElementById('tabColorEstados');
 const rangoHistorialAutomata = document.getElementById('rangoHistorialAutomata');
 /** @type {HTMLHeadingElement} */
 const labelRangoHistorialAutomata = document.getElementById('labelRangoHistorialAutomata');
+/** @type {HTMLInputElement} */
+const numEstados = document.getElementById('numEstados')
 /** @type {HTMLCanvasElement} */
 const canvasGrid = document.getElementById('canvasGrid');
 /** @type {CanvasRenderingContext2D} */
@@ -12,9 +14,12 @@ const ctx = canvasGrid?.getContext('2d');
 
 const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
 
+let ejecutando = false
 let colorEstados = ["#000000", "#ffffff"]
 /** @type {number[][][]} */
 let historialAutomata = []
+/** @type {number[][]} */
+let matrizCelulas = []
 
 /**
  * Dibuja una matriz en el canvas
@@ -38,10 +43,9 @@ const dibujaMatrizInterfaz = (matrizCelulas, colorEstados) => {
 
 /**
  * Carga la tabla de colores en la interfaz
- * @param {number[][]} matrizCelulas 
- * @param {string[]} colorEstados 
+ * @param {string[]} colorEstados
  */
-const cargarColorEstadosInterfaz = (matrizCelulas, colorEstados) => {
+const cargarColorEstadosInterfaz = (colorEstados) => {
     if (tabColorEstados === null) return;
 
     while (tabColorEstados.firstChild) {
@@ -78,17 +82,6 @@ const cargarColorEstadosInterfaz = (matrizCelulas, colorEstados) => {
     fragment.appendChild(filaColorEstados)
     tabColorEstados.appendChild(fragment)
 }
-
-rangoHistorialAutomata.addEventListener('input', (e) => {
-    const indice = parseInt(e.target?.value)
-    const matrizCelulas = historialAutomata[indice]
-    if (matrizCelulas === undefined) {
-        alert("No hay un historial para esa generacion")
-        return
-    }
-    labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
-    dibujaMatrizInterfaz(matrizCelulas, colorEstados)
-});
 
 const cargaSimulacionInterfaz = async () => {
     let faltanMatrices = true
@@ -137,8 +130,89 @@ const cargaSimulacionInterfaz = async () => {
     rangoHistorialAutomata.max = (historialAutomata.length - 1).toString()
     rangoHistorialAutomata.value = "0"
     dibujaMatrizInterfaz(historialAutomata[0], colorEstados);
+    matrizCelulas = historialAutomata[0]
 }
 
+/**
+ * Convierte hsl a hex
+ * @param {number} h 
+ * @param {number} s 
+ * @param {number} l 
+ * @returns {string}
+ */
+const hslToHex = (h, s, l) => {
+    // Convert hue to degrees
+    h /= 360;
+    // Convert saturation and lightness to 0-1 range
+    s /= 100;
+    l /= 100;
+    // Calculate RGB values
+    let r, g, b;
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        /**
+         * Hue a RGB
+         * @param {number} p 
+         * @param {number} q 
+         * @param {number} t 
+         * @returns {number}
+         */
+        const hueToRgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hueToRgb(p, q, h + 1 / 3);
+        g = hueToRgb(p, q, h);
+        b = hueToRgb(p, q, h - 1 / 3);
+    }
+    // Convert RGB values to hex format
+    /**
+     * A hex
+     * @param {number} c
+     * @returns {string}
+     */
+    const toHex = (c) => {
+        const hex = Math.round(c * 255).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+    };
+    return "#" + toHex(r) + toHex(g) + toHex(b);
+}
+/**
+ * Asigna colores del arcoiris a cada estado de acuerdo al numero de estados
+ * @param {number} numEstados 
+ * @param {number} saturation 
+ * @param {number} lightness 
+ */
+const asignaColorArcoiris = (numEstados, saturation = 100, lightness = 50) => {
+    const hueIncrement = 360 / numEstados
+    let hue = 0
+    colorEstados = []
+    for (let i = 0; i < numEstados; i++) {
+        const color = hslToHex(hue, saturation, lightness)
+        colorEstados.push(color)
+        hue += hueIncrement
+    }
+}
 
+rangoHistorialAutomata.addEventListener('input', (e) => {
+    const indice = parseInt(e.target?.value)
+    matrizCelulas = historialAutomata[indice]
+    if (matrizCelulas === undefined) {
+        alert("No hay un historial para esa generacion")
+        return
+    }
+    labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
+    dibujaMatrizInterfaz(matrizCelulas, colorEstados)
+});
+
+asignaColorArcoiris(parseInt(numEstados.value));
+cargarColorEstadosInterfaz(colorEstados);
 
 cargaSimulacionInterfaz();
