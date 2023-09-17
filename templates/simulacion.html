@@ -11,10 +11,10 @@
 {% block contenido %}
 <div class="inicioContenedor">
     <div>
-        <h3>{{ simulacion.nombre }}</h3>
+        <h3 id="simNombre" data-id="{{ simulacion.id }}">Id: {{ simulacion.id }} - {{ simulacion.nombre }}</h3>
     </div>
     <div>
-        <p>{{ simulacion.descripcion }}</p>
+        <p>Descripcion: {{ simulacion.descripcion }}</p>
     </div>
     <div>
         <form id="formConfiguracion">

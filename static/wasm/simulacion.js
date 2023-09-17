@@ -1,3 +1,5 @@
+/** @type {HTMLHeadingElement} */
+const simNombre = document.getElementById('simNombre');
 /** @type {HTMLTableElement} */
 const tabColorEstados = document.getElementById('tabColorEstados');
 /** @type {HTMLInputElement} */
@@ -5,7 +7,7 @@ const rangoHistorialAutomata = document.getElementById('rangoHistorialAutomata')
 /** @type {HTMLHeadingElement} */
 const labelRangoHistorialAutomata = document.getElementById('labelRangoHistorialAutomata');
 /** @type {HTMLInputElement} */
-const numEstados = document.getElementById('numEstados')
+const numEstados = document.getElementById('numEstados');
 /** @type {HTMLCanvasElement} */
 const canvasGrid = document.getElementById('canvasGrid');
 /** @type {CanvasRenderingContext2D} */
@@ -13,6 +15,7 @@ const ctx = canvasGrid?.getContext('2d');
 
 
 const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
+const SIM_ID = simNombre.dataset.id
 
 let ejecutando = false
 let colorEstados = ["#000000", "#ffffff"]
@@ -81,56 +84,6 @@ const cargarColorEstadosInterfaz = (colorEstados) => {
     fragment.appendChild(filaEtiquetaEstados)
     fragment.appendChild(filaColorEstados)
     tabColorEstados.appendChild(fragment)
-}
-
-const cargaSimulacionInterfaz = async () => {
-    let faltanMatrices = true
-    let inicio = 0
-    let fin = 10
-
-    while (faltanMatrices){
-        await fetch('/simulaciones/13/generaciones?'+ new URLSearchParams({inicio: inicio.toString(), fin: fin.toString()}), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.redirected) {
-                alert("Inicio de sesion requerido");
-                window.location.href = response.url;
-            }
-            if (response.status === 200) {
-                return response.json();
-            }
-            alert("Ocurrio un error al cargar el historial");
-            faltanMatrices = false;
-        })
-        .then( /** @param {number[][][]} data*/ data => {
-            if (!Array.isArray(data)) {
-                alert("Ocurrio un error: " + data);
-                faltanMatrices = false;
-                return;
-            }
-            if(data.length === 0) {
-                faltanMatrices = false;
-                return;
-            }
-            historialAutomata.push(...data);
-            inicio = fin;
-            fin += 10;
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Ocurrio un error guardando el historial");
-            faltanMatrices = false;
-            return;
-        });
-    }
-    rangoHistorialAutomata.max = (historialAutomata.length - 1).toString()
-    rangoHistorialAutomata.value = "0"
-    dibujaMatrizInterfaz(historialAutomata[0], colorEstados);
-    matrizCelulas = historialAutomata[0]
 }
 
 /**
@@ -211,6 +164,57 @@ rangoHistorialAutomata.addEventListener('input', (e) => {
     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
     dibujaMatrizInterfaz(matrizCelulas, colorEstados)
 });
+
+const cargaSimulacionInterfaz = async () => {
+    let faltanMatrices = true
+    let inicio = 0
+    let fin = 10
+
+    while (faltanMatrices){
+        await fetch(`/simulaciones/${SIM_ID}/generaciones?`+ new URLSearchParams({inicio: inicio.toString(), fin: fin.toString()}), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                alert("Inicio de sesion requerido");
+                window.location.href = response.url;
+            }
+            if (response.status === 200) {
+                return response.json();
+            }
+            alert("Ocurrio un error al cargar el historial");
+            faltanMatrices = false;
+        })
+        .then( /** @param {number[][][]} data*/ data => {
+            if (!Array.isArray(data)) {
+                alert("Ocurrio un error: " + data);
+                faltanMatrices = false;
+                return;
+            }
+            if(data.length === 0) {
+                faltanMatrices = false;
+                return;
+            }
+            historialAutomata.push(...data);
+            inicio = fin;
+            fin += 10;
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Ocurrio un error guardando el historial");
+            faltanMatrices = false;
+            return;
+        });
+    }
+    rangoHistorialAutomata.max = (historialAutomata.length - 1).toString()
+    rangoHistorialAutomata.value = "0"
+    labelRangoHistorialAutomata.textContent = `Generación 0 de ${historialAutomata.length - 1} `
+    dibujaMatrizInterfaz(historialAutomata[0], colorEstados);
+    matrizCelulas = historialAutomata[0]
+}
 
 asignaColorArcoiris(parseInt(numEstados.value));
 cargarColorEstadosInterfaz(colorEstados);
