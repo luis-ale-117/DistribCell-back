@@ -78,7 +78,8 @@ class Generaciones(db.Model):
     celular en la base de datos
     """
 
-    iteracion = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    iteracion = db.Column(db.Integer, nullable=False)
     simulacion_id = db.Column(
         db.Integer,
         db.ForeignKey("simulaciones.id"),

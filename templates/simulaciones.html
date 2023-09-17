@@ -31,8 +31,9 @@
                 <td class="tab-td">{{ simulacion.descripcion }}</td>
                 <td class="tab-td">{{ simulacion.anchura }}</td>
                 <td class="tab-td">{{ simulacion.altura }}</td>
+                <td class="tab-td">{{ simulacion.estados }}</td>
                 <td class="tab-td">{{ simulacion.tipo }}</td>
-                <td class="tab-td">{{ simulacion.generaciones|length }}</td>
+                <td class="tab-td">{{ simulacion.numero_generaciones() }}</td>
             </tr>
 
             {% endfor %}

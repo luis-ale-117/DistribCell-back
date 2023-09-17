@@ -57,8 +57,13 @@
     </div>
     <div id="formControl">
         <div class="inputForm">
-            <button id="botonPausa" type="button" title="Inicia/Pausa">
+            <button id="botonPausa" class="botonImagen" type="button" title="Inicia/Pausa">
                 <img id="imgPausa" src="{{ url_for('static', filename='imgs/boton-de-play.png') }}" alt="boton-de-pausa.png"></img>
+            </button>
+        </div>
+        <div class="inputForm">
+            <button id="botonGuardarHistorial" class="botonImagen" type="button" title="Guardar">
+                <img src="{{ url_for('static', filename='imgs/subir.png') }}" alt="subir.png"></img>
             </button>
         </div>
         <div class="inputForm">

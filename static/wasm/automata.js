@@ -9,6 +9,7 @@ const rangoVelocidad = document.getElementById('rangoVelocidad');
 const imgPausa = document.getElementById('imgPausa');
 const rangoHistorialAutomata = document.getElementById('rangoHistorialAutomata');
 const labelRangoHistorialAutomata = document.getElementById('labelRangoHistorialAutomata');
+const botonGuardarHistorial = document.getElementById('botonGuardarHistorial');
 
 const IMAGEN_PAUSA = "/static/imgs/boton-de-pausa.png";
 const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
@@ -410,6 +411,86 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     }
                     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
                     dibujaMatrizInterfaz(matrizCelulas)
+                });
+                botonGuardarHistorial.addEventListener('click', async () => {
+                    // popup para guardar el nombre del historial
+                    const nombreHistorial = prompt("Ingresa el nombre del historial")
+                    const descripcionHistorial = prompt("Ingresa una descripcion para el historial") // Opcional
+                    if (nombreHistorial === null || nombreHistorial === "") {
+                        alert("Agrega un nombre a tu simulacion")
+                        return;
+                    }
+                    // Paso 1: Crea la simulacion
+                    const simulacion = {
+                        nombre: nombreHistorial,
+                        descripcion: descripcionHistorial,
+                        altura: conf.altura,
+                        anchura: conf.anchura,
+                        estados: conf.numEstados,
+                        reglas: reglas,
+                    }
+                    let nuevaSimulacionId = null;
+                    await fetch('/simulaciones', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(simulacion)
+                    })
+                        .then(response => {
+                            if (!response.redirected) {
+                                return response.json();
+                            }
+                            alert("Inicio de sesion requerido")
+                            window.location.href = response.url;
+                        })
+                        .then(data => {
+                            console.log(data);
+                            nuevaSimulacionId = data.simulacion_id
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert("Ocurrio un error guardando la simulacion");
+                            return;
+                        });
+                    
+                    // Paso 2: Guarda el historial usando la simulacion creada
+                    // Envia el historial en bloques de 10 generaciones
+                    let historial = []
+                    for (let i = 0; i < historialAutomata.length; i++) {
+                        historial.push(historialAutomata[i])
+                        if (historial.length === 10 || i === historialAutomata.length - 1) {
+                            await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(historial)
+                            })
+                                .then(response => {
+                                    if (response.redirected) {
+                                        alert("Inicio de sesion requerido");
+                                        window.location.href = response.url;
+                                    }
+                                    if (response.status === 201) {
+                                        return response.json();
+                                    }
+                                    alert("Ocurrio un error guardando el historial");
+                                    return;
+                                })
+                                .then(data => {
+                                    console.log(data);
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert("Ocurrio un error guardando el historial");
+                                    return;
+                                });
+                            historial = []
+                        }
+                    }
+                    alert("Simulacion guardada correctamente")
+                    window.location.href = "/simulaciones"
                 });
             });
         } else {
