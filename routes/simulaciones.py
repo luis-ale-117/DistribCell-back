@@ -3,7 +3,7 @@ simulaciones.py
 Modulo para el manejo de las simulaciones pertenecientes del usuario
 """
 from flask import Blueprint, redirect, url_for, render_template, flash, session, request
-from models import Simulaciones, Usuarios, Generaciones
+from models import Simulaciones, Usuarios, Generaciones, Cola
 from utils.db import db
 
 blueprint = Blueprint("simulaciones", __name__)
@@ -213,6 +213,13 @@ def crear_procesamiento():
     )
 
     db.session.add(generacion)
+    db.session.commit()
+
+    cola = Cola(
+        simulacion_id=simulacion.id,
+        estado="PENDIENTE",
+    )
+    db.session.add(cola)
     db.session.commit()
 
     return {"status": "created", "simulacion_id": simulacion.id}, 201
