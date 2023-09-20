@@ -24,7 +24,7 @@
 }
 #formControl {
     display: grid;
-    grid-template-columns: 50px 50px minmax(200px, 700px);
+    grid-template-columns: repeat(3, 50px) minmax(200px, 700px);
     gap: 10px;
 }
 

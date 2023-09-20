@@ -99,6 +99,6 @@ class Cola(db.Model):
         db.ForeignKey("simulaciones.id"),
         nullable=False,
     )
-    proceso_id = db.Column(db.String(255))
+    proceso_id = db.Column(db.String(255), nullable=True, default=None)
     estado = db.Column(db.String(100), nullable=False)
-    ultima_actualizacion = db.Column(BIGINT, nullable=False)
+    ultima_actualizacion = db.Column(BIGINT, nullable=True, default=None)
