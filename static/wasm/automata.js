@@ -10,6 +10,7 @@ const imgPausa = document.getElementById('imgPausa');
 const rangoHistorialAutomata = document.getElementById('rangoHistorialAutomata');
 const labelRangoHistorialAutomata = document.getElementById('labelRangoHistorialAutomata');
 const botonGuardarHistorial = document.getElementById('botonGuardarHistorial');
+const botonProcesarAutomata = document.getElementById('botonProcesarAutomata');
 
 const IMAGEN_PAUSA = "/static/imgs/boton-de-pausa.png";
 const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
@@ -406,21 +407,21 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     const indice = parseInt(e.target.value)
                     const matrizCelulas = historialAutomata[indice]
                     if (matrizCelulas === undefined) {
-                        alert("No hay un historial para esa generacion")
+                        alert("No hay un historial para esa generación")
                         return
                     }
                     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
                     dibujaMatrizInterfaz(matrizCelulas)
                 });
-                botonGuardarHistorial.addEventListener('click', async () => {
+                botonGuardarHistorial?.addEventListener('click', async () => {
                     // popup para guardar el nombre del historial
                     const nombreHistorial = prompt("Ingresa el nombre del historial")
-                    const descripcionHistorial = prompt("Ingresa una descripcion para el historial") // Opcional
+                    const descripcionHistorial = prompt("Ingresa una descripción para el historial") // Opcional
                     if (nombreHistorial === null || nombreHistorial === "") {
-                        alert("Agrega un nombre a tu simulacion")
+                        alert("Agrega un nombre a tu simulación")
                         return;
                     }
-                    // Paso 1: Crea la simulacion
+                    // Paso 1: Crea la simulación
                     const simulacion = {
                         nombre: nombreHistorial,
                         descripcion: descripcionHistorial,
@@ -450,7 +451,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         })
                         .catch(err => {
                             console.error(err);
-                            alert("Ocurrio un error guardando la simulacion");
+                            alert("Ocurrio un error guardando la simulación");
                             return;
                         });
                     
@@ -489,8 +490,61 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                             historial = []
                         }
                     }
-                    alert("Simulacion guardada correctamente")
+                    alert("Simulación guardada correctamente")
                     window.location.href = "/simulaciones"
+                });
+                botonProcesarAutomata?.addEventListener('click', async () => {
+                    // popup para guardar el nombre de la simulacion a procesar
+                    const nombreProcesamiento = prompt("Ingresa el nombre de la simulación a procesar")
+                    const descripcionProcesamiento = prompt("Ingresa una descripción para simulación a procesar") // Opcional
+                    if (nombreProcesamiento === null || nombreProcesamiento === "") {
+                        alert("Agrega un nombre a tu simulación")
+                        return;
+                    }
+                    // Paso 1: Crea la simulación
+                    const indice = parseInt(rangoHistorialAutomata.value);
+                    const simulacion = {
+                        nombre: nombreProcesamiento,
+                        descripcion: descripcionProcesamiento,
+                        altura: conf.altura,
+                        anchura: conf.anchura,
+                        estados: conf.numEstados,
+                        reglas: reglas,
+                        generacionInicial: historialAutomata[indice],
+                    }
+                    console.log(indice)
+                    console.log(historialAutomata[indice])
+                    let nuevaSimulacionId = null;
+                    await fetch('/simulaciones/procesamiento', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(simulacion)
+                    })
+                        .then(response => {
+                            if (!response.redirected) {
+                                return response.json();
+                            }
+                            alert("Inicio de sesion requerido")
+                            window.location.href = response.url;
+                        })
+                        .then(data => {
+                            console.log(data);
+                            nuevaSimulacionId = data.simulacion_id
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert("Ocurrio un error guardando la simulación");
+                            return;
+                        });
+                    if (nuevaSimulacionId){
+                        alert("Simulación guardada correctamente");
+                        window.location.href = "/simulaciones";
+                    }
+                    else {
+                        alert("Ocurrio un error guardando la simulación");
+                    }
                 });
             });
         } else {

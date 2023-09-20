@@ -61,11 +61,20 @@
                 <img id="imgPausa" src="{{ url_for('static', filename='imgs/boton-de-play.png') }}" alt="boton-de-pausa.png"></img>
             </button>
         </div>
+        {% if usuario %}
         <div class="inputForm">
             <button id="botonGuardarHistorial" class="botonImagen" type="button" title="Guardar">
                 <img src="{{ url_for('static', filename='imgs/subir.png') }}" alt="subir.png"></img>
             </button>
         </div>
+        {% else %} <div></div> {% endif %}
+        {% if usuario %}
+        <div class="inputForm">
+            <button id="botonProcesarAutomata" class="botonImagen" type="button" title="Procesar">
+                <img src="{{ url_for('static', filename='imgs/administracion.png') }}" alt="administracion.png"></img>
+            </button>
+        </div>
+        {% else %} <div></div> {% endif %}
         <div class="inputForm">
             <label for="rangoVelocidad">Velocidad</label>
             <input id="rangoVelocidad" name="rangoVelocidad" type="range" min="0" max="1000" step="100" value="1000" autocomplete="off">

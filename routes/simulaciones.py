@@ -40,6 +40,8 @@ def pagina_simulacion(simulacion_id: int):
     simulacion = Simulaciones.query.filter_by(
         usuario_id=usuario.id, id=simulacion_id
     ).first_or_404()
+    if simulacion.tipo == "PROCESAMIENTO":
+        flash("La simulacion sigue en procesamiento", "info")
     return render_template("simulacion.html", usuario=usuario, simulacion=simulacion)
 
 
@@ -167,3 +169,50 @@ def obtener_generaciones(simulacion_id: int):
         matrices.append(matriz)
 
     return matrices, 200
+
+
+@blueprint.route("/simulaciones/procesamiento", methods=["POST"])
+def crear_procesamiento():
+    """Crea una nueva simulacion para procesar"""
+    if "usuario_id" not in session:
+        flash("Por favor, inicia sesion.", "info")
+        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+    usuario = Usuarios.query.get(session["usuario_id"])
+    if usuario is None:
+        session.pop("usuario_id", None)
+        flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
+        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+
+    conf = request.get_json()
+    simulacion = Simulaciones(
+        usuario_id=usuario.id,
+        nombre=conf["nombre"],
+        descripcion=conf["descripcion"],
+        anchura=conf["anchura"],
+        altura=conf["altura"],
+        estados=conf["estados"],
+        reglas=conf["reglas"],
+        tipo="PROCESAMIENTO",
+    )
+    db.session.add(simulacion)
+    db.session.commit()
+
+    generacion_inicial: list[list[int]] = conf["generacionInicial"]
+    if generacion_inicial is None:
+        return {"mensaje": "Simulacion sin generaciones"}, 200
+
+    contenido = bytearray()
+    for fila in generacion_inicial:
+        contenido.extend(fila)
+    contenido = bytes(contenido)
+
+    generacion = Generaciones(
+        simulacion_id=simulacion.id,
+        iteracion=0,
+        contenido=contenido,
+    )
+
+    db.session.add(generacion)
+    db.session.commit()
+
+    return {"status": "created", "simulacion_id": simulacion.id}, 201
