@@ -495,8 +495,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 });
                 botonProcesarAutomata?.addEventListener('click', async () => {
                     // popup para guardar el nombre de la simulacion a procesar
-                    const nombreProcesamiento = prompt("Ingresa el nombre de la simulación a procesar")
-                    const descripcionProcesamiento = prompt("Ingresa una descripción para simulación a procesar") // Opcional
+                    const nombreProcesamiento = prompt("Ingresa el nombre de la simulación a procesar");
+                    const descripcionProcesamiento = prompt("Ingresa una descripción para simulación a procesar"); // Opcional
+                    const numGeneraciones = parseInt(prompt("Ingresa el numero de generaciones a procesar"));
                     if (nombreProcesamiento === null || nombreProcesamiento === "") {
                         alert("Agrega un nombre a tu simulación")
                         return;
@@ -510,6 +511,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         anchura: conf.anchura,
                         estados: conf.numEstados,
                         reglas: reglas,
+                        numGeneraciones: numGeneraciones,
                         generacionInicial: historialAutomata[indice],
                     }
                     console.log(indice)
