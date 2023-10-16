@@ -112,8 +112,7 @@ def crear_simulacion():
         nombre, descripcion, anchura, altura, estados, reglas
     )
     if mensaje_validacion is not None:
-        flash(mensaje_validacion, "advertencia")
-        return redirect(url_for("simulaciones.pagina_simulaciones"))
+        return {"error": mensaje_validacion}, 400
 
     simulacion = Simulaciones(
         usuario_id=usuario.id,
@@ -246,17 +245,15 @@ def crear_procesamiento():
         num_generaciones: int = conf["numGeneraciones"]
         generacion_inicial: list[list[int]] = conf["generacionInicial"]
     except KeyError:
-        flash("Error en la peticion. Revisa los campos.", "advertencia")
-        return redirect(url_for("simulaciones.pagina_simulaciones"))
+        return {"error": "Error en la peticion. Revisa los campos."}, 400
 
     mensaje_validacion = validar_campos_procesamiento(
         nombre, descripcion, anchura, altura, estados, reglas, num_generaciones
     )
     if mensaje_validacion is not None:
-        flash(mensaje_validacion, "advertencia")
-        return redirect(url_for("simulaciones.pagina_simulaciones"))
+        return {"error": mensaje_validacion}, 400
     if generacion_inicial is None:
-        return {"mensaje": "Simulacion sin generaciones"}, 200
+        return {"error": "Simulacion sin generaciones"}, 400
     mensaje = validar_generacion(anchura, altura, estados, generacion_inicial)
     if mensaje is not None:
         return {"error": mensaje}, 400

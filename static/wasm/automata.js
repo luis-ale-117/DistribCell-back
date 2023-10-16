@@ -480,11 +480,14 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                                 .then(data => {
                                     console.log(data);
                                     error = data.error;
-                                    alert(data.error);
+                                    if (error){
+                                        alert(data.error);
+                                    }
                                     return;
                                 })
                                 .catch(err => {
                                     console.error(err);
+                                    error = err;
                                     alert("Ocurrio un error guardando el historial");
                                     return;
                                 });
@@ -493,6 +496,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                             }
                             historial = [];
                         }
+                    }
+                    if (error) {
+                        return;
                     }
                     alert("Simulación guardada correctamente");
                     window.location.href = "/simulaciones";
@@ -521,6 +527,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     console.log(indice)
                     console.log(historialAutomata[indice])
                     let nuevaSimulacionId = null;
+                    let error = null;
                     await fetch('/simulaciones/procesamiento', {
                         method: 'POST',
                         headers: {
@@ -538,18 +545,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         .then(data => {
                             console.log(data);
                             nuevaSimulacionId = data.simulacion_id
+                            error = data.error;
                         })
                         .catch(err => {
                             console.error(err);
-                            alert("Ocurrio un error guardando la simulación");
-                            return;
+                            error = err.message;
                         });
                     if (nuevaSimulacionId){
                         alert("Simulación guardada correctamente");
                         window.location.href = "/simulaciones";
                     }
-                    else {
-                        alert("Ocurrio un error guardando la simulación");
+                    if (error) {
+                        alert(error);
                     }
                 });
             });

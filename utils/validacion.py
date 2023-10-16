@@ -29,7 +29,18 @@ def validar_campos_nuevo_usuario(
 ):
     """Validacion de los campos al registrar un usuario nuevo"""
     mensaje = None
-    if nombre == "":
+    if not isinstance(nombre, str):
+        mensaje = "Nombre debe ser una cadena"
+    elif not isinstance(apellido, str):
+        mensaje = "Apellido debe ser una cadena"
+    elif not isinstance(correo, str):
+        mensaje = "Correo debe ser una cadena"
+    elif not isinstance(contrasena, str):
+        mensaje = "Contraseña debe ser una cadena"
+    elif not isinstance(contrasena2, str):
+        mensaje = "Contraseña2 debe ser una cadena"
+
+    elif nombre == "":
         mensaje = "Nombre requerido"
     elif not 2 <= len(nombre) <= MAX_NOMBRE:
         mensaje = "El nombre debe tener entre 2 y 255 caracteres"
@@ -55,7 +66,14 @@ def validar_campos_nuevo_usuario(
 def validar_campos_usuario(nombre: str, apellido: str, correo: str) -> str | None:
     """Validacion de los campos al intentar actualizar los datos de un usuario"""
     mensaje = None
-    if nombre == "":
+    if not isinstance(nombre, str):
+        mensaje = "Nombre debe ser una cadena"
+    elif not isinstance(apellido, str):
+        mensaje = "Apellido debe ser una cadena"
+    elif not isinstance(correo, str):
+        mensaje = "Correo debe ser una cadena"
+
+    elif nombre == "":
         mensaje = "Nombre requerido"
     elif not 2 <= len(nombre) <= MAX_NOMBRE:
         mensaje = "El nombre debe tener entre 2 y 255 caracteres"
@@ -80,11 +98,24 @@ def validar_campos_simulacion(
 ) -> str | None:
     """Validacion de los campos al intentar crear una simulacion"""
     mensaje = None
-    if nombre == "":
+    if not isinstance(nombre, str):
+        mensaje = "Nombre debe ser una cadena"
+    elif not isinstance(descripcion, (str, type(None))):
+        mensaje = "Descripcion debe ser una cadena o None"
+    elif not isinstance(anchura, int):
+        mensaje = "Anchura debe ser un entero"
+    elif not isinstance(altura, int):
+        mensaje = "Altura debe ser un entero"
+    elif not isinstance(estados, int):
+        mensaje = "Estados debe ser un entero"
+    elif not isinstance(reglas, list):
+        mensaje = "Reglas debe ser una lista"
+
+    elif nombre == "":
         mensaje = "Nombre requerido"
     elif not 2 <= len(nombre) <= MAX_NOMBRE:
         mensaje = "El nombre debe tener entre 2 y 255 caracteres"
-    elif descripcion is not None and not 2 <= len(descripcion) <= MAX_DESCRIPCION:
+    elif descripcion not in [None, ""] and not 2 <= len(descripcion) <= MAX_DESCRIPCION:
         mensaje = "La descripcion debe tener entre 2 y 2048 caracteres"
     elif not MIN_ANCHURA <= anchura <= MAX_ANCHURA:
         mensaje = f"Anchura debe estar entre {MIN_ANCHURA} y {MAX_ANCHURA}"
@@ -92,8 +123,6 @@ def validar_campos_simulacion(
         mensaje = f"Altura debe estar entre {MIN_ALTURA} y {MAX_ALTURA}"
     elif not MIN_ESTADOS <= estados <= MAX_ESTADOS:
         mensaje = f"Estados debe estar entre {MIN_ESTADOS} y {MAX_ESTADOS}"
-    elif not isinstance(reglas, list):
-        mensaje = "Reglas debe ser una lista"
     elif not MIN_REGLAS <= len(reglas):
         mensaje = f"Debe haber al menos {MIN_REGLAS} regla"
     for regla in reglas:
@@ -131,7 +160,9 @@ def validar_campos_procesamiento(
     )
     if mensaje is not None:
         return mensaje
-    if not 1 <= num_generaciones <= MAX_GENERACIONES:
+    if not isinstance(num_generaciones, int):
+        mensaje = "El numero de generaciones debe ser un entero"
+    elif not 1 <= num_generaciones <= MAX_GENERACIONES:
         mensaje = f"El numero de generaciones debe estar entre 1 y {MAX_GENERACIONES}"
     return mensaje
 
