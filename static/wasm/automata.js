@@ -457,8 +457,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     
                     // Paso 2: Guarda el historial usando la simulacion creada
                     // Envia el historial en bloques de 10 generaciones
-                    let historial = []
+                    let historial = [];
+                    error = null;
                     for (let i = 0; i < historialAutomata.length; i++) {
+
                         historial.push(historialAutomata[i])
                         if (historial.length === 10 || i === historialAutomata.length - 1) {
                             await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
@@ -473,25 +475,27 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                                         alert("Inicio de sesion requerido");
                                         window.location.href = response.url;
                                     }
-                                    if (response.status === 201) {
-                                        return response.json();
-                                    }
-                                    alert("Ocurrio un error guardando el historial");
-                                    return;
+                                    return response.json();
                                 })
                                 .then(data => {
                                     console.log(data);
+                                    error = data.error;
+                                    alert(data.error);
+                                    return;
                                 })
                                 .catch(err => {
                                     console.error(err);
                                     alert("Ocurrio un error guardando el historial");
                                     return;
                                 });
-                            historial = []
+                            if (error) {
+                                return;
+                            }
+                            historial = [];
                         }
                     }
-                    alert("Simulación guardada correctamente")
-                    window.location.href = "/simulaciones"
+                    alert("Simulación guardada correctamente");
+                    window.location.href = "/simulaciones";
                 });
                 botonProcesarAutomata?.addEventListener('click', async () => {
                     // popup para guardar el nombre de la simulacion a procesar
