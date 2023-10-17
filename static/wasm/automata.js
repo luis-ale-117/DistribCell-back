@@ -1,6 +1,6 @@
 // @ts-nocheck
 const divMensajes = document.getElementById('mensajes');
-const divGrid = document.getElementById('grid');
+// const divGrid = document.getElementById('grid');
 const botonPausa = document.getElementById('botonPausa');
 const formConfiguracion = document.getElementById('formConfiguracion');
 const formReglas = document.getElementById('formReglas');
@@ -62,6 +62,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 let estadoSeleccionado = "0"
                 let estadoSeleccionadoInterfaz = null
                 let velocidadEjecucion = 1000
+                /**
+                 * @type {number[][][]}
+                 */
                 let historialAutomata = []
                 const conf = {
                     numEstados: parseInt(formConfiguracion.elements['numEstados'].value),
@@ -75,6 +78,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     Rule2d("n11 == 0 && s1 == 3", 1),
                     Rule2d("0==0", 0)
                 ]
+                console.log(reglas)
                 let ejecutando = false
                 const matrizAleatoria = (anchura, altura, numEstados) => {
                     let matrix = [];
@@ -453,6 +457,19 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         estados: conf.numEstados,
                         reglas: reglas,
                     }
+                    console.log(simulacion);
+                    let msgError = validaSimulacion(simulacion);
+                    if (msgError) {
+                        generaMensaje(msgError, "error");
+                        return;
+                    }
+                    for(const matriz of historialAutomata){
+                        msgError = validaMatriz(simulacion, matriz);
+                        if (msgError) {
+                            generaMensaje(msgError, "error");
+                            return;
+                        }
+                    }
                     let nuevaSimulacionId = null;
                     let error = null;
                     await fetch('/simulaciones', {
@@ -482,7 +499,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     if (error) {
                         return;
                     }
-                    
+
                     // Paso 2: Guarda el historial usando la simulacion creada
                     // Envia el historial en bloques de 10 generaciones
                     let historial = [];
@@ -550,6 +567,12 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         reglas: reglas,
                         numGeneraciones: numGeneraciones,
                         generacionInicial: historialAutomata[indice],
+                    };
+                    console.log(simulacion);
+                    let msgError = validaProcesamiento(simulacion);
+                    if (msgError) {
+                        generaMensaje(msgError, "error");
+                        return;
                     }
                     console.log(indice)
                     console.log(historialAutomata[indice])
@@ -596,3 +619,98 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
         console.error(err);
         generaMensaje("Error cargando el archivo wasm", "error");
     });
+
+const MAX_NOMBRE = 255;
+const MIN_NOMBRE = 2;
+const MAX_DESCRIPCION = 2048;
+const MAX_ALTURA = 500;
+const MIN_ALTURA = 3;
+const MAX_ANCHURA = 500;
+const MIN_ANCHURA = 3;
+const MAX_ESTADOS = 255;
+const MIN_ESTADOS = 2;
+const MIN_REGLAS = 1;
+const MAX_GENERACIONES = 500;
+const MIN_GENERACIONES = 1;
+
+/**
+ * Valida los datos de una simulación
+ * @param {{nombre: string, descripcion: string|null, altura: number,
+ * anchura: number, estados: number,
+ * reglas: {condition: string, state: number}[]}} simulacion 
+ * @returns {string|null} mensaje de error o null si no hay error
+ */
+function validaSimulacion(simulacion){
+    let mensaje = null;
+    if(!simulacion.nombre || simulacion.nombre.length > MAX_NOMBRE || simulacion.nombre.length < MIN_NOMBRE){
+        mensaje = 'El nombre de la simulación debe tener entre 2 y 255 caracteres';
+    }
+    else if(simulacion.descripcion && simulacion.descripcion.length > MAX_DESCRIPCION){
+        mensaje = 'La descripción de la simulación debe tener como máximo 2048 caracteres';
+    }
+    else if(simulacion.altura > MAX_ALTURA || simulacion.altura < MIN_ALTURA){
+        mensaje = 'La altura de la simulación debe estar entre 3 y 500';
+    }
+    else if(simulacion.anchura > MAX_ANCHURA || simulacion.anchura < MIN_ANCHURA){
+        mensaje = 'La anchura de la simulación debe estar entre 3 y 500';
+    }
+    else if(simulacion.estados > MAX_ESTADOS || simulacion.estados < MIN_ESTADOS){
+        mensaje = 'El número de estados debe estar entre 2 y 255';
+    }
+    else if(simulacion.reglas.length < MIN_REGLAS){
+        mensaje = 'La simulación debe tener al menos una regla';
+    }
+    else if(simulacion.reglas.some(regla => !regla.condition || regla.state==null)){
+        mensaje = 'Todas las reglas deben tener una condición y un estado';
+    }
+    else if(simulacion.reglas.some(regla => typeof regla.condition !== 'string' || typeof regla.state !== 'number')){
+        mensaje = 'Las condiciones deben ser cadenas de texto y los estados números';
+    }
+    return mensaje;
+}
+
+/**
+ * Valida los datos de una matriz
+ * @param {{nombre: string, descripcion: string|null, altura: number,
+* anchura: number, estados: number,
+* reglas: {condition: string, state: number}[]}} simulacion
+* @param {number[][]} matriz
+* @returns {string|null} mensaje de error o null si no hay error
+*/
+function validaMatriz(simulacion, matriz){
+    let mensaje = null;
+    if (matriz.length !== simulacion.altura) {
+        mensaje = 'La matriz no tiene la altura correcta';
+    }
+    else if (matriz.some(fila => fila.length !== simulacion.anchura)) {
+        mensaje = 'La matriz no tiene la anchura correcta';
+    }
+    else if (matriz.some(fila => fila.some(celda => celda < 0 || celda >= simulacion.estados))) {
+        mensaje = 'La matriz contiene estados no válidos';
+    }
+    return mensaje;
+}
+
+/**
+ * Valida los datos de una simulación para procesarla
+ * @param {{nombre: string, descripcion: string|null, altura: number,
+* anchura: number, estados: number,
+* reglas: {condition: string, state: number}[],
+* numGeneraciones: number, generacionInicial: number[][]}} simulacion 
+* @returns {string|null} mensaje de error o null si no hay error
+*/
+function validaProcesamiento(simulacion){
+    let mensaje = null;
+    mensaje = validaSimulacion(simulacion);
+    if (mensaje) {
+        return mensaje;
+    }
+    mensaje = validaMatriz(simulacion, simulacion.generacionInicial);
+    if (mensaje) {
+        return mensaje;
+    }
+    if (simulacion.numGeneraciones > MAX_GENERACIONES || simulacion.numGeneraciones < MIN_GENERACIONES) {
+        mensaje = 'El número de generaciones debe estar entre 1 y 500';
+    }
+    return mensaje;
+}
