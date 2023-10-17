@@ -1,4 +1,5 @@
 // @ts-nocheck
+const divMensajes = document.getElementById('mensajes');
 const divGrid = document.getElementById('grid');
 const botonPausa = document.getElementById('botonPausa');
 const formConfiguracion = document.getElementById('formConfiguracion');
@@ -25,6 +26,28 @@ const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
 // Metodo para mover un elemento en un array
 Array.prototype.move = function (from, to) {
     this.splice(to, 0, this.splice(from, 1)[0]);
+}
+
+/**
+ * 
+ * @param {string} mensaje 
+ * @param {string} tipo // error, info, advertencia, exito
+ */
+const generaMensaje = (mensaje, tipo = "error") => {
+    const divMensaje = document.createElement('div');
+    divMensaje.classList.add('alerta');
+    divMensaje.classList.add(tipo);
+    divMensaje.textContent = mensaje;
+
+    const botonCerrar = document.createElement('button');
+    botonCerrar.classList.add('cerrar-mensaje');
+    botonCerrar.textContent = 'Cerrar';
+    botonCerrar.addEventListener('click', _ => {
+        botonCerrar.parentElement?.classList.add('invisible');
+    });
+
+    divMensaje.appendChild(botonCerrar);
+    divMensajes.appendChild(divMensaje);
 }
 
 const go = new Go();
@@ -229,7 +252,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         if (err != null) {
                             console.error("Error:", err)
                             // TODO: Error como mensaje, no como alert
-                            alert("Ocurrio un error, revisa tus reglas: " + err);
+                            generaMensaje(`Ocurrio un error, revisa tus reglas: ${err}`, "error");
                             ejecutando = false;
                             imgPausa.src = IMAGEN_PLAY
                             continue
@@ -251,7 +274,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 // Por defecto haz una matriz aleatoria
                 err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                 if (err != null) {
-                    alert("Ocurrio un error al cargar la matriz inicial" + err);
+                    generaMensaje(`Error al cargar la matriz inicial ${err}`, "error");
                     return
                 }
                 matrizCelulas = automata.getInitGrid()
@@ -263,7 +286,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 dibujaMatrizInterfaz(matrizCelulas)
                 agregaHistorial(matrizCelulas)
 
-                ejecutaAutomata()
+                ejecutaAutomata();
 
                 //////////////////////////////////////////////
                 botonPausa.addEventListener('click', () => {
@@ -281,7 +304,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     automata.setRules(reglas)
                     err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                     if (err != null) {
-                        alert("Ocurrio un error cargando la matriz" + err);
+                        generaMensaje(`Error cargando la matriz ${err}`, "error");
                         ejecutando = false;
                         return
                     }
@@ -407,8 +430,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     const indice = parseInt(e.target.value)
                     const matrizCelulas = historialAutomata[indice]
                     if (matrizCelulas === undefined) {
-                        alert("No hay un historial para esa generación")
-                        return
+                        generaMensaje("No hay un historial para esa generación", "error");
+                        return;
                     }
                     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
                     dibujaMatrizInterfaz(matrizCelulas)
@@ -418,7 +441,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     const nombreHistorial = prompt("Ingresa el nombre del historial")
                     const descripcionHistorial = prompt("Ingresa una descripción para el historial") // Opcional
                     if (nombreHistorial === null || nombreHistorial === "") {
-                        alert("Agrega un nombre a tu simulación")
+                        generaMensaje("Agrega un nombre a tu simulación", "advertencia");
                         return;
                     }
                     // Paso 1: Crea la simulación
@@ -431,6 +454,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         reglas: reglas,
                     }
                     let nuevaSimulacionId = null;
+                    let error = null;
                     await fetch('/simulaciones', {
                         method: 'POST',
                         headers: {
@@ -451,14 +475,17 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         })
                         .catch(err => {
                             console.error(err);
-                            alert("Ocurrio un error guardando la simulación");
+                            error = err;
+                            generaMensaje(`Error al guardar la simulación: ${err}`, "error");
                             return;
                         });
+                    if (error) {
+                        return;
+                    }
                     
                     // Paso 2: Guarda el historial usando la simulacion creada
                     // Envia el historial en bloques de 10 generaciones
                     let historial = [];
-                    error = null;
                     for (let i = 0; i < historialAutomata.length; i++) {
 
                         historial.push(historialAutomata[i])
@@ -481,14 +508,14 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                                     console.log(data);
                                     error = data.error;
                                     if (error){
-                                        alert(data.error);
+                                        generaMensaje(data.error, "error");
                                     }
                                     return;
                                 })
                                 .catch(err => {
                                     console.error(err);
                                     error = err;
-                                    alert("Ocurrio un error guardando el historial");
+                                    generaMensaje("Error al guardar el historial", "error");
                                     return;
                                 });
                             if (error) {
@@ -509,7 +536,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     const descripcionProcesamiento = prompt("Ingresa una descripción para simulación a procesar"); // Opcional
                     const numGeneraciones = parseInt(prompt("Ingresa el numero de generaciones a procesar"));
                     if (nombreProcesamiento === null || nombreProcesamiento === "") {
-                        alert("Agrega un nombre a tu simulación")
+                        generaMensaje("Agrega un nombre a tu simulación", "advertencia");
                         return;
                     }
                     // Paso 1: Crea la simulación
@@ -556,14 +583,16 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         window.location.href = "/simulaciones";
                     }
                     if (error) {
-                        alert(error);
+                        generaMensaje(error, "error");
                     }
                 });
             });
         } else {
             console.error('Invalid WebAssembly binary file');
+            generaMensaje("Error cargando el archivo wasm", "error");
         }
     })
     .catch(err => {
         console.error(err);
+        generaMensaje("Error cargando el archivo wasm", "error");
     });
