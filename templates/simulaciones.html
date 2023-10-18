@@ -11,6 +11,7 @@
     <div class="sim">
         <table class="tab">
             <tr>
+                <th class="tab-th">Borrar</th>
                 <th class="tab-th">Nombre</th>
                 <th class="tab-th">Descripcion</th>
                 <th class="tab-th">Anchura</th>
@@ -22,6 +23,12 @@
             {% if simulaciones %}
             {% for simulacion in simulaciones %}
             <tr>
+                <td class="tab-td">
+                    <a class="blacklink"
+                        href="{{ url_for('simulaciones.borrar_simulacion', simulacion_id=simulacion.id) }}">
+                        X
+                    </a>
+                </td>
                 <td class="tab-td">
                     <a class="blacklink"
                         href="{{ url_for('simulaciones.pagina_simulacion', simulacion_id=simulacion.id) }}">
