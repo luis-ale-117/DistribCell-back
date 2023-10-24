@@ -1,5 +1,6 @@
 // @ts-nocheck
-const divGrid = document.getElementById('grid');
+const divMensajes = document.getElementById('mensajes');
+// const divGrid = document.getElementById('grid');
 const botonPausa = document.getElementById('botonPausa');
 const formConfiguracion = document.getElementById('formConfiguracion');
 const formReglas = document.getElementById('formReglas');
@@ -27,6 +28,28 @@ Array.prototype.move = function (from, to) {
     this.splice(to, 0, this.splice(from, 1)[0]);
 }
 
+/**
+ * 
+ * @param {string} mensaje 
+ * @param {string} tipo // error, info, advertencia, exito
+ */
+const generaMensaje = (mensaje, tipo = "error") => {
+    const divMensaje = document.createElement('div');
+    divMensaje.classList.add('alerta');
+    divMensaje.classList.add(tipo);
+    divMensaje.textContent = mensaje;
+
+    const botonCerrar = document.createElement('button');
+    botonCerrar.classList.add('cerrar-mensaje');
+    botonCerrar.textContent = 'Cerrar';
+    botonCerrar.addEventListener('click', _ => {
+        botonCerrar.parentElement?.classList.add('invisible');
+    });
+
+    divMensaje.appendChild(botonCerrar);
+    divMensajes.appendChild(divMensaje);
+}
+
 const go = new Go();
 fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
     .then(response => response.arrayBuffer())
@@ -39,6 +62,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 let estadoSeleccionado = "0"
                 let estadoSeleccionadoInterfaz = null
                 let velocidadEjecucion = 1000
+                /**
+                 * @type {number[][][]}
+                 */
                 let historialAutomata = []
                 const conf = {
                     numEstados: parseInt(formConfiguracion.elements['numEstados'].value),
@@ -52,6 +78,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     Rule2d("n11 == 0 && s1 == 3", 1),
                     Rule2d("0==0", 0)
                 ]
+                console.log(reglas)
                 let ejecutando = false
                 const matrizAleatoria = (anchura, altura, numEstados) => {
                     let matrix = [];
@@ -229,7 +256,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         if (err != null) {
                             console.error("Error:", err)
                             // TODO: Error como mensaje, no como alert
-                            alert("Ocurrio un error, revisa tus reglas: " + err);
+                            generaMensaje(`Ocurrio un error, revisa tus reglas: ${err}`, "error");
                             ejecutando = false;
                             imgPausa.src = IMAGEN_PLAY
                             continue
@@ -251,7 +278,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 // Por defecto haz una matriz aleatoria
                 err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                 if (err != null) {
-                    alert("Ocurrio un error al cargar la matriz inicial" + err);
+                    generaMensaje(`Error al cargar la matriz inicial ${err}`, "error");
                     return
                 }
                 matrizCelulas = automata.getInitGrid()
@@ -263,7 +290,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 dibujaMatrizInterfaz(matrizCelulas)
                 agregaHistorial(matrizCelulas)
 
-                ejecutaAutomata()
+                ejecutaAutomata();
 
                 //////////////////////////////////////////////
                 botonPausa.addEventListener('click', () => {
@@ -281,7 +308,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     automata.setRules(reglas)
                     err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
                     if (err != null) {
-                        alert("Ocurrio un error cargando la matriz" + err);
+                        generaMensaje(`Error cargando la matriz ${err}`, "error");
                         ejecutando = false;
                         return
                     }
@@ -407,8 +434,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     const indice = parseInt(e.target.value)
                     const matrizCelulas = historialAutomata[indice]
                     if (matrizCelulas === undefined) {
-                        alert("No hay un historial para esa generación")
-                        return
+                        generaMensaje("No hay un historial para esa generación", "error");
+                        return;
                     }
                     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
                     dibujaMatrizInterfaz(matrizCelulas)
@@ -418,7 +445,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     const nombreHistorial = prompt("Ingresa el nombre del historial")
                     const descripcionHistorial = prompt("Ingresa una descripción para el historial") // Opcional
                     if (nombreHistorial === null || nombreHistorial === "") {
-                        alert("Agrega un nombre a tu simulación")
+                        generaMensaje("Agrega un nombre a tu simulación", "advertencia");
                         return;
                     }
                     // Paso 1: Crea la simulación
@@ -430,7 +457,21 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         estados: conf.numEstados,
                         reglas: reglas,
                     }
+                    console.log(simulacion);
+                    let msgError = validaSimulacion(simulacion);
+                    if (msgError) {
+                        generaMensaje(msgError, "error");
+                        return;
+                    }
+                    for(const matriz of historialAutomata){
+                        msgError = validaMatriz(simulacion, matriz);
+                        if (msgError) {
+                            generaMensaje(msgError, "error");
+                            return;
+                        }
+                    }
                     let nuevaSimulacionId = null;
+                    let error = null;
                     await fetch('/simulaciones', {
                         method: 'POST',
                         headers: {
@@ -451,14 +492,19 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         })
                         .catch(err => {
                             console.error(err);
-                            alert("Ocurrio un error guardando la simulación");
+                            error = err;
+                            generaMensaje(`Error al guardar la simulación: ${err}`, "error");
                             return;
                         });
-                    
+                    if (error) {
+                        return;
+                    }
+
                     // Paso 2: Guarda el historial usando la simulacion creada
                     // Envia el historial en bloques de 10 generaciones
-                    let historial = []
+                    let historial = [];
                     for (let i = 0; i < historialAutomata.length; i++) {
+
                         historial.push(historialAutomata[i])
                         if (historial.length === 10 || i === historialAutomata.length - 1) {
                             await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
@@ -473,25 +519,33 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                                         alert("Inicio de sesion requerido");
                                         window.location.href = response.url;
                                     }
-                                    if (response.status === 201) {
-                                        return response.json();
-                                    }
-                                    alert("Ocurrio un error guardando el historial");
-                                    return;
+                                    return response.json();
                                 })
                                 .then(data => {
                                     console.log(data);
+                                    error = data.error;
+                                    if (error){
+                                        generaMensaje(data.error, "error");
+                                    }
+                                    return;
                                 })
                                 .catch(err => {
                                     console.error(err);
-                                    alert("Ocurrio un error guardando el historial");
+                                    error = err;
+                                    generaMensaje("Error al guardar el historial", "error");
                                     return;
                                 });
-                            historial = []
+                            if (error) {
+                                return;
+                            }
+                            historial = [];
                         }
                     }
-                    alert("Simulación guardada correctamente")
-                    window.location.href = "/simulaciones"
+                    if (error) {
+                        return;
+                    }
+                    alert("Simulación guardada correctamente");
+                    window.location.href = "/simulaciones";
                 });
                 botonProcesarAutomata?.addEventListener('click', async () => {
                     // popup para guardar el nombre de la simulacion a procesar
@@ -499,7 +553,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                     const descripcionProcesamiento = prompt("Ingresa una descripción para simulación a procesar"); // Opcional
                     const numGeneraciones = parseInt(prompt("Ingresa el numero de generaciones a procesar"));
                     if (nombreProcesamiento === null || nombreProcesamiento === "") {
-                        alert("Agrega un nombre a tu simulación")
+                        generaMensaje("Agrega un nombre a tu simulación", "advertencia");
                         return;
                     }
                     // Paso 1: Crea la simulación
@@ -513,10 +567,17 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         reglas: reglas,
                         numGeneraciones: numGeneraciones,
                         generacionInicial: historialAutomata[indice],
+                    };
+                    console.log(simulacion);
+                    let msgError = validaProcesamiento(simulacion);
+                    if (msgError) {
+                        generaMensaje(msgError, "error");
+                        return;
                     }
                     console.log(indice)
                     console.log(historialAutomata[indice])
                     let nuevaSimulacionId = null;
+                    let error = null;
                     await fetch('/simulaciones/procesamiento', {
                         method: 'POST',
                         headers: {
@@ -534,25 +595,122 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                         .then(data => {
                             console.log(data);
                             nuevaSimulacionId = data.simulacion_id
+                            error = data.error;
                         })
                         .catch(err => {
                             console.error(err);
-                            alert("Ocurrio un error guardando la simulación");
-                            return;
+                            error = err.message;
                         });
                     if (nuevaSimulacionId){
                         alert("Simulación guardada correctamente");
                         window.location.href = "/simulaciones";
                     }
-                    else {
-                        alert("Ocurrio un error guardando la simulación");
+                    if (error) {
+                        generaMensaje(error, "error");
                     }
                 });
             });
         } else {
             console.error('Invalid WebAssembly binary file');
+            generaMensaje("Error cargando el archivo wasm", "error");
         }
     })
     .catch(err => {
         console.error(err);
+        generaMensaje("Error cargando el archivo wasm", "error");
     });
+
+const MAX_NOMBRE = 255;
+const MIN_NOMBRE = 2;
+const MAX_DESCRIPCION = 2048;
+const MAX_ALTURA = 500;
+const MIN_ALTURA = 3;
+const MAX_ANCHURA = 500;
+const MIN_ANCHURA = 3;
+const MAX_ESTADOS = 255;
+const MIN_ESTADOS = 2;
+const MIN_REGLAS = 1;
+const MAX_GENERACIONES = 500;
+const MIN_GENERACIONES = 1;
+
+/**
+ * Valida los datos de una simulación
+ * @param {{nombre: string, descripcion: string|null, altura: number,
+ * anchura: number, estados: number,
+ * reglas: {condition: string, state: number}[]}} simulacion 
+ * @returns {string|null} mensaje de error o null si no hay error
+ */
+function validaSimulacion(simulacion){
+    let mensaje = null;
+    if(!simulacion.nombre || simulacion.nombre.length > MAX_NOMBRE || simulacion.nombre.length < MIN_NOMBRE){
+        mensaje = 'El nombre de la simulación debe tener entre 2 y 255 caracteres';
+    }
+    else if(simulacion.descripcion && simulacion.descripcion.length > MAX_DESCRIPCION){
+        mensaje = 'La descripción de la simulación debe tener como máximo 2048 caracteres';
+    }
+    else if(simulacion.altura > MAX_ALTURA || simulacion.altura < MIN_ALTURA){
+        mensaje = 'La altura de la simulación debe estar entre 3 y 500';
+    }
+    else if(simulacion.anchura > MAX_ANCHURA || simulacion.anchura < MIN_ANCHURA){
+        mensaje = 'La anchura de la simulación debe estar entre 3 y 500';
+    }
+    else if(simulacion.estados > MAX_ESTADOS || simulacion.estados < MIN_ESTADOS){
+        mensaje = 'El número de estados debe estar entre 2 y 255';
+    }
+    else if(simulacion.reglas.length < MIN_REGLAS){
+        mensaje = 'La simulación debe tener al menos una regla';
+    }
+    else if(simulacion.reglas.some(regla => !regla.condition || regla.state==null)){
+        mensaje = 'Todas las reglas deben tener una condición y un estado';
+    }
+    else if(simulacion.reglas.some(regla => typeof regla.condition !== 'string' || typeof regla.state !== 'number')){
+        mensaje = 'Las condiciones deben ser cadenas de texto y los estados números';
+    }
+    return mensaje;
+}
+
+/**
+ * Valida los datos de una matriz
+ * @param {{nombre: string, descripcion: string|null, altura: number,
+* anchura: number, estados: number,
+* reglas: {condition: string, state: number}[]}} simulacion
+* @param {number[][]} matriz
+* @returns {string|null} mensaje de error o null si no hay error
+*/
+function validaMatriz(simulacion, matriz){
+    let mensaje = null;
+    if (matriz.length !== simulacion.altura) {
+        mensaje = 'La matriz no tiene la altura correcta';
+    }
+    else if (matriz.some(fila => fila.length !== simulacion.anchura)) {
+        mensaje = 'La matriz no tiene la anchura correcta';
+    }
+    else if (matriz.some(fila => fila.some(celda => celda < 0 || celda >= simulacion.estados))) {
+        mensaje = 'La matriz contiene estados no válidos';
+    }
+    return mensaje;
+}
+
+/**
+ * Valida los datos de una simulación para procesarla
+ * @param {{nombre: string, descripcion: string|null, altura: number,
+* anchura: number, estados: number,
+* reglas: {condition: string, state: number}[],
+* numGeneraciones: number, generacionInicial: number[][]}} simulacion 
+* @returns {string|null} mensaje de error o null si no hay error
+*/
+function validaProcesamiento(simulacion){
+    let mensaje = null;
+    mensaje = validaSimulacion(simulacion);
+    if (mensaje) {
+        return mensaje;
+    }
+    mensaje = validaMatriz(simulacion, simulacion.generacionInicial);
+    if (mensaje) {
+        return mensaje;
+    }
+    if (simulacion.numGeneraciones > MAX_GENERACIONES || simulacion.numGeneraciones < MIN_GENERACIONES) {
+        mensaje = 'El número de generaciones debe estar entre 1 y 500';
+    }
+    return mensaje;
+}

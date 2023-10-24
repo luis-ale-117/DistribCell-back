@@ -13,25 +13,9 @@ from flask import (
 )
 from models import Usuarios
 from utils.db import db
+from utils.validacion import validar_campos_nuevo_usuario
 
 blueprint = Blueprint("registro_usuario", __name__)
-
-
-def validar_campos(
-    nombre: str, apellido: str, correo: str, contrasena: str, contrasena2: str
-) -> str | None:
-    """Validacion de los campos al registrar un usuario"""
-    if nombre == "":
-        return "Nombre requerido"
-    if apellido == "":
-        return "Apellido requerido"
-    if correo == "":
-        return "Correo requerido"
-    if contrasena == "":
-        return "Contraseña requerida"
-    if contrasena != contrasena2:
-        return "Las contraseñas no son iguales"
-    return None
 
 
 @blueprint.route("/registro_usuario", methods=["GET"])
@@ -58,7 +42,7 @@ def crea_usuario():
         redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     # Validar campos
-    mensaje_validacion = validar_campos(
+    mensaje_validacion = validar_campos_nuevo_usuario(
         nombre, apellido, correo, contrasena, contrasena2
     )
     if mensaje_validacion is not None:

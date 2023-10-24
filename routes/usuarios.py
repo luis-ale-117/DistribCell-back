@@ -4,20 +4,10 @@ Modulo para el manejo de los datos del usuario
 """
 from flask import render_template, redirect, session, url_for, flash, request, Blueprint
 from utils.db import db
+from utils.validacion import MIN_CONTRASENA, validar_campos_usuario
 from models import Usuarios
 
 blueprint = Blueprint("usuarios", __name__)
-
-
-def validar_campos(nombre: str, apellido: str, correo: str) -> str | None:
-    """Validacion de los campos al registrar un usuario"""
-    if nombre == "":
-        return "Nombre requerido"
-    if apellido == "":
-        return "Apellido requerido"
-    if correo != "":
-        return "No se puede cambiar el correo"
-    return None
 
 
 @blueprint.route("/mi_cuenta", methods=["GET"])
@@ -55,7 +45,7 @@ def actualiza_datos_usuario():
         flash("Error en la petición. Revisa los campos.", "error")
         return redirect(url_for("usuarios.pagina_datos_usuario"))
 
-    mensaje_validacion = validar_campos(nombre, apellido, correo)
+    mensaje_validacion = validar_campos_usuario(nombre, apellido, correo)
     if mensaje_validacion is not None:
         flash(mensaje_validacion, "error")
         return redirect(url_for("usuarios.pagina_datos_usuario"))
@@ -68,6 +58,12 @@ def actualiza_datos_usuario():
             return redirect(url_for("usuarios.pagina_datos_usuario"))
         if nueva_contrasena != nueva_contrasena2:
             flash("Las contraseñas no son iguales", "error")
+            return redirect(url_for("usuarios.pagina_datos_usuario"))
+        if len(nueva_contrasena) < MIN_CONTRASENA:
+            flash(
+                f"La contraseña debe tener al menos {MIN_CONTRASENA} caracteres",
+                "error",
+            )
             return redirect(url_for("usuarios.pagina_datos_usuario"))
         usuario.asigna_contrasena(nueva_contrasena)
 
