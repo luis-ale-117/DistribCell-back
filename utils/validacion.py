@@ -19,7 +19,7 @@ MIN_ESTADOS = 2
 MAX_ESTADOS = 255
 MIN_REGLAS = 1
 
-MAX_GENERACIONES = 500
+MAX_GENERACIONES = 100
 
 email_regex = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b")
 
