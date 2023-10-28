@@ -114,6 +114,9 @@ def crear_simulacion():
     if mensaje_validacion is not None:
         return {"error": mensaje_validacion}, 400
 
+    if usuario.numero_simulaciones() >= 5:
+        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
+
     simulacion = Simulaciones(
         usuario_id=usuario.id,
         nombre=nombre,

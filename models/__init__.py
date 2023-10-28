@@ -48,6 +48,10 @@ class Usuarios(db.Model):
         """
         self.contrasena_hash = generate_password_hash(contrasena)
 
+    def numero_simulaciones(self):
+        """Numero de simulaciones del usuario"""
+        return len(self.simulaciones)
+
 
 class Simulaciones(db.Model):
     """
