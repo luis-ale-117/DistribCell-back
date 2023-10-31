@@ -89,9 +89,14 @@
     </div>
     <div class="divGrid">
         <canvas id="canvasGrid"></canvas>
+    </div> 
+    <div>
+        <canvas id="canvasGrafica1"></canvas>
     </div>
-    
 </div>
 {% endblock %}
 
-{% block scriptEspecial %}<script src="{{ url_for('static', filename='wasm/automata.js') }}" ></script>{% endblock %}
+{% block scriptEspecial %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
+<script src="{{ url_for('static', filename='wasm/automata.js') }}" ></script>
+{% endblock %}
