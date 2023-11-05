@@ -55,6 +55,11 @@ def pagina_simulacion(simulacion_id: int):
 
     if simulacion.tipo == "ERROR":
         flash("La simulacion no se pudo procesar. Revisa tus reglas.", "error")
+    if simulacion.tipo == "TIMEOUT":
+        flash(
+            "La simulacion tomó demasiado tiempo en procesarse. No se pudo completar.",
+            "error",
+        )
     return render_template("simulacion.html", usuario=usuario, simulacion=simulacion)
 
 
