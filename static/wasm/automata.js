@@ -1,6 +1,5 @@
 // @ts-nocheck
 const divMensajes = document.getElementById('mensajes');
-// const divGrid = document.getElementById('grid');
 const botonPausa = document.getElementById('botonPausa');
 const formConfiguracion = document.getElementById('formConfiguracion');
 const formReglas = document.getElementById('formReglas');
@@ -22,32 +21,30 @@ const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
 const canvasGrid = document.getElementById('canvasGrid');
 const ctx = canvasGrid.getContext('2d');
 const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
+/**
+ * @type {HTMLCanvasElement}
+ */
+const canvasGrafica1 = document.getElementById('canvasGrafica1');
+const ctxGrafica1 = canvasGrafica1.getContext('2d');
+/**
+ * @type {Chart}
+ */
+let grafica1;
+const plugin = { // plugin para poner un fondo gris en la gráfica
+  id: 'customCanvasBackgroundColor',
+  beforeDraw: (chart, args, options) => {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = options.color || 'lightGrey'; // default color is light grey
+    ctx.fillRect(0, 0, chart.width, chart.height);
+    ctx.restore();
+  }
+};
 
 // Metodo para mover un elemento en un array
 Array.prototype.move = function (from, to) {
   this.splice(to, 0, this.splice(from, 1)[0]);
-}
-
-/**
- * 
- * @param {string} mensaje 
- * @param {string} tipo // error, info, advertencia, exito
- */
-const generaMensaje = (mensaje, tipo = "error") => {
-  const divMensaje = document.createElement('div');
-  divMensaje.classList.add('alerta');
-  divMensaje.classList.add(tipo);
-  divMensaje.textContent = mensaje;
-
-  const botonCerrar = document.createElement('button');
-  botonCerrar.classList.add('cerrar-mensaje');
-  botonCerrar.textContent = 'Cerrar';
-  botonCerrar.addEventListener('click', _ => {
-    botonCerrar.parentElement?.classList.add('invisible');
-  });
-
-  divMensaje.appendChild(botonCerrar);
-  divMensajes.appendChild(divMensaje);
 }
 
 const go = new Go();
@@ -55,7 +52,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
   .then(response => response.arrayBuffer())
   .then(buffer => {
     if (WebAssembly.validate(buffer)) {
-      // Load the WebAssembly module
       WebAssembly.instantiate(buffer, go.importObject).then(result => {
         go.run(result.instance);
         let colorEstados = ["#000000", "#ffffff"]
@@ -72,15 +68,67 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           altura: parseInt(formConfiguracion.elements['altura'].value)
         }
         const automata = CellularAumtomaton(conf.numEstados, conf.anchura, conf.altura)
-        // Default (Conway's game of life) TODO: Load from USER
+        // Por defecto haz un automata celular del juego de la vida de Conway
         let reglas = [
           Rule2d("n11 == 1 && (s1 == 2 || s1 == 3)", 1),
           Rule2d("n11 == 0 && s1 == 3", 1),
           Rule2d("0==0", 0)
         ]
-        console.log(reglas)
         let ejecutando = false
-        const matrizAleatoria = (anchura, altura, numEstados) => {
+        imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
+
+        cargarReglasInterfaz(reglas)
+        cargarColorEstadosInterfaz(colorEstados)
+        estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
+        estadoSeleccionadoInterfaz.classList.add('seleccionado')
+        automata.setRules(reglas)
+        // Por defecto haz una matriz aleatoria
+        err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
+        if (err != null) {
+          generaMensaje(`Error al cargar la matriz inicial ${err}`, "error");
+          return
+        }
+        matrizCelulas = automata.getInitGrid()
+        // Haz una copia de la matriz para poder modificarla
+        matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+        // Carga la matriz en la interfaz por primera vez
+        canvasGrid.width = conf.anchura * TAM_CELDA
+        canvasGrid.height = conf.altura * TAM_CELDA
+        dibujaMatrizInterfaz(matrizCelulas)
+        agregaHistorial(matrizCelulas)
+
+        // Inicializa la gráfica
+        grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados)
+        console.log(grafica1.data)
+
+        ejecutaAutomata();
+
+        //////////////////////////////////////////////
+        ////////// Funciones auxiliares //////////////
+        //////////////////////////////////////////////
+
+        /**
+         * Genera un mensaje en la interfaz
+         * @param {string} mensaje 
+         * @param {string} tipo error, info, advertencia, exito
+         */
+        function generaMensaje(mensaje, tipo = "error") {
+          const divMensaje = document.createElement('div');
+          divMensaje.classList.add('alerta');
+          divMensaje.classList.add(tipo);
+          divMensaje.textContent = mensaje;
+
+          const botonCerrar = document.createElement('button');
+          botonCerrar.classList.add('cerrar-mensaje');
+          botonCerrar.textContent = 'Cerrar';
+          botonCerrar.addEventListener('click', _ => {
+            botonCerrar.parentElement?.classList.add('invisible');
+          });
+
+          divMensaje.appendChild(botonCerrar);
+          divMensajes.appendChild(divMensaje);
+        }
+        function matrizAleatoria(anchura, altura, numEstados) {
           let matrix = [];
           for (let i = 0; i < altura; i++) {
             let row = [];
@@ -91,7 +139,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           }
           return matrix;
         }
-        const dibujaMatrizInterfaz = (matrizCelulas) => {
+        function dibujaMatrizInterfaz(matrizCelulas) {
           ctx.clearRect(0, 0, canvasGrid.width, canvasGrid.height);
           for (let fila = 0; fila < matrizCelulas.length; fila++) {
             for (let columna = 0; columna < matrizCelulas[0].length; columna++) {
@@ -100,7 +148,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             }
           }
         }
-        const cargarReglasInterfaz = (reglas) => {
+        function cargarReglasInterfaz(reglas) {
           while (listaReglas.firstChild) {
             listaReglas.removeChild(listaReglas.firstChild);
           }
@@ -145,7 +193,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           }
           listaReglas.appendChild(fragment)
         }
-        const cargarColorEstadosInterfaz = (colorEstados) => {
+        function cargarColorEstadosInterfaz(colorEstados) {
           while (tabColorEstados.firstChild) {
             tabColorEstados.removeChild(tabColorEstados.firstChild);
           }
@@ -188,7 +236,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           fragment.appendChild(filaColorEstados)
           tabColorEstados.appendChild(fragment)
         }
-        const hslToHex = (h, s, l) => {
+        function hslToHex(h, s, l) {
           // Convert hue to degrees
           h /= 360;
           // Convert saturation and lightness to 0-1 range
@@ -220,7 +268,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           };
           return "#" + toHex(r) + toHex(g) + toHex(b);
         }
-        const asignaColorArcoiris = (numEstados, saturation = 100, lightness = 50) => {
+        function asignaColorArcoiris(numEstados, saturation = 100, lightness = 50) {
           const hueIncrement = 360 / numEstados
           let hue = 0
           colorEstados = []
@@ -230,19 +278,19 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             hue += hueIncrement
           }
         }
-        const agregaHistorial = (matrizCelulas) => {
+        function agregaHistorial(matrizCelulas) {
           historialAutomata.push(matrizCelulas)
           rangoHistorialAutomata.max = historialAutomata.length - 1
           rangoHistorialAutomata.value = historialAutomata.length - 1
           labelRangoHistorialAutomata.textContent = `Generación ${historialAutomata.length - 1} de ${historialAutomata.length - 1} `
         }
-        const reiniciaHistorial = () => {
+        function reiniciaHistorial() {
           historialAutomata = []
           rangoHistorialAutomata.max = 0
           rangoHistorialAutomata.value = 0
           labelRangoHistorialAutomata.textContent = `Generación 0 de 0 `
         }
-        const ejecutaAutomata = async () => {
+        async function ejecutaAutomata() {
           // Ejecuta el automata
           while (true) {
             if (!ejecutando) {
@@ -266,37 +314,87 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             agregaHistorial(matrizCelulas)
 
             dibujaMatrizInterfaz(matrizCelulas)
+            // Actualiza la gráfica
+            const celulasPorEstado = cuentaEstados(matrizCelulas);
+            agregaDatosGrafica(grafica1, celulasPorEstado);
           }
         }
-        //////////////////
-        imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
-        cargarReglasInterfaz(reglas)
-        cargarColorEstadosInterfaz(colorEstados)
-        estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
-        estadoSeleccionadoInterfaz.classList.add('seleccionado')
-        automata.setRules(reglas)
-        // Por defecto haz una matriz aleatoria
-        err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
-        if (err != null) {
-          generaMensaje(`Error al cargar la matriz inicial ${err}`, "error");
-          return
+        /**
+        * Cuenta el número de células por estado en una matriz de células
+        * @param {number[][]} matrizCelulas
+        * @returns {number[]} arreglo con el número de células por estado
+        */
+        function cuentaEstados(matrizCelulas) {
+          const numEstados = conf.numEstados;
+          const cuenta = new Array(numEstados).fill(0);
+          for (let j = 0; j < conf.altura; j++) {
+            for (let k = 0; k < conf.anchura; k++) {
+              cuenta[matrizCelulas[j][k]]++;
+            }
+          }
+          return cuenta;
         }
-        matrizCelulas = automata.getInitGrid()
-        // Haz una copia de la matriz para poder modificarla
-        matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
-        // Carga la matriz en la interfaz por primera vez
-        canvasGrid.width = conf.anchura * TAM_CELDA
-        canvasGrid.height = conf.altura * TAM_CELDA
-        dibujaMatrizInterfaz(matrizCelulas)
-        agregaHistorial(matrizCelulas)
-
-        ejecutaAutomata();
-
-        //////////////////////////////////////////////
+        /**
+         * Inicializa la gráfica con el número de células por estado
+         * @param {Chart} grafica1 - Gráfica
+         * @param {number} numEstados - Número de estados
+         * @param {string[]} colorEstados - Arreglo con los colores de cada estado
+         * @returns {Chart} Gráfica inicializada
+         */
+        function inicializaGrafica(ctxGrafica1, numEstados, colorEstados) {
+          const labels = [];
+          const datasets = [];
+          for (let i = 0; i < numEstados; i++) {
+            datasets.push({
+              label: i.toString(),
+              data: new Array(0),
+              fill: false,
+              borderColor: colorEstados[i],
+              tension: 0.1
+            })
+          }
+          return new Chart(ctxGrafica1, {
+            type: 'line',
+            data: {
+              labels,
+              datasets
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              },
+              plugins: {
+                customCanvasBackgroundColor: {
+                  color: 'lightGrey',
+                }
+              }
+            },
+            plugins: [plugin],
+          });
+        }
+        /**
+         * Actualiza la gráfica con el número de células por estado
+         * @param {Chart} grafica1
+         * @param {number[]} celulasPorEstado
+         */
+        function agregaDatosGrafica(grafica1, celulasPorEstado) {
+          grafica1.data.labels.push(grafica1.data.labels.length);
+          for (let i = 0; i < celulasPorEstado.length; i++) {
+            grafica1.data.datasets[i].data.push(celulasPorEstado[i]);
+          }
+          grafica1.update();
+        }
         botonPausa.addEventListener('click', () => {
           ejecutando = !ejecutando
           imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
         })
+        //////////////////////////////////////////////
+        ////////// Eventos de la interfaz ////////////
+        //////////////////////////////////////////////
 
         formConfiguracion.addEventListener('submit', (e) => {
           e.preventDefault()
@@ -568,14 +666,12 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             numGeneraciones: numGeneraciones,
             generacionInicial: historialAutomata[indice],
           };
-          console.log(simulacion);
+          // console.log(simulacion);
           let msgError = validaProcesamiento(simulacion);
           if (msgError) {
             generaMensaje(msgError, "error");
             return;
           }
-          console.log(indice)
-          console.log(historialAutomata[indice])
           let nuevaSimulacionId = null;
           let error = null;
           await fetch('/simulaciones/procesamiento', {
@@ -619,6 +715,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
     console.error(err);
     generaMensaje("Error cargando el archivo wasm", "error");
   });
+
+//////////////////////////////////////////////
+////////// Validación de datos //////////////
+//////////////////////////////////////////////
 
 const MAX_NOMBRE = 255;
 const MIN_NOMBRE = 2;
