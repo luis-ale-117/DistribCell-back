@@ -146,27 +146,27 @@ def confirmar_correo(token):
         correo = confirma_token(token)
     except SignatureExpired:
         flash("El token ha expirado, registrate nuevamente.", "advertencia")
-        return redirect("/registro_usuario")
+        return redirect(url_for("registro_usuario.pagina_registro_usuario"))
     except BadSignature:
         flash("El token es invalido, registrate nuevamente.", "error")
-        return redirect("/registro_usuario")
+        return redirect(url_for("registro_usuario.pagina_registro_usuario"))
     except Exception:
         flash("Error desconocido, registrate nuevamente", "error")
-        return redirect("/registro_usuario")
+        return redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     if correo is None:
         flash("El token ha expirado, registrate nuevamente.", "advertencia")
-        return redirect("/registro_usuario")
+        return redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     usuario = Usuarios.query.filter_by(correo=correo).first_or_404()
     if usuario.confirmado:
         flash("El correo ya ha sido confirmado, por favor inicia sesion", "info")
-        return redirect("/inicio_sesion")
+        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     usuario.confirmado = True
     db.session.add(usuario)
     db.session.commit()
     flash("Haz confirmado tu correo, gracias!", "exito")
-    return redirect("/inicio_sesion")
+    return redirect(url_for("sesion.pagina_inicio_de_sesion"))
 
 
 # Routes

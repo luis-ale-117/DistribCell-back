@@ -53,6 +53,8 @@ def pagina_simulacion(simulacion_id: int):
         flash("La simulacion sigue en procesamiento", "info")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
+    if simulacion.tipo == "ERROR":
+        flash("La simulacion no se pudo procesar. Revisa tus reglas.", "error")
     return render_template("simulacion.html", usuario=usuario, simulacion=simulacion)
 
 

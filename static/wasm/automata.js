@@ -26,6 +26,7 @@ const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
  */
 const canvasGrafica1 = document.getElementById('canvasGrafica1');
 const ctxGrafica1 = canvasGrafica1.getContext('2d');
+const botonGrafica1 = document.getElementById('botonGrafica1');
 /**
  * @type {Chart}
  */
@@ -96,10 +97,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
         canvasGrid.height = conf.altura * TAM_CELDA
         dibujaMatrizInterfaz(matrizCelulas)
         agregaHistorial(matrizCelulas)
-
-        // Inicializa la gráfica
-        grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados)
-        console.log(grafica1.data)
 
         ejecutaAutomata();
 
@@ -314,9 +311,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             agregaHistorial(matrizCelulas)
 
             dibujaMatrizInterfaz(matrizCelulas)
-            // Actualiza la gráfica
-            const celulasPorEstado = cuentaEstados(matrizCelulas);
-            agregaDatosGrafica(grafica1, celulasPorEstado);
           }
         }
         /**
@@ -386,7 +380,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           for (let i = 0; i < celulasPorEstado.length; i++) {
             grafica1.data.datasets[i].data.push(celulasPorEstado[i]);
           }
-          grafica1.update();
         }
         botonPausa.addEventListener('click', () => {
           ejecutando = !ejecutando
@@ -704,6 +697,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           if (error) {
             generaMensaje(error, "error");
           }
+        });
+        botonGrafica1?.addEventListener('click', () => {
+          if(grafica1) {
+            grafica1.destroy(); // Destruye la gráfica anterior
+          }
+          grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados);
+
+          for(matrizCelulas of historialAutomata) {
+            const celulasPorEstado = cuentaEstados(matrizCelulas);
+            agregaDatosGrafica(grafica1, celulasPorEstado);
+          }
+          grafica1.update();
         });
       });
     } else {
