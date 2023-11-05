@@ -91,6 +91,7 @@
 }
 
 .inputForm input[type=number] {
+    appearance: textfield;
     -moz-appearance: textfield;
 }
 .inputForm input[type=number]:focus {
@@ -106,6 +107,7 @@
 }
 
 .inputForm input[type=range] {
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: grab;

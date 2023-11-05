@@ -36,12 +36,12 @@ def genera_sesion():
     except KeyError:
         flash("Error en la peticion. Revisa los campos.", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
-    usuario = Usuarios.query.filter_by(correo=correo).first_or_404()
+    usuario = Usuarios.query.filter_by(correo=correo).first()
+    if usuario is None or not usuario.checa_contrasena(contrasena):
+        flash("Usuario o contrasena incorrecta, intenta de nuevo", "advertencia")
+        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     if usuario and not usuario.confirmado:
         flash("Confirma tu cuenta. Revisa tu correo.", "advertencia")
-        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
-    if usuario is None or not usuario.checa_contrasena(contrasena):
-        flash("Usuario o contrasena incorrecta, intenta de nuevo", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     session.permanent = True
     session["usuario_id"] = usuario.id
