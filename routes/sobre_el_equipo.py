@@ -15,4 +15,4 @@ def pagina_sobre_el_equipo():
     usuario = None
     if "usuario_id" in session:
         usuario = Usuarios.query.get(session["usuario_id"])
-    return render_template("sobre_el_equipo.html", usuario=usuario)
+    return render_template("sobre_el_equipo.html", usuario=usuario,titulo="Nosotros")

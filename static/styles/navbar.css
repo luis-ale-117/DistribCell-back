@@ -1,18 +1,51 @@
-.logo {
-    font-size: 2em;
-    color: #fff;
+.typewriter {
+    text-align: center;
+    color: white;
+    width: min-content;
+}
+
+#typed-text {
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 1px solid #000;
+    animation: typing 1s steps(40, end), blink-caret 0.5s step-end infinite;
+    font-size: 24px;
+    color: white;
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: #000;
+    }
 }
 
 .nav-ul {
     float: right;
 }
+
 .nav-li {
     display: inline-block;
     line-height: 80px;
     margin: 0;
 }
 
-.navigation .link{
+.navigation .link {
     position: relative;
     font-size: 1.1em;
     color: #fff;
@@ -66,6 +99,7 @@
     transition: .3s;
     margin-left: 5px;
 }
+
 .btnToggle {
     display: none;
     position: absolute;
@@ -80,33 +114,38 @@
     color: #fff;
     margin-left: 40px;
 }
+
 .btnToggle:hover {
-    .toggle{
+    .toggle {
         color: black;
     }
+
     background: white;
 }
 
-@media screen and (max-width: 952px){
+@media screen and (max-width: 952px) {
     .nav-ul {
         position: fixed;
         width: 100%;
         height: 100vh;
         background-color: white;
-        top:75px;
+        top: 75px;
         left: 100%;
         text-align: center;
         transition: all 0.5s;
     }
+
     .nav-ul .active {
         left: 100%;
     }
+
     .nav-ul .nav-li {
         display: block;
         margin: 50px 0;
         line-height: 30px;
     }
-    .navigation .link{
+
+    .navigation .link {
         position: relative;
         font-size: 1.1em;
         color: #000000;
@@ -114,6 +153,7 @@
         margin-left: 40px;
         text-decoration: none;
     }
+
     .navigation .link::after {
         content: '';
         position: absolute;
@@ -127,12 +167,12 @@
         transform: scaleX(0);
         transition: transform .5s;
     }
-    
+
     .navigation .link:hover::after {
         transform-origin: left;
         transform: scaleX(1);
     }
-    
+
     .navigation .btnLogin-popup {
         width: 130px;
         height: 50px;
@@ -145,11 +185,12 @@
         color: #000000;
         margin-left: 40px;
     }
-    
+
     .navigation .btnLogin-popup:hover {
         background: #000000;
         color: #ffffff;
     }
+
     .btnToggle {
         display: block;
     }

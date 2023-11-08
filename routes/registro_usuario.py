@@ -18,4 +18,4 @@ def pagina_registro_usuario():
     """Regresa la pagina de registro de usuario"""
     if "usuario_id" in session:
         return redirect(url_for("inicio.pagina_inicio"))
-    return render_template("registro_usuario.html")
+    return render_template("registro_usuario.html",titulo="Registrate")

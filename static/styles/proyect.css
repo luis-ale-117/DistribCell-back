@@ -1,0 +1,71 @@
+.AcercaProyecto {
+    width: 100%;
+    margin: 30px;
+}
+
+.TituloSobreProyecto {
+    color: white;
+    text-align: center;
+}
+
+.columnas {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 10px;
+    justify-content: center;
+    color: white;
+    margin-top: 50px;
+}
+
+.columna {
+    padding: 10px;
+    /*text-align: center;*/
+    color: white;
+    margin-bottom: 5vh;
+}
+
+.columna1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.columna1 video {
+    width: 100%;
+}
+
+.columna2 {
+    width: 90%;
+}
+
+.problematicawrapper {
+    margin-top: 7.5%;
+}
+
+.Problematica {
+    text-align: center;
+    font-size: 3.5vh;
+}
+
+.columna2 p {
+    margin-top: 2vh;
+    font-size: 3vh;
+    text-align: justify;
+}
+
+.ManualUsuario {
+    text-align: center;
+    margin-bottom: 2vh;
+    width: 100%;
+    color: white;
+}
+
+.ManualUsuario h2 {
+    margin-top: 2vh;
+    font-size: 3vh;
+    text-align: center;
+}
+
+.ManualUsuario span {
+    font-size: 4vh;
+}

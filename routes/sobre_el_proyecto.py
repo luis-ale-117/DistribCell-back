@@ -14,4 +14,4 @@ def pagina_sobre_el_proyecto():
     usuario = None
     if "usuario_id" in session:
         usuario = Usuarios.query.get(session["usuario_id"])
-    return render_template("sobre_el_proyecto.html", usuario=usuario)
+    return render_template("sobre_el_proyecto.html", usuario=usuario,titulo="Sobre el proyecto")
