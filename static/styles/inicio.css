@@ -242,14 +242,14 @@
     display: grid;
     background: none;
     margin-right: 5%;
-    width: 25%;
+    width: 30%;
     justify-content: center;
     place-items: center;
     text-align: center;
 }
 
 .infoTip img{
-    width: 45%;
+    width: 30%;
     padding: 5% 0;
 }
    
