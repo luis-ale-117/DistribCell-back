@@ -10,7 +10,12 @@ const imgPausa = document.getElementById('imgPausa');
 const rangoHistorialAutomata = document.getElementById('rangoHistorialAutomata');
 const labelRangoHistorialAutomata = document.getElementById('labelRangoHistorialAutomata');
 const botonGuardarHistorial = document.getElementById('botonGuardarHistorial');
-const botonProcesarAutomata = document.getElementById('botonProcesarAutomata');
+/* prompt*/
+const wrapProcesar = document.querySelector('.procesar')
+const cierraProcesar = document.querySelector('.cierraProcesar')
+const formProcesar = document.getElementById('form-procesar')
+const inicioContenedor = document.querySelector('.inicioContenedor')
+const botonProcesarAutomata = document.getElementById('botonProcesarAutomata')
 
 const IMAGEN_PAUSA = "/static/imgs/boton-de-pausa.png";
 const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
@@ -639,10 +644,20 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           window.location.href = "/simulaciones";
         });
         botonProcesarAutomata?.addEventListener('click', async () => {
-          // popup para guardar el nombre de la simulacion a procesar
-          const nombreProcesamiento = prompt("Ingresa el nombre de la simulación a procesar");
-          const descripcionProcesamiento = prompt("Ingresa una descripción para simulación a procesar"); // Opcional
-          const numGeneraciones = parseInt(prompt("Ingresa el numero de generaciones a procesar"));
+          inicioContenedor.style.opacity = '0.1'
+          wrapProcesar.style.display = 'grid'
+          inicioContenedor.style.transition = 'transition: all 0.5s ease-out;'
+          wrapProcesar.style.transition = 'transition: 0.5s ease;'
+          window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY + 100;
+            wrapProcesar.style.top = `${scrollTop}px`;
+          });
+        });
+        formProcesar.addEventListener('submit', async (e) => {
+          e.preventDefault()
+          const nombreProcesamiento = document.getElementById('nombre_simulacion').value;
+          const descripcionProcesamiento = document.getElementById('desc_simulacion').value; // Opcional
+          const numGeneraciones = parseInt(document.getElementById('num_simulacion').value);
           if (nombreProcesamiento === null || nombreProcesamiento === "") {
             generaMensaje("Agrega un nombre a tu simulación", "advertencia");
             return;
@@ -659,7 +674,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             numGeneraciones: numGeneraciones,
             generacionInicial: historialAutomata[indice],
           };
-          // console.log(simulacion);
           let msgError = validaProcesamiento(simulacion);
           if (msgError) {
             generaMensaje(msgError, "error");
@@ -685,26 +699,36 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               console.log(data);
               nuevaSimulacionId = data.simulacion_id
               error = data.error;
+              if (nuevaSimulacionId) {
+                alert("Simulación guardada correctamente");
+                window.location.href = "/simulaciones";
+                //generaMensaje("Simulación guardada correctamente", "exito");
+              }
+              if (error) {
+                generaMensaje(error, "error");
+              }
             })
             .catch(err => {
               console.error(err);
               error = err.message;
             });
-          if (nuevaSimulacionId) {
-            alert("Simulación guardada correctamente");
-            window.location.href = "/simulaciones";
-          }
-          if (error) {
-            generaMensaje(error, "error");
-          }
-        });
+          cierraProcesar.click();
+          document.getElementById('nombre_simulacion').value = '';
+          document.getElementById('desc_simulacion').value = ''; // Opcional
+          document.getElementById('num_simulacion').value = '';
+        })
+
+        cierraProcesar.addEventListener('click', () => {
+          inicioContenedor.style.opacity = '1'
+          wrapProcesar.style.display = 'none'
+        })
         botonGrafica1?.addEventListener('click', () => {
-          if(grafica1) {
+          if (grafica1) {
             grafica1.destroy(); // Destruye la gráfica anterior
           }
           grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados);
 
-          for(matrizCelulas of historialAutomata) {
+          for (matrizCelulas of historialAutomata) {
             const celulasPorEstado = cuentaEstados(matrizCelulas);
             agregaDatosGrafica(grafica1, celulasPorEstado);
           }

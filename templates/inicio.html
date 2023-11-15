@@ -11,6 +11,36 @@
 {% endblock %}
 
 {% block contenido %}
+<div class="procesar">
+    <div class="wrapper">
+        <div id="cierraProcesar" class="cierraProcesar"><ion-icon name="close-circle-outline"></ion-icon></div>
+        <div class="formBox">
+            <h2>Procesar</h2>
+            <form id="form-procesar">
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="text" id="nombre_simulacion" name="nombre_simulacion" required>
+                    <label for="correo">Nombre de la simulación a procesar</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="text-box" id="desc_simulacion" name="desc_simulacion" required>
+                    <label for="correo">Descripcion de la simulacion</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="keypad-outline"></ion-icon></span>
+                    <input type="number" id="num_simulacion" name="num_simulacion" required>
+                    <label for="correo">Numero de generaciones</label>
+                </div>
+                <div class="divBtn">
+                    <button type="submit" class="boton">
+                        <h4>Procesar</h4>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="inicioContenedor">
     <div>
         <form id="formConfiguracion">
@@ -78,6 +108,7 @@
                 <img src="{{ url_for('static', filename='imgs/administracion.png') }}" alt="administracion.png"></img>
             </button>
         </div>
+
         {% else %} <div></div> {% endif %}
         <div class="inputForm">
             <label for="rangoVelocidad">Velocidad</label>
@@ -109,5 +140,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
     integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="{{ url_for('static', filename='wasm/automata.js') }}" ></script>
+<script src="{{ url_for('static', filename='wasm/automata.js') }}"></script>
 {% endblock %}
