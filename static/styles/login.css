@@ -2,8 +2,9 @@
     display: grid;
     align-items: center;
     width: 100%;
-    text-align:center;
+    text-align: center;
 }
+
 .wrapper {
     position: static;
     width: 400px;
@@ -42,7 +43,7 @@
     transform: translateX(-400px);
 }
 
-.wrapper .formBox.signup{
+.wrapper .formBox.signup {
     position: absolute;
     transition: none;
     transform: translateX(400px);
@@ -73,7 +74,10 @@
 
 .formBox h2 {
     font-size: 2em;
-    color: rgb(0, 0, 0);
+    background: black;
+    background: linear-gradient(#000000, #b3b3b3);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
     text-align: center;
 }
 
@@ -143,11 +147,11 @@
     text-decoration: none;
 }
 
-.rememberForgot a:hover{
+.rememberForgot a:hover {
     text-decoration: underline;
 }
 
-.divBtn{
+.divBtn {
     margin-left: 10px;
     margin-right: 10px;
     background: transparent;

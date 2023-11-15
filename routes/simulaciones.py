@@ -29,7 +29,7 @@ def pagina_simulaciones():
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     simulaciones = Simulaciones.query.filter_by(usuario_id=usuario.id).all()
     return render_template(
-        "simulaciones.html", usuario=usuario, simulaciones=simulaciones
+        "simulaciones.html", usuario=usuario, simulaciones=simulaciones,titulo="Simulaciones"
     )
 
 
@@ -60,7 +60,7 @@ def pagina_simulacion(simulacion_id: int):
             "La simulacion tomó demasiado tiempo en procesarse. No se pudo completar.",
             "error",
         )
-    return render_template("simulacion.html", usuario=usuario, simulacion=simulacion)
+    return render_template("simulacion.html", usuario=usuario, simulacion=simulacion,titulo="Simulacion "+str(simulacion_id))
 
 
 @blueprint.route("/simulaciones/<int:simulacion_id>/borrar", methods=["GET"])

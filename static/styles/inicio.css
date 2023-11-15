@@ -12,16 +12,19 @@
     gap: 10px;
     color: white;
 }
+
 #formConfiguracion {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 10px;
 }
+
 #formReglas {
     display: grid;
     grid-template-columns: minmax(200px, 4fr) minmax(150px, 2fr) minmax(150px, 1fr);
     gap: 10px;
 }
+
 #formControl {
     display: grid;
     grid-template-columns: repeat(3, 50px) minmax(200px, 700px);
@@ -55,13 +58,14 @@
 
 
 
-.formConfiguracion, .formReglas {
+.formConfiguracion,
+.formReglas {
     margin-top: 30px;
     text-align: center;
     width: 300px;
     height: 300px;
     float: left;
-    background:transparent;
+    background: transparent;
 }
 
 .inputForm {
@@ -69,11 +73,13 @@
     align-content: center;
     align-items: center;
 }
-.inputForm label{
+
+.inputForm label {
     margin-right: 5px;
     font-weight: bold;
     color: white;
 }
+
 .inputForm input {
     width: 100%;
     border: 2px solid white;
@@ -95,6 +101,7 @@
     appearance: textfield;
     -moz-appearance: textfield;
 }
+
 .inputForm input[type=number]:focus {
     background-color: white;
     color: black;
@@ -123,7 +130,7 @@
     cursor: grabbing;
 }
 
-.inputForm #rangoHistorialAutomata{
+.inputForm #rangoHistorialAutomata {
     direction: ltr;
 }
 
@@ -137,6 +144,7 @@
     color: black;
     padding: 3px;
 }
+
 .botonCarga:hover {
     background-color: black;
     border: 1px solid white;
@@ -211,11 +219,11 @@
     cursor: grab;
 }
 
-.divListaReglas table td[data-tipo="borrar"]{
+.divListaReglas table td[data-tipo="borrar"] {
     cursor: pointer;
 }
 
-.divListaReglas table td[data-tipo="borrar"] img{
+.divListaReglas table td[data-tipo="borrar"] img {
     -webkit-filter: invert(100%);
     filter: invert(100%);
     background-color: white;
@@ -232,13 +240,45 @@
     background-color: white;
 }
 
-.divListaReglas table td[data-tipo="borrar"]:hover img{
+.divListaReglas table td[data-tipo="borrar"]:hover img {
     background-color: white;
     -webkit-filter: none;
     filter: none;
 }
 
-.infoTip{
+.procesar {
+    display: none;
+    /*grid*/
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    position: absolute;
+    z-index: 1;
+    top: 100;
+}
+
+.cierraProcesar {
+    cursor: pointer;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 1;
+}
+
+.cierraProcesar ion-icon {
+    font-size: 34px;
+    position: relative;
+    top: 1px;
+    transition: 0.5s ease;
+}
+
+.cierraProcesar ion-icon:hover {
+    font-size: 40px;
+}
+
+.infoTip {
     display: grid;
     background: none;
     margin-right: 5%;
@@ -248,8 +288,7 @@
     text-align: center;
 }
 
-.infoTip img{
+.infoTip img {
     width: 30%;
     padding: 5% 0;
 }
-   

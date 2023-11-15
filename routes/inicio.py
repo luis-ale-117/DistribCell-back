@@ -15,4 +15,4 @@ def pagina_inicio():
     usuario = None
     if "usuario_id" in session:
         usuario = Usuarios.query.get(session["usuario_id"])
-    return render_template("inicio.html", usuario=usuario)
+    return render_template("inicio.html", usuario=usuario, titulo="Automatas Celulares")

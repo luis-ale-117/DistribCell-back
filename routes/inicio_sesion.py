@@ -22,7 +22,7 @@ def pagina_inicio_de_sesion():
     """Regresa la pagina de inicio de sesion"""
     if "usuario_id" in session:
         return redirect(url_for("inicio.pagina_inicio"))
-    return render_template("inicio_sesion.html")
+    return render_template("inicio_sesion.html", titulo="Inicia Sesion")
 
 
 @blueprint.route("/inicio_sesion", methods=["POST"])
