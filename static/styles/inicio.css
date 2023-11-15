@@ -70,7 +70,8 @@
 
 .inputForm {
     display: flex;
-    align-items: flex-end;
+    align-content: center;
+    align-items: center;
 }
 
 .inputForm label {
@@ -275,4 +276,19 @@
 
 .cierraProcesar ion-icon:hover {
     font-size: 40px;
+}
+
+.infoTip {
+    display: grid;
+    background: none;
+    margin-right: 5%;
+    width: 30%;
+    justify-content: center;
+    place-items: center;
+    text-align: center;
+}
+
+.infoTip img {
+    width: 30%;
+    padding: 5% 0;
 }

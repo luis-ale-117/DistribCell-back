@@ -196,3 +196,26 @@
     }
 
 }
+
+
+footer{
+    opacity: 0.25;
+    display: flex;
+    /* bottom: -50%; */
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5%;
+    padding-bottom: 1%;
+    /* padding-top: 1%;S */
+}
+
+footer div{
+    width: 75%;
+}
+
+footer div p{
+    font-size: 100%;
+    color: #ffffff;
+    padding: 1% 5%;
+}
