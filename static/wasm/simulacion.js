@@ -14,7 +14,7 @@ const canvasGrid = document.getElementById('canvasGrid');
 const ctx = canvasGrid?.getContext('2d');
 
 
-const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
+const TAM_CELDA = 10;  // Tamaño de la celda en píxeles
 const SIM_ID = simNombre.dataset.id
 
 let ejecutando = false

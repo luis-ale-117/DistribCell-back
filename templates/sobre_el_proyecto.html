@@ -20,15 +20,25 @@
         </div>
     </div>
     <div class="ManualUsuario">
-        <h2>Te dejamos nuestro manual de usuario </h2>
-        <span>↓</span>
+        <h2>Te dejamos nuestro manual de usuario y nuestro documento técnico</h2>     
     </div>
     <div class="divBtn">
-        <a href="{{ url_for('static', filename='docs/Manual_de_Usuario.pdf') }}" download>
-            <button class="boton">
-                <h4>Manual de Usuario</h4>
-            </button>
-        </a>
+        <div class="linkBtn">
+            <span>↓</span>
+            <a href="https://drive.google.com/file/d/1gP4LwVDyYOx3dLxZQwXjOoUR6riiq7CJ/view?usp=sharing" target="_blank">
+                <button class="boton">
+                    <h4>Manual de Usuario</h4>
+                </button>
+            </a>
+        </div>
+        <div class="linkBtn">
+            <span>↓</span>
+            <a href="https://drive.google.com/file/d/1gP4LwVDyYOx3dLxZQwXjOoUR6riiq7CJ/view?usp=sharing" target="_blank">
+                <button class="boton">
+                    <h4>Documento técnico</h4>
+                </button>
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -25,7 +25,7 @@ const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
  */
 const canvasGrid = document.getElementById('canvasGrid');
 const ctx = canvasGrid.getContext('2d');
-const TAM_CELDA = 20;  // Tamaño de la celda en píxeles
+const TAM_CELDA = 10;  // Tamaño de la celda en píxeles
 /**
  * @type {HTMLCanvasElement}
  */
