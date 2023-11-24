@@ -71,7 +71,7 @@ def validar_campos_usuario(nombre: str, apellido: str, correo: str) -> str | Non
     elif not isinstance(apellido, str):
         mensaje = "Apellido debe ser una cadena"
     elif not isinstance(correo, str):
-        mensaje = "Correo debe ser una cadena"
+        mensaje = "Correo debe ser una cadena de texto"
 
     elif nombre == "":
         mensaje = "Nombre requerido"
@@ -83,8 +83,6 @@ def validar_campos_usuario(nombre: str, apellido: str, correo: str) -> str | Non
         mensaje = "El apellido debe tener entre 2 y 255 caracteres"
     elif correo != "":
         mensaje = "No esta permitido cambiar el correo"
-    elif not 2 <= len(correo) <= MAX_CORREO:
-        mensaje = "El correo debe tener entre 2 y 255 caracteres"
     return mensaje
 
 
@@ -115,7 +113,7 @@ def validar_campos_simulacion(
         mensaje = "Nombre requerido"
     elif not 2 <= len(nombre) <= MAX_NOMBRE:
         mensaje = "El nombre debe tener entre 2 y 255 caracteres"
-    elif descripcion not in [None, ""] and not 2 <= len(descripcion) <= MAX_DESCRIPCION:
+    elif descripcion not in [None, ""] and not 1 <= len(descripcion) <= MAX_DESCRIPCION:
         mensaje = "La descripcion debe tener entre 2 y 2048 caracteres"
     elif not MIN_ANCHURA <= anchura <= MAX_ANCHURA:
         mensaje = f"Anchura debe estar entre {MIN_ANCHURA} y {MAX_ANCHURA}"

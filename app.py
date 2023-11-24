@@ -89,7 +89,7 @@ def crea_usuario():
         contrasena = request.form["contrasena"]
         contrasena2 = request.form["contrasena2"]
     except KeyError:
-        flash("Error en la peticion. Revisa los campos.", "error")
+        flash("Error en la petición. Revisa los campos.", "error")
         redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     # Validar campos
@@ -133,7 +133,7 @@ def crea_usuario():
     enviar_correo(correo, "Confirmacion de correo", temp)
 
     flash(
-        "Registrado. Te enviamos un correo de confirmacion. (Tienes 1h para confirmar)",
+        "Registrado. Te enviamos un correo de confirmación. (Tienes 1h para confirmar)",
         "exito",
     )
     return redirect(url_for("inicio.pagina_inicio"))
@@ -158,7 +158,12 @@ def confirmar_correo(token):
         flash("El token ha expirado, registrate nuevamente.", "advertencia")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
-    usuario = Usuarios.query.filter_by(correo=correo).first_or_404()
+    usuario = Usuarios.query.filter_by(correo=correo).first()
+
+    if usuario is None:
+        flash("El usuario no existe, registrate nuevamente.", "error")
+        return redirect(url_for("registro_usuario.pagina_registro_usuario"))
+
     if usuario.confirmado:
         flash("El correo ya ha sido confirmado, por favor inicia sesion", "info")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
