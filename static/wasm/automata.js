@@ -305,7 +305,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             err = automata.step()
             if (err != null) {
               console.error("Error:", err)
-              // TODO: Error como mensaje, no como alert
               generaMensaje(`Ocurrio un error, revisa tus reglas: ${err}`, "error");
               ejecutando = false;
               imgPausa.src = IMAGEN_PLAY

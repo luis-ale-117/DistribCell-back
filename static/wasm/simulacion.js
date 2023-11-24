@@ -13,6 +13,31 @@ const canvasGrid = document.getElementById('canvasGrid');
 /** @type {CanvasRenderingContext2D} */
 const ctx = canvasGrid?.getContext('2d');
 
+// @ts-ignore
+const divMensajes = document.getElementById('mensajes');
+/**
+ * Genera un mensaje en la interfaz
+ * @param {string} mensaje 
+ * @param {string} tipo error, info, advertencia, exito
+ */
+function generaMensaje(mensaje, tipo = "error") {
+  if (!divMensajes) return;
+  const divMensaje = document.createElement('div');
+  divMensaje.classList.add('alerta');
+  divMensaje.classList.add(tipo);
+  divMensaje.textContent = mensaje;
+
+  const botonCerrar = document.createElement('button');
+  botonCerrar.classList.add('cerrar-mensaje');
+  botonCerrar.textContent = 'Cerrar';
+  botonCerrar.addEventListener('click', _ => {
+    botonCerrar.parentElement?.classList.add('invisible');
+  });
+
+  divMensaje.appendChild(botonCerrar);
+  divMensajes.appendChild(divMensaje);
+}
+
 
 const TAM_CELDA = 10;  // Tamaño de la celda en píxeles
 const SIM_ID = simNombre.dataset.id
@@ -158,8 +183,8 @@ rangoHistorialAutomata.addEventListener('input', (e) => {
     const indice = parseInt(e.target?.value)
     matrizCelulas = historialAutomata[indice]
     if (matrizCelulas === undefined) {
-        alert("No hay un historial para esa generacion")
-        return
+        generaMensaje("No hay un historial para esa generacion", 'advertencia');
+        return;
     }
     labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
     dibujaMatrizInterfaz(matrizCelulas, colorEstados)
@@ -185,12 +210,12 @@ const cargaSimulacionInterfaz = async () => {
             if (response.status === 200) {
                 return response.json();
             }
-            alert("Ocurrio un error al cargar el historial");
+            generaMensaje("Ocurrio un error al cargar el historial", 'error');
             faltanMatrices = false;
         })
         .then( /** @param {number[][][]} data*/ data => {
             if (!Array.isArray(data)) {
-                alert("Ocurrio un error: " + data);
+                generaMensaje("Ocurrio un error: " + data, 'error');
                 faltanMatrices = false;
                 return;
             }
@@ -204,7 +229,7 @@ const cargaSimulacionInterfaz = async () => {
         })
         .catch(err => {
             console.error(err);
-            alert("Ocurrio un error guardando el historial");
+            generaMensaje("Ocurrio un error guardando el historial", 'error');
             faltanMatrices = false;
             return;
         });

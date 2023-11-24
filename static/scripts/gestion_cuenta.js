@@ -17,6 +17,31 @@ const datosOriginales = {
   nuevaContrasena2: ''
 }
 
+// @ts-ignore
+const divMensajes = document.getElementById('mensajes');
+/**
+ * Genera un mensaje en la interfaz
+ * @param {string} mensaje 
+ * @param {string} tipo error, info, advertencia, exito
+ */
+function generaMensaje(mensaje, tipo = "error") {
+  if (!divMensajes) return;
+  const divMensaje = document.createElement('div');
+  divMensaje.classList.add('alerta');
+  divMensaje.classList.add(tipo);
+  divMensaje.textContent = mensaje;
+
+  const botonCerrar = document.createElement('button');
+  botonCerrar.classList.add('cerrar-mensaje');
+  botonCerrar.textContent = 'Cerrar';
+  botonCerrar.addEventListener('click', _ => {
+    botonCerrar.parentElement?.classList.add('invisible');
+  });
+
+  divMensaje.appendChild(botonCerrar);
+  divMensajes.appendChild(divMensaje);
+}
+
 const sinCambiosEnCampos = form =>  {
   if (!form) return false;
   return datosOriginales.nombre === form.nombre.value &&
@@ -57,8 +82,7 @@ camposForm.forEach(campo => {
 // @ts-ignore
 const validar_datos = form => {
   if (form === null) {
-    alert('Formualrio no encontrado')
-    return false
+    return 'Formualrio no encontrado';
   }
   form.nombre.value = form.nombre.value.trim()
   form.apellido.value = form.apellido.value.trim()
@@ -72,34 +96,34 @@ const validar_datos = form => {
   const contrasenaActual = form.contrasenaActual.value
 
   if (nombre === '') {
-    alert('Nombre requerido')
-    return false
+    return 'Nombre requerido';
   }
   if (apellido === '') {
-    alert('Apellido requerido')
-    return false
+    return 'Apellido requerido';
   }
   if (correo !== datosOriginales.correo) {
-    alert('No se puede cambiar el correo')
-    return false
+    return 'No se permite cambiar el correo';
   }
   if (nuevaContrasena !== '') {
+    if (nuevaContrasena.length < 8) {
+      return 'La contraseña debe tener al menos 8 caracteres';
+    }
     if (nuevaContrasena !== nuevaContrasena2) {
-      alert('Las contraseñas no son iguales')
-      return false
+      return 'Las contraseñas no son iguales';
     }
     if (contrasenaActual === '') {
-      alert('Escribe la contraseña actual')
-      return false
+      return 'Escribe la contraseña actual';
     }
   }
-  return true
+  return null;
 }
 
 form?.addEventListener('submit',  e => {
   e.preventDefault();
-  if (!validar_datos(form)){
-    return
+  const mensaje = validar_datos(form);
+  if (mensaje !== null) {
+    generaMensaje(mensaje, 'error');
+    return;
   }
   // @ts-ignore
   form.correo.value = ''
