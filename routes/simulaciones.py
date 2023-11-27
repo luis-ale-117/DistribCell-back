@@ -29,7 +29,10 @@ def pagina_simulaciones():
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     simulaciones = Simulaciones.query.filter_by(usuario_id=usuario.id).all()
     return render_template(
-        "simulaciones.html", usuario=usuario, simulaciones=simulaciones,titulo="Simulaciones"
+        "simulaciones.html",
+        usuario=usuario,
+        simulaciones=simulaciones,
+        titulo="Simulaciones",
     )
 
 
@@ -47,7 +50,11 @@ def pagina_simulacion(simulacion_id: int):
 
     simulacion = Simulaciones.query.filter_by(
         usuario_id=usuario.id, id=simulacion_id
-    ).first_or_404()
+    ).first()
+
+    if simulacion is None:
+        flash("Simulación no encontrada", "error")
+        return redirect(url_for("simulaciones.pagina_simulaciones"))
 
     if simulacion.tipo == "PROCESAMIENTO":
         flash("La simulacion sigue en procesamiento", "info")
@@ -60,7 +67,12 @@ def pagina_simulacion(simulacion_id: int):
             "La simulacion tomó demasiado tiempo en procesarse. No se pudo completar.",
             "error",
         )
-    return render_template("simulacion.html", usuario=usuario, simulacion=simulacion,titulo="Simulacion "+str(simulacion_id))
+    return render_template(
+        "simulacion.html",
+        usuario=usuario,
+        simulacion=simulacion,
+        titulo="Simulacion " + str(simulacion_id),
+    )
 
 
 @blueprint.route("/simulaciones/<int:simulacion_id>/borrar", methods=["GET"])
@@ -77,7 +89,12 @@ def borrar_simulacion(simulacion_id: int):
 
     simulacion = Simulaciones.query.filter_by(
         usuario_id=usuario.id, id=simulacion_id
-    ).first_or_404()
+    ).first()
+
+    if simulacion is None:
+        flash("Simulación no encontrada", "error")
+        return redirect(url_for("simulaciones.pagina_simulaciones"))
+
     cola = Cola.query.filter_by(simulacion_id=simulacion.id).first()
 
     for generacion in simulacion.generaciones:
@@ -154,7 +171,12 @@ def anadir_generaciones(simulacion_id: int):
     nuevas_generaciones: list[list[list[int]]] = request.get_json()
     simulacion: Simulaciones = Simulaciones.query.filter_by(
         usuario_id=usuario.id, id=simulacion_id
-    ).first_or_404()
+    ).first()
+
+    if simulacion is None:
+        flash("Simulación no encontrada", "error")
+        return redirect(url_for("simulaciones.pagina_simulaciones"))
+
     indice: int = simulacion.numero_generaciones()
 
     if indice >= MAX_GENERACIONES:
@@ -203,7 +225,11 @@ def obtener_generaciones(simulacion_id: int):
 
     simulacion: Simulaciones = Simulaciones.query.filter_by(
         usuario_id=usuario.id, id=simulacion_id
-    ).first_or_404()
+    ).first()
+
+    if simulacion is None:
+        flash("Simulación no encontrada", "error")
+        return redirect(url_for("simulaciones.pagina_simulaciones"))
 
     gen_inicio = request.args.get("inicio", default=0, type=int)
     gen_fin = request.args.get("fin", default=10, type=int)

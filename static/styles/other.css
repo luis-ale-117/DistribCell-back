@@ -259,3 +259,25 @@ a:hover {
     transform-origin: left;
     transform: scaleX(1);
 }
+
+.linkBtn {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: none;
+    align-items: center;
+    justify-content: center;
+    width: 15%;
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+.linkBtn span {
+    display: block;
+    color: #ffffff;
+    font-size: 4vh;
+    width: 20%;
+    margin: auto;
+    padding-bottom: 5%;
+    text-align: center;
+}

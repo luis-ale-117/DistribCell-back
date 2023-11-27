@@ -1,6 +1,6 @@
 
 // @ts-ignore
-const form = document.getElementById('form-registro-usuario');
+const form = document.getElementById('form-inicio-sesion');
 // @ts-ignore
 const divMensajes = document.getElementById('mensajes');
 /**
@@ -31,32 +31,15 @@ const validar_datos = form => {
   if (form === null) {
     return 'Formualrio no encontrado';
   }
-  form.nombre.value = form.nombre.value.trim()
-  form.apellido.value = form.apellido.value.trim()
-  form.correo.value = form.correo.value.trim()
-
-  const nombre = form.nombre.value
-  const apellido = form.apellido.value
-  const correo = form.correo.value
-  const contrasena = form.contrasena.value
-  const contrasena2 = form.contrasena2.value
-
-  if(nombre === ''){
-    return 'Nombre requerido';
-  }
-  if(apellido === ''){
-    return 'Apellido requerido';
-  }
+  form.correo.value = form.correo.value.trim();
+  const correo = form?.correo.value;
+  const contrasena = form?.contrasena.value;
   if(correo === ''){
     return 'Correo requerido';
   }
   if(contrasena === ''){
     return 'Contraseña requerida';
   }
-  if(contrasena !== contrasena2){
-    return 'Las contraseñas no coinciden';
-  }
-
   return null;
 }
 

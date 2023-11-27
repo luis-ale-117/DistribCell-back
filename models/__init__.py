@@ -70,6 +70,9 @@ class Simulaciones(db.Model):
     generaciones = db.relationship(
         "Generaciones", cascade="all, delete", backref="simulaciones", lazy=True
     )
+    cola = db.relationship(
+        "Cola", cascade="all, delete", backref="simulaciones", lazy=True
+    )
 
     def numero_generaciones(self):
         """Numero de generaciones de la simulacion"""
@@ -103,7 +106,5 @@ class Cola(db.Model):
         db.ForeignKey("simulaciones.id"),
         nullable=False,
     )
-    # proceso_id = db.Column(db.String(255), nullable=True, default=None)  # ID del proceso en el servidor Tal vez no sea necesario
-    # estado = db.Column(db.String(100), nullable=False)  # PENDIENTE, EN_PROCESO, TERMINADO Tal vez no sea necesario
     num_generaciones = db.Column(db.Integer, nullable=False, default=1)
     ultima_actualizacion = db.Column(BIGINT, nullable=True, default=0)

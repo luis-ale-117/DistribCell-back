@@ -76,3 +76,22 @@ def actualiza_datos_usuario():
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     flash("Datos actualizados.", "exito")
     return redirect(url_for("usuarios.pagina_datos_usuario"))
+
+
+@blueprint.route("/elimina_cuenta", methods=["GET"])
+def elimina_cuenta():
+    """Elimina la cuenta del usuario"""
+    if "usuario_id" not in session:
+        flash("Inicia sesión", "advertencia")
+        return redirect(url_for("inicio.pagina_inicio"))
+    usuario = Usuarios.query.get(session["usuario_id"])
+    if usuario is None:
+        session.pop("usuario_id", None)
+        flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
+        return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+    session.pop("usuario_id", None)
+
+    db.session.delete(usuario)
+    db.session.commit()
+    flash("Cuenta eliminada.", "exito")
+    return redirect(url_for("inicio.pagina_inicio"))

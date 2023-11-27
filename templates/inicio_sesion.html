@@ -3,9 +3,8 @@
 {% block titulo %}Iniciar Sesion{% endblock %}
 
 {% block contenido %}
-<div class="login">
     <div class="wrapper">
-        <div class="formBox login">
+        <div class="formBox">
             <h2>Inicia sesión</h2>
             <form id="form-inicio-sesion" action="{{ url_for('sesion.genera_sesion') }}" method="POST">
                 <div class="inputBox">
@@ -18,14 +17,9 @@
                     <input type="password" name="contrasena" required>
                     <label for="contrasena">Contraseña</label>
                 </div>
-        
-                <div class="rememberForgot">
-                    <label><input type="checkbox">Recuerdame</label>
-                    <a href="#">¿Olvidaste la contraseña?</a>
-                </div>
-                <div class="divBtn">
-                    <button type="submit" class="boton">
-                        <h4>Inica sesión</h4>
+                <div class="divBotonGif">
+                    <button type="submit" class="botonGif">
+                        <h4>Inicia sesión</h4>
                     </button>
                 </div>
                 <div class="loginRegister">
@@ -34,9 +28,8 @@
             </form>
         </div>
     </div>    
-</div>
 {% endblock %}
 
 {% block scriptEspecial %}
-<script src="{{ url_for('static', filename='scripts/incio_sesion.js') }}"></script>
+<script src="{{ url_for('static', filename='scripts/inicio_sesion.js') }}"></script>
 {% endblock %}
