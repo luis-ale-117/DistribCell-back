@@ -2,6 +2,7 @@
 simulaciones.py
 Modulo para el manejo de las simulaciones pertenecientes del usuario
 """
+import zlib
 from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template, flash, session, request
 from models import Simulaciones, Usuarios, Generaciones, Cola
@@ -168,7 +169,6 @@ def anadir_generaciones(simulacion_id: int):
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
 
-    nuevas_generaciones: list[list[list[int]]] = request.get_json()
     simulacion: Simulaciones = Simulaciones.query.filter_by(
         usuario_id=usuario.id, id=simulacion_id
     ).first()
@@ -177,10 +177,25 @@ def anadir_generaciones(simulacion_id: int):
         flash("Simulación no encontrada", "error")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
+    generaciones_comprimidas = request.data
+    generaciones_bytes = zlib.decompress(generaciones_comprimidas)
+
+    items_por_generacion = int(simulacion.anchura * simulacion.altura)
+    if len(generaciones_bytes) % items_por_generacion != 0:
+        return {"error": "Error en el numero de elementos"}, 400
+
+    num_generaciones = len(generaciones_bytes) // items_por_generacion
     indice: int = simulacion.numero_generaciones()
 
-    if indice >= MAX_GENERACIONES:
-        return {"error": "Limite de generaciones alcanzado"}, 400
+    if indice >= MAX_GENERACIONES or indice + num_generaciones > MAX_GENERACIONES:
+        return {
+            "error": f"Se supera el limite de generaciones: {MAX_GENERACIONES}"
+        }, 400
+
+    nuevas_generaciones = [
+        generaciones_bytes[i * items_por_generacion : (i + 1) * items_por_generacion]
+        for i in range(num_generaciones)
+    ]
 
     for generacion in nuevas_generaciones:
         mensaje = validar_generacion(
@@ -189,22 +204,16 @@ def anadir_generaciones(simulacion_id: int):
         if mensaje is not None:
             return {"error": mensaje}, 400
 
-    gens: list[Generaciones] = []
-    for generacion in nuevas_generaciones:
-        contenido = bytearray()
-        for fila in generacion:
-            contenido.extend(fila)
-        contenido = bytes(contenido)
-        gens.append(
-            Generaciones(
-                simulacion_id=simulacion.id,
-                iteracion=indice,
-                contenido=contenido,
-            )
+    print(len(generaciones_comprimidas))
+    print(len(generaciones_bytes))
+    gens: list[Generaciones] = [
+        Generaciones(
+            simulacion_id=simulacion.id,
+            iteracion=indice + i,
+            contenido=generacion,
         )
-        indice += 1
-        if indice >= MAX_GENERACIONES:
-            break
+        for i, generacion in enumerate(nuevas_generaciones)
+    ]
 
     db.session.add_all(gens)
     db.session.commit()

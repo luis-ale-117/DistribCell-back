@@ -35,7 +35,8 @@
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="keypad-outline"></ion-icon></span>
-                    <input type="number" id="num_simulacion" name="num_simulacion" min="1" max="500" step="1" value="1" required>
+                    <input type="number" id="num_simulacion" name="num_simulacion" min="1" max="500" step="1" value="1"
+                        required>
                     <label for="correo">Numero de generaciones</label>
                 </div>
                 <div class="divBotonGif">
@@ -92,27 +93,27 @@
     </div>
     <div class="inputForm">
         <div class="infoTip">
-            <p>Para colocar una regla, se usa como guía la siguiente imagen, 
+            <p>Para colocar una regla, se usa como guía la siguiente imagen,
                 que representa un vecindario de Moore:</p>
             <img src="{{ url_for('static', filename='imgs/moore.png') }}">
             <p>
                 Las reglas son de la forma: <i>n<sub>xy</sub> = a && (s<sub>b</sub> = m || ... )</i>, donde:<br>
-                <ul>
-                    <li><i>n<sub>xy</sub></i> representa la célula que se va a evaluar</li>
-                    <li><i>a</i> representa el estado en el que se encuentra la célula anterior</li>
-                    <li><i>s<sub>b</sub></i> representa la células vecinas que se encuentran en estado <i>b</i></li>
-                    <li><i>m</i> es el número de células vecinas del punto anterior</li>
-                </ul>
+            <ul>
+                <li><i>n<sub>xy</sub></i> representa la célula que se va a evaluar</li>
+                <li><i>a</i> representa el estado en el que se encuentra la célula anterior</li>
+                <li><i>s<sub>b</sub></i> representa la células vecinas que se encuentran en estado <i>b</i></li>
+                <li><i>m</i> es el número de células vecinas del punto anterior</li>
+            </ul>
             </p>
             <!-- <p>Donde:<br> n<sub>xy</sub> representa la célula que se va a evaluar y su estado inicial
                 <br>
                 s<sub>n</sub> es el número de vecinos en el estado <i>n</i>
             </p> -->
         </div>
-    <div class="divTabEstados divListaReglas">
-        <table id="listaReglas">
-        </table>
-    </div>
+        <div class="divTabEstados divListaReglas">
+            <table id="listaReglas">
+            </table>
+        </div>
     </div>
     <div id="formControl">
         <div class="inputForm">
@@ -165,6 +166,9 @@
 {% block scriptEspecial %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
     integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"
+    integrity="sha512-g2TeAWw5GPnX7z0Kn8nFbYfeHcvAu/tx6d6mrLe/90mkCxO+RcptyYpksUz35EO337F83bZwcmUyHiHamspkfg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ url_for('static', filename='wasm/automata.js') }}"></script>
 {% endblock %}

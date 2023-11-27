@@ -596,51 +596,36 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           }
 
           // Paso 2: Guarda el historial usando la simulacion creada
-          // Envia el historial en bloques de 10 generaciones
-          let historial = [];
-          for (let i = 0; i < historialAutomata.length; i++) {
-
-            historial.push(historialAutomata[i])
-            if (historial.length === 10 || i === historialAutomata.length - 1) {
-              await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(historial)
-              })
-                .then(response => {
-                  if (response.redirected) {
-                    alert("Inicio de sesion requerido");
-                    window.location.href = response.url;
-                  }
-                  return response.json();
-                })
-                .then(data => {
-                  console.log(data);
-                  error = data.error;
-                  if (error) {
-                    generaMensaje(data.error, "error");
-                  }
-                  return;
-                })
-                .catch(err => {
-                  console.error(err);
-                  error = err;
-                  generaMensaje("Error al guardar el historial", "error");
-                  return;
-                });
-              if (error) {
-                return;
+          const historialFlat = historialAutomata.flat(2);
+          const uint8Array = new Uint8Array(historialFlat);
+          const uint8ArrayComprimido = pako.deflate(uint8Array);
+          console.log(`Original: ${uint8Array.length} bytes, comprimido: ${uint8ArrayComprimido.length} bytes`);
+          await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
+            method: 'POST',
+            body: uint8ArrayComprimido.buffer
+          })
+            .then(response => {
+              if (response.redirected) {
+                alert("Inicio de sesion requerido");
+                window.location.href = response.url;
               }
-              historial = [];
-            }
-          }
-          if (error) {
-            return;
-          }
-          alert("Simulación guardada correctamente");
-          window.location.href = "/simulaciones";
+              return response.json();
+            })
+            .then(data => {
+              console.log(data);
+              error = data.error;
+              if (error) {
+                generaMensaje(data.error, "error");
+              }
+              else {
+                generaMensaje("Simulación guardada correctamente", "exito");
+              }
+            })
+            .catch(err => {
+              console.error(err);
+              error = err;
+              generaMensaje("Error al guardar el historial", "error");
+            });
         });
         botonProcesarAutomata?.addEventListener('click', async () => {
           inicioContenedor.style.opacity = '0.1'
@@ -749,7 +734,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
 //////////////////////////////////////////////
 
 const MAX_NOMBRE = 255;
-const MIN_NOMBRE = 2;
+const MIN_NOMBRE = 1;
 const MAX_DESCRIPCION = 2048;
 const MAX_ALTURA = 500;
 const MIN_ALTURA = 3;
@@ -771,7 +756,7 @@ const MIN_GENERACIONES = 1;
 function validaSimulacion(simulacion) {
   let mensaje = null;
   if (!simulacion.nombre || simulacion.nombre.length > MAX_NOMBRE || simulacion.nombre.length < MIN_NOMBRE) {
-    mensaje = 'El nombre de la simulación debe tener entre 2 y 255 caracteres';
+    mensaje = 'El nombre de la simulación debe tener entre 1 y 255 caracteres';
   }
   else if (simulacion.descripcion && simulacion.descripcion.length > MAX_DESCRIPCION) {
     mensaje = 'La descripción de la simulación debe tener como máximo 2048 caracteres';
