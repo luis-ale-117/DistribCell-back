@@ -13,27 +13,33 @@
 {% block contenido %}
 <div class="procesar">
     <div class="wrapper">
-        <div id="cierraProcesar" class="cierraProcesar"><ion-icon name="close-circle-outline"></ion-icon></div>
         <div class="formBox">
-            <h2>Procesar</h2>
+            <div id="cierraProcesar" class="cierraProcesar"><ion-icon name="close-circle-outline"></ion-icon></div>
+            <h2>Mandar a procesar</h2>
+            <br>
+            <label>
+                Manda a procesar tu autómata en nuestros sistemas en la nube. El autómata debe tener
+                un tamaño menor a 500x500 y un máximo de 500 generaciones.
+            </label>
+            <br>
             <form id="form-procesar">
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
-                    <input type="text" id="nombre_simulacion" name="nombre_simulacion" required>
+                    <input type="text" id="nombre_simulacion" name="nombre_simulacion" maxlength="255" required>
                     <label for="correo">Nombre de la simulación a procesar</label>
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
-                    <input type="text-box" id="desc_simulacion" name="desc_simulacion" required>
+                    <input type="text" id="desc_simulacion" name="desc_simulacion" maxlength="2048" required>
                     <label for="correo">Descripcion de la simulacion</label>
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="keypad-outline"></ion-icon></span>
-                    <input type="number" id="num_simulacion" name="num_simulacion" required>
+                    <input type="number" id="num_simulacion" name="num_simulacion" min="1" max="500" step="1" value="1" required>
                     <label for="correo">Numero de generaciones</label>
                 </div>
-                <div class="divBtn">
-                    <button type="submit" class="boton">
+                <div class="divBotonGif">
+                    <button type="submit" class="botonGif">
                         <h4>Procesar</h4>
                     </button>
                 </div>

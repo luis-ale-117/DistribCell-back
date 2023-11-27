@@ -1,6 +1,7 @@
 
 // @ts-ignore
 const form = document.getElementById('form-datos-cuenta');
+const linkBorrarCuenta = document.getElementById('linkBorrarCuenta');
 const divActualizar = document.getElementById('divActualizar')
 const divContrasenaActual = document.getElementById('divContrasenaActual')
 const divRepiteNuevaContrasena = document.getElementById('divRepiteNuevaContrasena')
@@ -130,3 +131,10 @@ form?.addEventListener('submit',  e => {
   // @ts-ignore
   form.submit()
 })
+
+linkBorrarCuenta?.addEventListener('click', e => {
+  const mensaje = '¿Estás seguro de que quieres borrar tu cuenta?';
+  if (!confirm(mensaje)) {
+    e.preventDefault();
+  }
+});

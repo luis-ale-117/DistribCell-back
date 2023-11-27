@@ -3,11 +3,10 @@
 {% block titulo %}Registro usuario{% endblock %}
 
 {% block contenido %}
-<div class="wrapper active">
-    <div class="formBox signup">
+<div class="wrapper">
+    <div class="formBox">
         <h2>Registrate</h2>
-        <form id="form-registro-usuario" action="{{ url_for('registro_usuario.crea_usuario') }}" method="POST"
-            class="register-form">
+        <form id="form-registro-usuario" action="{{ url_for('registro_usuario.crea_usuario') }}" method="POST">
             <div class="inputBox">
                 <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
                 <input type="text" id="nombre" name="nombre" required>
@@ -33,8 +32,8 @@
                 <input type="password" id="contrasena2" name="contrasena2" required>
                 <label for="contrasena2">Repite la Contraseña</label>
             </div>
-            <div class="divBtn">
-                <button type="submit" class="boton">
+            <div class="divBotonGif">
+                <button type="submit" class="botonGif">
                     <h4>Registrate</h4>
                 </button>
             </div>

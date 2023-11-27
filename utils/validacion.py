@@ -114,7 +114,7 @@ def validar_campos_simulacion(
     elif not 2 <= len(nombre) <= MAX_NOMBRE:
         mensaje = "El nombre debe tener entre 2 y 255 caracteres"
     elif descripcion not in [None, ""] and not 1 <= len(descripcion) <= MAX_DESCRIPCION:
-        mensaje = "La descripcion debe tener entre 2 y 2048 caracteres"
+        mensaje = "La descripcion debe tener entre 0 y 2048 caracteres"
     elif not MIN_ANCHURA <= anchura <= MAX_ANCHURA:
         mensaje = f"Anchura debe estar entre {MIN_ANCHURA} y {MAX_ANCHURA}"
     elif not MIN_ALTURA <= altura <= MAX_ALTURA:
