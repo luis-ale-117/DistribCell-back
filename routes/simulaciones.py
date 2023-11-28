@@ -204,8 +204,6 @@ def anadir_generaciones(simulacion_id: int):
         if mensaje is not None:
             return {"error": mensaje}, 400
 
-    print(len(generaciones_comprimidas))
-    print(len(generaciones_bytes))
     gens: list[Generaciones] = [
         Generaciones(
             simulacion_id=simulacion.id,
@@ -240,31 +238,18 @@ def obtener_generaciones(simulacion_id: int):
         flash("Simulación no encontrada", "error")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
-    gen_inicio = request.args.get("inicio", default=0, type=int)
-    gen_fin = request.args.get("fin", default=10, type=int)
-
     generaciones: Generaciones = simulacion.generaciones
 
     if generaciones is None:
-        return {"mensaje": "Simulacion sin generaciones"}, 200
+        return {"error": "Simulacion sin generaciones"}, 404
 
-    generaciones = generaciones[gen_inicio:gen_fin]
-
-    matrices: list[list[list[int]]] = []
-    filas: int = simulacion.altura
-    columnas: int = simulacion.anchura
-
+    matrices = bytearray()
     for generacion in generaciones:
-        matriz: list[list[int]] = []
-        for fila in range(filas):
-            matriz_fila: list[int] = []
-            for columna in range(columnas):
-                num = generacion.contenido[fila * columnas + columna]
-                matriz_fila.append(num)
-            matriz.append(matriz_fila)
-        matrices.append(matriz)
+        matrices.extend(generacion.contenido)
 
-    return matrices, 200
+    matrices_comp = zlib.compress(matrices)
+
+    return matrices_comp, 200
 
 
 @blueprint.route("/simulaciones/procesamiento", methods=["POST"])

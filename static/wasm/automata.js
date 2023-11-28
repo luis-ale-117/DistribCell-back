@@ -617,15 +617,16 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               if (error) {
                 generaMensaje(data.error, "error");
               }
-              else {
-                generaMensaje("Simulación guardada correctamente", "exito");
-              }
             })
             .catch(err => {
               console.error(err);
               error = err;
               generaMensaje("Error al guardar el historial", "error");
             });
+          if (!error) {
+            alert("Simulación guardada correctamente");
+            window.location.href = "/simulaciones";
+          }
         });
         botonProcesarAutomata?.addEventListener('click', async () => {
           inicioContenedor.style.opacity = '0.1'

@@ -13,6 +13,14 @@ const canvasGrid = document.getElementById('canvasGrid');
 /** @type {CanvasRenderingContext2D} */
 const ctx = canvasGrid?.getContext('2d');
 
+/** @type {HTMLInputElement} */
+const inputAnchura = document.getElementById('anchura');
+/** @type {HTMLInputElement} */
+const inputAltura = document.getElementById('altura');
+
+const altura = parseInt(inputAltura?.value ?? "0");
+const anchura = parseInt(inputAnchura?.value ?? "0");
+
 // @ts-ignore
 const divMensajes = document.getElementById('mensajes');
 /**
@@ -179,7 +187,7 @@ const asignaColorArcoiris = (numEstados, saturation = 100, lightness = 50) => {
     }
 }
 
-rangoHistorialAutomata.addEventListener('input', (e) => {
+rangoHistorialAutomata?.addEventListener('input', (e) => {
     const indice = parseInt(e.target?.value)
     matrizCelulas = historialAutomata[indice]
     if (matrizCelulas === undefined) {
@@ -191,48 +199,36 @@ rangoHistorialAutomata.addEventListener('input', (e) => {
 });
 
 const cargaSimulacionInterfaz = async () => {
-    let faltanMatrices = true
-    let inicio = 0
-    let fin = 10
-
-    while (faltanMatrices){
-        await fetch(`/simulaciones/${SIM_ID}/generaciones?`+ new URLSearchParams({inicio: inicio.toString(), fin: fin.toString()}), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.redirected) {
-                alert("Inicio de sesion requerido");
-                window.location.href = response.url;
-            }
-            if (response.status === 200) {
-                return response.json();
-            }
-            generaMensaje("Ocurrio un error al cargar el historial", 'error');
-            faltanMatrices = false;
-        })
-        .then( /** @param {number[][][]} data*/ data => {
-            if (!Array.isArray(data)) {
-                generaMensaje("Ocurrio un error: " + data, 'error');
-                faltanMatrices = false;
-                return;
-            }
-            if(data.length === 0) {
-                faltanMatrices = false;
-                return;
-            }
-            historialAutomata.push(...data);
-            inicio = fin;
-            fin += 10;
-        })
-        .catch(err => {
-            console.error(err);
-            generaMensaje("Ocurrio un error guardando el historial", 'error');
-            faltanMatrices = false;
+    try {
+        const response = await fetch(`/simulaciones/${SIM_ID}/generaciones`)
+        if (response.redirected) {
+            alert("Inicio de sesion requerido");
+            window.location.href = response.url;
+        }
+        if (response.status !== 200) {
+            generaMensaje("Ocurrio un error al cargar la simulacion", 'error');
             return;
-        });
+        }
+
+        const generacionesComprimidasBuff = await response.arrayBuffer();
+        const generacionesComprimidas = new Int8Array(generacionesComprimidasBuff);
+        // Cada byte representa un estado.
+        const generaciones = pako.inflate(generacionesComprimidas.buffer);
+        const numGeneraciones = generaciones.length / (altura * anchura);
+
+        historialAutomata = new Array(numGeneraciones).fill(0).map(_ => new Array(altura).fill(0).map(_ => new Array(anchura).fill(0)));
+
+        for (let i = 0; i < numGeneraciones; i++) {
+            for (let j = 0; j < altura; j++) {
+                for (let k = 0; k < anchura; k++) {
+                    historialAutomata[i][j][k] = generaciones[i * altura * anchura + j * anchura + k];
+                }
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        generaMensaje("Ocurrio un error guardando el historial", 'error');
+        return;
     }
     rangoHistorialAutomata.max = (historialAutomata.length - 1).toString()
     rangoHistorialAutomata.value = "0"
