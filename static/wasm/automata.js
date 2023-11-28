@@ -94,14 +94,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           generaMensaje(`Error al cargar la matriz inicial ${err}`, "error");
           return
         }
-        matrizCelulas = automata.getInitGrid()
-        // Haz una copia de la matriz para poder modificarla
-        matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+        const matrizCelulas = automata.getInitGrid();
+        const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
+        for (let j = 0; j < conf.altura; j++) {
+          for (let k = 0; k < conf.anchura; k++) {
+            matrizCelulasCopia[j][k] = matrizCelulas[j][k];
+          }
+        }
         // Carga la matriz en la interfaz por primera vez
         canvasGrid.width = conf.anchura * TAM_CELDA
         canvasGrid.height = conf.altura * TAM_CELDA
-        dibujaMatrizInterfaz(matrizCelulas)
-        agregaHistorial(matrizCelulas)
+        dibujaMatrizInterfaz(matrizCelulasCopia);
+        agregaHistorial(matrizCelulasCopia);
 
         ejecutaAutomata();
 
@@ -131,13 +135,11 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           divMensajes.appendChild(divMensaje);
         }
         function matrizAleatoria(anchura, altura, numEstados) {
-          let matrix = [];
+          let matrix = new Array(altura).fill(0).map((anchura) => new Array().fill(0));
           for (let i = 0; i < altura; i++) {
-            let row = [];
             for (let j = 0; j < anchura; j++) {
-              row.push(Math.floor(Math.random() * numEstados));
+              matrix[i][j] = Math.floor(Math.random() * numEstados);
             }
-            matrix.push(row);
           }
           return matrix;
         }
@@ -310,11 +312,16 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               imgPausa.src = IMAGEN_PLAY
               continue
             }
-            matrizCelulas = automata.getInitGrid()
-            matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
-            agregaHistorial(matrizCelulas)
-
-            dibujaMatrizInterfaz(matrizCelulas)
+            const matrizCelulas = automata.getInitGrid();
+            const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
+            for (let j = 0; j < conf.altura; j++) {
+              for (let k = 0; k < conf.anchura; k++) {
+                matrizCelulasCopia[j][k] = matrizCelulas[j][k];
+              }
+            }
+            
+            agregaHistorial(matrizCelulasCopia);
+            dibujaMatrizInterfaz(matrizCelulasCopia);
           }
         }
         /**
@@ -407,20 +414,25 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             ejecutando = false;
             return
           }
-          matrizCelulas = automata.getInitGrid()
-          matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+          const matrizCelulas = automata.getInitGrid();
+          const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
+          for (let j = 0; j < conf.altura; j++) {
+            for (let k = 0; k < conf.anchura; k++) {
+              matrizCelulasCopia[j][k] = matrizCelulas[j][k];
+            }
+          }
 
-          reiniciaHistorial()
-          agregaHistorial(matrizCelulas)
+          reiniciaHistorial();
+          agregaHistorial(matrizCelulasCopia);
 
-          asignaColorArcoiris(conf.numEstados)
-          cargarColorEstadosInterfaz(colorEstados)
+          asignaColorArcoiris(conf.numEstados);
+          cargarColorEstadosInterfaz(colorEstados);
 
-          estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild
-          estadoSeleccionadoInterfaz.classList.add('seleccionado')
-          canvasGrid.width = conf.anchura * TAM_CELDA
-          canvasGrid.height = conf.altura * TAM_CELDA
-          dibujaMatrizInterfaz(matrizCelulas)
+          estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild;
+          estadoSeleccionadoInterfaz.classList.add('seleccionado');
+          canvasGrid.width = conf.anchura * TAM_CELDA;
+          canvasGrid.height = conf.altura * TAM_CELDA;
+          dibujaMatrizInterfaz(matrizCelulasCopia);
         })
         formReglas.addEventListener('submit', (e) => {
           e.preventDefault()
@@ -434,10 +446,15 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           automata.setRules(reglas)
           formReglas.elements['condicion'].value = ""
           formReglas.elements['estado'].value = ""
-          let matrizCelulas = automata.getInitGrid()
-          matrizCelulas = JSON.parse(JSON.stringify(matrizCelulas))
+          const matrizCelulas = automata.getInitGrid();
+          const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
+          for (let j = 0; j < conf.altura; j++) {
+            for (let k = 0; k < conf.anchura; k++) {
+              matrizCelulasCopia[j][k] = matrizCelulas[j][k];
+            }
+          }
           reiniciaHistorial()
-          agregaHistorial(matrizCelulas)
+          agregaHistorial(matrizCelulasCopia)
         })
         rangoVelocidad.addEventListener('change', (e) => {
           velocidadEjecucion = parseInt(e.target.value)
