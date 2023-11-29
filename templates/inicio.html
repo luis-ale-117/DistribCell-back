@@ -35,7 +35,8 @@
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="keypad-outline"></ion-icon></span>
-                    <input type="number" id="num_simulacion" name="num_simulacion" min="1" max="500" step="1" value="1" required>
+                    <input type="number" id="num_simulacion" name="num_simulacion" min="1" max="500" step="1" value="1"
+                        required>
                     <label for="correo">Numero de generaciones</label>
                 </div>
                 <div class="divBotonGif">
@@ -47,6 +48,38 @@
         </div>
     </div>
 </div>
+<div class="guardar">
+    <div class="wrapper">
+        <div class="formBox">
+            <div id="cierraGuardar" class="cierraProcesar"><ion-icon name="close-circle-outline"></ion-icon></div>
+            <h2>Mandar a guardar</h2>
+            <br>
+            <label>
+                Manda a guardar tu autómata en nuestros sistemas en la nube. El autómata debe tener
+                un tamaño menor a 500x500 y un máximo de 500 generaciones.
+            </label>
+            <br>
+            <form id="form-guardar">
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="text" id="nombre_historial" name="nombre_historial" maxlength="255" required>
+                    <label for="correo">Nombre de la simulación a procesar</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="text" id="desc_historial" name="desc_historial" maxlength="2048" required>
+                    <label for="correo">Descripcion de la simulacion</label>
+                </div>
+                <div class="divBotonGif">
+                    <button type="submit" class="botonGif">
+                        <h4>Guardar</h4>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="inicioContenedor">
     <div>
         <form id="formConfiguracion">
@@ -92,27 +125,27 @@
     </div>
     <div class="inputForm">
         <div class="infoTip">
-            <p>Para colocar una regla, se usa como guía la siguiente imagen, 
+            <p>Para colocar una regla, se usa como guía la siguiente imagen,
                 que representa un vecindario de Moore:</p>
             <img src="{{ url_for('static', filename='imgs/moore.png') }}">
             <p>
                 Las reglas son de la forma: <i>n<sub>xy</sub> = a && (s<sub>b</sub> = m || ... )</i>, donde:<br>
-                <ul>
-                    <li><i>n<sub>xy</sub></i> representa la célula que se va a evaluar</li>
-                    <li><i>a</i> representa el estado en el que se encuentra la célula anterior</li>
-                    <li><i>s<sub>b</sub></i> representa la células vecinas que se encuentran en estado <i>b</i></li>
-                    <li><i>m</i> es el número de células vecinas del punto anterior</li>
-                </ul>
+            <ul>
+                <li><i>n<sub>xy</sub></i> representa la célula que se va a evaluar</li>
+                <li><i>a</i> representa el estado en el que se encuentra la célula anterior</li>
+                <li><i>s<sub>b</sub></i> representa la células vecinas que se encuentran en estado <i>b</i></li>
+                <li><i>m</i> es el número de células vecinas del punto anterior</li>
+            </ul>
             </p>
             <!-- <p>Donde:<br> n<sub>xy</sub> representa la célula que se va a evaluar y su estado inicial
                 <br>
                 s<sub>n</sub> es el número de vecinos en el estado <i>n</i>
             </p> -->
         </div>
-    <div class="divTabEstados divListaReglas">
-        <table id="listaReglas">
-        </table>
-    </div>
+        <div class="divTabEstados divListaReglas">
+            <table id="listaReglas">
+            </table>
+        </div>
     </div>
     <div id="formControl">
         <div class="inputForm">
