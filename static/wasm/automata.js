@@ -392,14 +392,13 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             grafica1.data.datasets[i].data.push(celulasPorEstado[i]);
           }
         }
-        botonPausa.addEventListener('click', () => {
-          ejecutando = !ejecutando
-          imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
-        })
         //////////////////////////////////////////////
         ////////// Eventos de la interfaz ////////////
         //////////////////////////////////////////////
-
+        botonPausa.addEventListener('click', () => {
+          ejecutando = !ejecutando
+          imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
+        });
         formConfiguracion.addEventListener('submit', (e) => {
           e.preventDefault()
           conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value)
@@ -583,66 +582,52 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             }
           }
           let nuevaSimulacionId = null;
-          let error = null;
-          await fetch('/simulaciones', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(simulacion)
-          })
-            .then(response => {
-              if (!response.redirected) {
-                return response.json();
-              }
-              alert("Inicio de sesion requerido")
-              window.location.href = response.url;
-            })
-            .then(data => {
-              console.log(data);
-              nuevaSimulacionId = data.simulacion_id
-            })
-            .catch(err => {
-              console.error(err);
-              error = err;
-              generaMensaje(`Error al guardar la simulación: ${err}`, "error");
-              return;
+          try {
+            const response = await fetch('/simulaciones', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(simulacion)
             });
-          if (error) {
+            if (response.redirected) {
+              alert("Inicio de sesion requerido");
+              window.location.href = response.url;
+            }
+            const data = await response.json();
+            console.log(data);
+            nuevaSimulacionId = data.simulacion_id;
+          } catch (error) {
+            console.error(error);
+            generaMensaje(`Error al guardar la simulación: ${error}`, "error");
             return;
           }
-
           // Paso 2: Guarda el historial usando la simulacion creada
           const historialFlat = historialAutomata.flat(2);
           const uint8Array = new Uint8Array(historialFlat);
           const uint8ArrayComprimido = pako.deflate(uint8Array);
           console.log(`Original: ${uint8Array.length} bytes, comprimido: ${uint8ArrayComprimido.length} bytes`);
-          await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
-            method: 'POST',
-            body: uint8ArrayComprimido.buffer
-          })
-            .then(response => {
-              if (response.redirected) {
-                alert("Inicio de sesion requerido");
-                window.location.href = response.url;
-              }
-              return response.json();
-            })
-            .then(data => {
-              console.log(data);
-              error = data.error;
-              if (error) {
-                generaMensaje(data.error, "error");
-              }
-            })
-            .catch(err => {
-              console.error(err);
-              error = err;
-              generaMensaje("Error al guardar el historial", "error");
+          try {
+            const response = await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
+              method: 'POST',
+              body: uint8ArrayComprimido.buffer
             });
-          if (!error) {
+            if (response.redirected) {
+              alert("Inicio de sesion requerido");
+              window.location.href = response.url;
+            }
+            const data = await response.json();
+            console.log(data);
+            if (data.error) {
+              generaMensaje(data.error, "error");
+              return;
+            }
             alert("Simulación guardada correctamente");
             window.location.href = "/simulaciones";
+          } catch (error) {
+            console.error(error);
+            generaMensaje(`Error al guardar el historial: ${error}`, "error");
+            return;
           }
         });
         botonProcesarAutomata?.addEventListener('click', async () => {
@@ -681,44 +666,38 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             generaMensaje(msgError, "error");
             return;
           }
-          let nuevaSimulacionId = null;
-          let error = null;
-          await fetch('/simulaciones/procesamiento', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(simulacion)
-          })
-            .then(response => {
-              if (!response.redirected) {
-                return response.json();
-              }
-              alert("Inicio de sesion requerido")
-              window.location.href = response.url;
-            })
-            .then(data => {
-              console.log(data);
-              nuevaSimulacionId = data.simulacion_id
-              error = data.error;
-              if (nuevaSimulacionId) {
-                alert("Simulación guardada correctamente");
-                window.location.href = "/simulaciones";
-                //generaMensaje("Simulación guardada correctamente", "exito");
-              }
-              if (error) {
-                generaMensaje(error, "error");
-              }
-            })
-            .catch(err => {
-              console.error(err);
-              error = err.message;
+          try{
+            const response = await fetch('/simulaciones/procesamiento', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(simulacion)
             });
+            if (response.redirected) {
+              alert("Inicio de sesion requerido");
+              window.location.href = response.url;
+            }
+            const data = await response.json();
+            console.log(data);
+            if (data.error) {
+              generaMensaje(data.error, "error");
+            }
+            else if (data.simulacion_id) {
+              alert("Simulación guardada correctamente");
+              window.location.href = "/simulaciones";
+            } else {
+              generaMensaje("Error al guardar la simulación", "error");
+            }
+          } catch (error) {
+            console.error(error);
+            generaMensaje(`Error al guardar la simulación: ${error}`, "error");
+          }
           cierraProcesar.click();
           document.getElementById('nombre_simulacion').value = '';
           document.getElementById('desc_simulacion').value = ''; // Opcional
           document.getElementById('num_simulacion').value = '';
-        })
+        });
 
         cierraProcesar.addEventListener('click', () => {
           inicioContenedor.style.opacity = '1'
