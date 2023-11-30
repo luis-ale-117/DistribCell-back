@@ -48,6 +48,38 @@
         </div>
     </div>
 </div>
+<div class="guardar">
+    <div class="wrapper">
+        <div class="formBox">
+            <div id="cierraGuardar" class="cierraProcesar"><ion-icon name="close-circle-outline"></ion-icon></div>
+            <h2>Mandar a guardar</h2>
+            <br>
+            <label>
+                Manda a guardar tu autómata en nuestros sistemas en la nube. El autómata debe tener
+                un tamaño menor a 500x500 y un máximo de 500 generaciones.
+            </label>
+            <br>
+            <form id="form-guardar">
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="text" id="nombre_historial" name="nombre_historial" maxlength="255" required>
+                    <label for="correo">Nombre de la simulación a procesar</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="text" id="desc_historial" name="desc_historial" maxlength="2048" required>
+                    <label for="correo">Descripcion de la simulacion</label>
+                </div>
+                <div class="divBotonGif">
+                    <button type="submit" class="botonGif">
+                        <h4>Guardar</h4>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="inicioContenedor">
     <div>
         <form id="formConfiguracion">

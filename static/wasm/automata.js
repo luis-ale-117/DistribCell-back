@@ -14,6 +14,10 @@ const botonGuardarHistorial = document.getElementById('botonGuardarHistorial');
 const wrapProcesar = document.querySelector('.procesar')
 const cierraProcesar = document.querySelector('.cierraProcesar')
 const formProcesar = document.getElementById('form-procesar')
+
+const wrapGuardar = document.querySelector('.guardar')
+const cierraGuardar = document.getElementById('cierraGuardar')
+const formGuardar = document.getElementById('form-guardar')
 const inicioContenedor = document.querySelector('.inicioContenedor')
 const botonProcesarAutomata = document.getElementById('botonProcesarAutomata')
 
@@ -551,6 +555,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `
           dibujaMatrizInterfaz(matrizCelulas)
         });
+        /*
         botonGuardarHistorial?.addEventListener('click', async () => {
           // popup para guardar el nombre del historial
           const nombreHistorial = prompt("Ingresa el nombre del historial")
@@ -629,7 +634,130 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             generaMensaje(`Error al guardar el historial: ${error}`, "error");
             return;
           }
+          alert("Simulación guardada correctamente");
+          window.location.href = "/simulaciones";
+        });*/
+        botonGuardarHistorial?.addEventListener('click', async () => {
+          inicioContenedor.style.opacity = '0.1'
+          wrapGuardar.style.display = 'grid'
+          inicioContenedor.style.transition = 'transition: all 0.5s ease-out;'
+          wrapGuardar.style.transition = 'transition: 0.5s ease;'
+          window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY + 100;
+            wrapGuardar.style.top = `${scrollTop}px`;
+          });
         });
+        formProcesar.addEventListener('submit', async (e) => {
+          e.preventDefault()
+          const nombreHistorial = document.getElementById('nombre_historial').value
+          const descripcionHistorial = document.getElementById('desc_historial').value
+          if (nombreHistorial === null || nombreHistorial === "") {
+            generaMensaje("Agrega un nombre a tu simulación", "advertencia");
+            return;
+          }
+          // Paso 1: Crea la simulación
+          const simulacion = {
+            nombre: nombreHistorial,
+            descripcion: descripcionHistorial,
+            altura: conf.altura,
+            anchura: conf.anchura,
+            estados: conf.numEstados,
+            reglas: reglas,
+          }
+          console.log(simulacion);
+          let msgError = validaSimulacion(simulacion);
+          if (msgError) {
+            generaMensaje(msgError, "error");
+            return;
+          }
+          for (const matriz of historialAutomata) {
+            msgError = validaMatriz(simulacion, matriz);
+            if (msgError) {
+              generaMensaje(msgError, "error");
+              return;
+            }
+          }
+          let nuevaSimulacionId = null;
+          let error = null;
+          await fetch('/simulaciones', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(simulacion)
+          })
+            .then(response => {
+              if (!response.redirected) {
+                return response.json();
+              }
+              alert("Inicio de sesion requerido")
+              window.location.href = response.url;
+            })
+            .then(data => {
+              console.log(data);
+              nuevaSimulacionId = data.simulacion_id
+            })
+            .catch(err => {
+              console.error(err);
+              error = err;
+              generaMensaje(`Error al guardar la simulación: ${err}`, "error");
+              return;
+            });
+          if (error) {
+            return;
+          }
+          // Paso 2: Guarda el historial usando la simulacion creada
+          // Envia el historial en bloques de 10 generaciones
+          let historial = [];
+          for (let i = 0; i < historialAutomata.length; i++) {
+
+            historial.push(historialAutomata[i])
+            if (historial.length === 10 || i === historialAutomata.length - 1) {
+              await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(historial)
+              })
+                .then(response => {
+                  if (response.redirected) {
+                    alert("Inicio de sesion requerido");
+                    window.location.href = response.url;
+                  }
+                  return response.json();
+                })
+                .then(data => {
+                  console.log(data);
+                  error = data.error;
+                  if (error) {
+                    generaMensaje(data.error, "error");
+                  }
+                  return;
+                })
+                .catch(err => {
+                  console.error(err);
+                  error = err;
+                  generaMensaje("Error al guardar el historial", "error");
+                  return;
+                });
+              if (error) {
+                return;
+              }
+              historial = [];
+            }
+          }
+          if (error) {
+            return;
+          }
+          alert("Simulación guardada correctamente");
+          window.location.href = "/simulaciones";
+        })
+        cierraGuardar.addEventListener('click', () => {
+          inicioContenedor.style.opacity = '1'
+          wrapGuardar.style.display = 'none'
+        })
+
         botonProcesarAutomata?.addEventListener('click', async () => {
           inicioContenedor.style.opacity = '0.1'
           wrapProcesar.style.display = 'grid'
