@@ -12,6 +12,7 @@ from utils.validacion import (
     validar_campos_simulacion,
     validar_campos_procesamiento,
     validar_generacion,
+    validar_generacion_matriz,
 )
 
 blueprint = Blueprint("simulaciones", __name__)
@@ -120,6 +121,8 @@ def crear_simulacion():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+    if usuario.numero_simulaciones() >= 5:
+        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
 
     conf = request.get_json()
     try:
@@ -138,9 +141,6 @@ def crear_simulacion():
     )
     if mensaje_validacion is not None:
         return {"error": mensaje_validacion}, 400
-
-    if usuario.numero_simulaciones() >= 5:
-        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
 
     simulacion = Simulaciones(
         usuario_id=usuario.id,
@@ -263,6 +263,8 @@ def crear_procesamiento():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+    if usuario.numero_simulaciones() >= 5:
+        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
 
     conf = request.get_json()
     try:
@@ -284,7 +286,7 @@ def crear_procesamiento():
         return {"error": mensaje_validacion}, 400
     if generacion_inicial is None:
         return {"error": "Simulacion sin generaciones"}, 400
-    mensaje = validar_generacion(anchura, altura, estados, generacion_inicial)
+    mensaje = validar_generacion_matriz(anchura, altura, estados, generacion_inicial)
     if mensaje is not None:
         return {"error": mensaje}, 400
 

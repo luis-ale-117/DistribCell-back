@@ -181,3 +181,32 @@ def validar_generacion(
         if mensaje is not None:
             break
     return mensaje
+
+
+def validar_generacion_matriz(
+    anchura: int,
+    altura: int,
+    estados: int,
+    generacion: list[list[int]],
+):
+    """Validacion de la generacion"""
+    mensaje = None
+    if not isinstance(generacion, list):
+        mensaje = "La generacion debe ser una lista de listas de enteros"
+    elif len(generacion) != altura:
+        mensaje = f"La altura de la generacion debe ser {altura} casillas"
+    for fila in generacion:
+        if not isinstance(fila, list):
+            mensaje = "Cada fila de la generacion debe ser una lista de enteros"
+        elif len(fila) != anchura:
+            mensaje = f"Cada fila de la generacion debe tener {anchura} casillas"
+        for casilla in fila:
+            if not isinstance(casilla, int):
+                mensaje = "Cada casilla de la generacion debe ser un entero"
+            elif not 0 <= casilla <= estados:
+                mensaje = (
+                    f"Cada casilla de la generacion debe estar entre 0 y {estados}"
+                )
+        if mensaje is not None:
+            break
+    return mensaje
