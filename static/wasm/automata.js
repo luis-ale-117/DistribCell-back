@@ -391,10 +391,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           /**
            * @type {number[][]}
            */
-          const densidadPoblacionMedia = new Array(conf.numEstados)
+          const densidadPoblacionMedia = new Array(densidadPoblacion.length)
             .fill(0)
             .map((_) => new Array(Math.ceil(densidadPoblacion[0].length / numGeneraciones)));
-          for (let estado = 0; estado < conf.numEstados; estado++) {
+          for (let estado = 0; estado < densidadPoblacion.length; estado++) {
             for (let rangoGeneracion = 0; rangoGeneracion < densidadPoblacionMedia[estado].length; rangoGeneracion++) {
               let suma = 0;
               const nGen = Math.min(
@@ -402,7 +402,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 densidadPoblacion[estado].length - rangoGeneracion * numGeneraciones
               );
               for (let i = 0; i < nGen; i++) {
-                suma += densidadPoblacion[estado][rangoGeneracion * nGen + i];
+                suma += densidadPoblacion[estado][rangoGeneracion * numGeneraciones + i];
               }
               densidadPoblacionMedia[estado][rangoGeneracion] = suma / nGen;
             }
@@ -457,13 +457,13 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
          * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
          */
         function agregaDatosGraficaDensidad(grafica, densidadPoblacion) {
-          for (estado = 0; estado < conf.numEstados; estado++) {
-            const densidadEstado = densidadPoblacion[estado];
-            grafica.data.labels = new Array(densidadEstado.length).fill(0);
-            grafica.data.datasets[estado].data = densidadEstado;
-            for (let generacion = 0; generacion < densidadEstado.length; generacion++) {
-              grafica.data.labels[generacion] = generacion;
-            }
+          for (estado = 0; estado < densidadPoblacion.length; estado++) {
+            grafica.data.datasets[estado].data = densidadPoblacion[estado];
+          }
+          const numGeneraciones = densidadPoblacion[0].length;
+          grafica.data.labels = new Array(numGeneraciones);
+          for (let generacion = 0; generacion < numGeneraciones; generacion++) {
+            grafica.data.labels[generacion] = generacion;
           }
         }
         /**
@@ -473,16 +473,16 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
          * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
          */
         function agregaDatosGraficaDensidadMedia(grafica, rangoMedia, densidadPoblacion) {
+          for (estado = 0; estado < densidadPoblacion.length; estado++) {
+            grafica.data.datasets[estado].data = densidadPoblacion[estado];
+          }
           const numGeneraciones = historialAutomata.length;
-          for (estado = 0; estado < conf.numEstados; estado++) {
-            const densidadEstado = densidadPoblacion[estado];
-            grafica.data.labels = new Array(densidadEstado.length);
-            grafica.data.datasets[estado].data = densidadEstado;
-            for (let rangoGeneracion = 0; rangoGeneracion < densidadEstado.length; rangoGeneracion++) {
-              const genMin = rangoGeneracion * rangoMedia;
-              const genMax = Math.min(numGeneraciones, (rangoGeneracion + 1) * rangoMedia) - 1;
-              grafica.data.labels[rangoGeneracion] = `${genMin}-${genMax}`;
-            }
+          const numRangos = densidadPoblacion[0].length;
+          grafica.data.labels = new Array(numRangos);
+          for (let rangoGeneracion = 0; rangoGeneracion < numRangos; rangoGeneracion++) {
+            const genMin = rangoGeneracion * rangoMedia;
+            const genMax = Math.min(numGeneraciones, (rangoGeneracion + 1) * rangoMedia) - 1;
+            grafica.data.labels[rangoGeneracion] = `${genMin}-${genMax}`;
           }
         }
         //////////////////////////////////////////////
