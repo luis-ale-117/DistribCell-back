@@ -402,7 +402,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
                 densidadPoblacion[estado].length - rangoGeneracion * numGeneraciones
               );
               for (let i = 0; i < nGen; i++) {
-                suma += densidadPoblacion[estado][rangoGeneracion * numGeneraciones + i];
+                suma += densidadPoblacion[estado][rangoGeneracion * nGen + i];
               }
               densidadPoblacionMedia[estado][rangoGeneracion] = suma / nGen;
             }
@@ -463,6 +463,25 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             grafica.data.datasets[estado].data = densidadEstado;
             for (let generacion = 0; generacion < densidadEstado.length; generacion++) {
               grafica.data.labels[generacion] = generacion;
+            }
+          }
+        }
+        /**
+         * Actualiza la gráfica con el número de células por estado
+         * @param {Chart} grafica - Gráfica
+         * @param {number} rangoMedia - Número de generaciones a promediar
+         * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
+         */
+        function agregaDatosGraficaDensidadMedia(grafica, rangoMedia, densidadPoblacion) {
+          const numGeneraciones = historialAutomata.length;
+          for (estado = 0; estado < conf.numEstados; estado++) {
+            const densidadEstado = densidadPoblacion[estado];
+            grafica.data.labels = new Array(densidadEstado.length);
+            grafica.data.datasets[estado].data = densidadEstado;
+            for (let rangoGeneracion = 0; rangoGeneracion < densidadEstado.length; rangoGeneracion++) {
+              const genMin = rangoGeneracion * rangoMedia;
+              const genMax = Math.min(numGeneraciones, (rangoGeneracion + 1) * rangoMedia) - 1;
+              grafica.data.labels[rangoGeneracion] = `${genMin}-${genMax}`;
             }
           }
         }
@@ -811,13 +830,14 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           if (grafica2) {
             grafica2.destroy();
           }
+          const rangoMedia = 10;
           grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados);
           grafica2 = inicializaGrafica(ctxGrafica2, conf.numEstados, colorEstados);
 
           const densidadPoblacion = calculaDensidad();
-          const densidadPoblacionMedia = calculaDensidadMedia(10, densidadPoblacion);
+          const densidadPoblacionMedia = calculaDensidadMedia(rangoMedia, densidadPoblacion);
           agregaDatosGraficaDensidad(grafica1, densidadPoblacion);
-          agregaDatosGraficaDensidad(grafica2, densidadPoblacionMedia);
+          agregaDatosGraficaDensidadMedia(grafica2, rangoMedia, densidadPoblacionMedia);
           grafica1.update();
           grafica2.update();
         });
