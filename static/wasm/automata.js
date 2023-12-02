@@ -26,6 +26,7 @@ const IMAGEN_PLAY = '/static/imgs/boton-de-play.png';
 
 const divGrafica1 = document.getElementById('divGrafica1');
 const divGrafica2 = document.getElementById('divGrafica2');
+const divGrafica3 = document.getElementById('divGrafica3');
 /**
  * @type {HTMLCanvasElement}
  */
@@ -46,6 +47,11 @@ const ctxGrafica1 = canvasGrafica1.getContext('2d');
 const canvasGrafica2 = document.getElementById('canvasGrafica2');
 const ctxGrafica2 = canvasGrafica2.getContext('2d');
 /**
+ * @type {HTMLCanvasElement}
+ */
+const canvasGrafica3 = document.getElementById('canvasGrafica3');
+const ctxGrafica3 = canvasGrafica3.getContext('2d');
+/**
  * @type {Chart} grafica1 - Gráfica de densidad de población
  */
 let grafica1;
@@ -53,6 +59,10 @@ let grafica1;
  * @type {Chart} grafica2 - Gráfica de densidad de población media (en 10 generaciones)
  */
 let grafica2;
+/**
+ * @type {Chart} grafica3 - Gráfica de varianza (en 10 generaciones)
+ */
+let grafica3;
 
 const plugin = {
   // plugin para poner un fondo gris en la gráfica
@@ -383,31 +393,56 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
         }
         /**
          * Calcula la densidad de población de cada estado en cada generación
-         * @param {number} numGeneraciones - Número de generaciones a promediar
+         * @param {number} rangoMedia - Número de generaciones a promediar
          * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
          * @returns {number[][]} densidad media de población de cada estado en un intervalo de n generaciones
          */
-        function calculaDensidadMedia(numGeneraciones, densidadPoblacion) {
+        function calculaDensidadMedia(rangoMedia, densidadPoblacion) {
           /**
            * @type {number[][]}
            */
           const densidadPoblacionMedia = new Array(densidadPoblacion.length)
             .fill(0)
-            .map((_) => new Array(Math.ceil(densidadPoblacion[0].length / numGeneraciones)));
+            .map((_) => new Array(Math.ceil(densidadPoblacion[0].length / rangoMedia)));
           for (let estado = 0; estado < densidadPoblacion.length; estado++) {
             for (let rangoGeneracion = 0; rangoGeneracion < densidadPoblacionMedia[estado].length; rangoGeneracion++) {
               let suma = 0;
-              const nGen = Math.min(
-                numGeneraciones,
-                densidadPoblacion[estado].length - rangoGeneracion * numGeneraciones
-              );
+              const nGen = Math.min(rangoMedia, densidadPoblacion[estado].length - rangoGeneracion * rangoMedia);
               for (let i = 0; i < nGen; i++) {
-                suma += densidadPoblacion[estado][rangoGeneracion * numGeneraciones + i];
+                suma += densidadPoblacion[estado][rangoGeneracion * rangoMedia + i];
               }
               densidadPoblacionMedia[estado][rangoGeneracion] = suma / nGen;
             }
           }
           return densidadPoblacionMedia;
+        }
+        /**
+         * Calcula la densidad de población de cada estado en cada generación
+         * @param {number} rangoMedia - Número de generaciones a promediar
+         * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
+         * @param {number[][]} densidadPoblacionMedia - Densidad de población
+         * @returns {number[][]} varianza de la poblacion en el intervalo de n generaciones
+         */
+        function calculaVarianza(rangoMedia, densidadPoblacion, densidadPoblacionMedia) {
+          /**
+           * @type {number[][]}
+           */
+          const densidadPoblacionVarianza = new Array(densidadPoblacionMedia.length)
+            .fill(0)
+            .map((_) => new Array(densidadPoblacionMedia[0].length));
+          for (let estado = 0; estado < densidadPoblacion.length; estado++) {
+            for (let rangoGeneracion = 0; rangoGeneracion < densidadPoblacionMedia[estado].length; rangoGeneracion++) {
+              let suma = 0;
+              const media = densidadPoblacionMedia[estado][rangoGeneracion];
+              const nGen = Math.min(rangoMedia, densidadPoblacion[estado].length - rangoGeneracion * rangoMedia);
+              for (let i = 0; i < nGen; i++) {
+                const xi = densidadPoblacion[estado][rangoGeneracion * rangoMedia + i];
+                suma += (xi - media) * (xi - media); // (xi - media)^2
+              }
+              densidadPoblacionVarianza[estado][rangoGeneracion] = suma / nGen;
+            }
+          }
+          return densidadPoblacionVarianza;
         }
         /**
          * Inicializa la gráfica con el número de células por estado
@@ -470,20 +505,29 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
          * Actualiza la gráfica con el número de células por estado
          * @param {Chart} grafica - Gráfica
          * @param {number} rangoMedia - Número de generaciones a promediar
-         * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
+         * @param {number[][]} densidadPoblacionMedia - Densidad de población de cada estado en cada generación
          */
-        function agregaDatosGraficaDensidadMedia(grafica, rangoMedia, densidadPoblacion) {
-          for (estado = 0; estado < densidadPoblacion.length; estado++) {
-            grafica.data.datasets[estado].data = densidadPoblacion[estado];
+        function agregaDatosGraficaDensidadMedia(grafica, rangoMedia, densidadPoblacionMedia) {
+          for (estado = 0; estado < densidadPoblacionMedia.length; estado++) {
+            grafica.data.datasets[estado].data = densidadPoblacionMedia[estado];
           }
           const numGeneraciones = historialAutomata.length;
-          const numRangos = densidadPoblacion[0].length;
+          const numRangos = densidadPoblacionMedia[0].length;
           grafica.data.labels = new Array(numRangos);
           for (let rangoGeneracion = 0; rangoGeneracion < numRangos; rangoGeneracion++) {
             const genMin = rangoGeneracion * rangoMedia;
             const genMax = Math.min(numGeneraciones, (rangoGeneracion + 1) * rangoMedia) - 1;
             grafica.data.labels[rangoGeneracion] = `${genMin}-${genMax}`;
           }
+        }
+        /**
+         * Actualiza la gráfica con el número de células por estado
+         * @param {Chart} grafica - Gráfica
+         * @param {number} rangoMedia - Número de generaciones a promediar
+         * @param {number[][]} varianzaPoblacion - Densidad de población de cada estado en cada generación
+         */
+        function agregaDatosGraficaVarianza(grafica, rangoMedia, varianzaPoblacion) {
+          agregaDatosGraficaDensidadMedia(grafica, rangoMedia, varianzaPoblacion);
         }
         //////////////////////////////////////////////
         ////////// Eventos de la interfaz ////////////
@@ -824,22 +868,30 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           imgPausa.src = IMAGEN_PLAY;
           divGrafica1.style.display = 'grid';
           divGrafica2.style.display = 'grid';
+          divGrafica3.style.display = 'grid';
           if (grafica1) {
             grafica1.destroy();
           }
           if (grafica2) {
             grafica2.destroy();
           }
+          if (grafica3) {
+            grafica3.destroy();
+          }
           const rangoMedia = 10;
           grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados);
           grafica2 = inicializaGrafica(ctxGrafica2, conf.numEstados, colorEstados);
+          grafica3 = inicializaGrafica(ctxGrafica3, conf.numEstados, colorEstados);
 
           const densidadPoblacion = calculaDensidad();
           const densidadPoblacionMedia = calculaDensidadMedia(rangoMedia, densidadPoblacion);
+          const varianzaPoblacion = calculaVarianza(rangoMedia, densidadPoblacion, densidadPoblacionMedia);
           agregaDatosGraficaDensidad(grafica1, densidadPoblacion);
           agregaDatosGraficaDensidadMedia(grafica2, rangoMedia, densidadPoblacionMedia);
+          agregaDatosGraficaVarianza(grafica3, rangoMedia, varianzaPoblacion);
           grafica1.update();
           grafica2.update();
+          grafica3.update();
         });
       });
     } else {
