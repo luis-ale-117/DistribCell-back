@@ -24,22 +24,36 @@ const botonProcesarAutomata = document.getElementById('botonProcesarAutomata')
 const IMAGEN_PAUSA = "/static/imgs/boton-de-pausa.png";
 const IMAGEN_PLAY = "/static/imgs/boton-de-play.png";
 
+const divGrafica1 = document.getElementById('divGrafica1');
+const divGrafica2 = document.getElementById('divGrafica2');
 /**
  * @type {HTMLCanvasElement}
  */
 const canvasGrid = document.getElementById('canvasGrid');
 const ctx = canvasGrid.getContext('2d');
 const TAM_CELDA = 10;  // Tamaño de la celda en píxeles
+
+const botonGraficas = document.getElementById('botonGraficas');
+
 /**
  * @type {HTMLCanvasElement}
  */
 const canvasGrafica1 = document.getElementById('canvasGrafica1');
 const ctxGrafica1 = canvasGrafica1.getContext('2d');
-const botonGrafica1 = document.getElementById('botonGrafica1');
 /**
- * @type {Chart}
+ * @type {HTMLCanvasElement}
+ */
+const canvasGrafica2 = document.getElementById('canvasGrafica2');
+const ctxGrafica2 = canvasGrafica2.getContext('2d');
+/**
+ * @type {Chart} grafica1 - Gráfica de densidad de población
  */
 let grafica1;
+/**
+ * @type {Chart} grafica2 - Gráfica de densidad de población media (en 10 generaciones)
+ */
+let grafica2;
+
 const plugin = { // plugin para poner un fondo gris en la gráfica
   id: 'customCanvasBackgroundColor',
   beforeDraw: (chart, args, options) => {
@@ -201,6 +215,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           }
           listaReglas.appendChild(fragment)
         }
+        /**
+         * Valida que la simulación tenga los campos correctos
+         * @param {string[]} colorEstados - Arreglo con los colores de cada estado
+         */
         function cargarColorEstadosInterfaz(colorEstados) {
           while (tabColorEstados.firstChild) {
             tabColorEstados.removeChild(tabColorEstados.firstChild);
@@ -210,8 +228,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           const filaColorEstados = document.createElement('tr')
           for (let i = 0; i < colorEstados.length; i++) {
             const estado = document.createElement('td')
-            estado.textContent = i
-            estado.dataset.estado = i
+            estado.textContent = i.toString();
+            estado.dataset.estado = i.toString();
             estado.addEventListener('click', () => {
               if (estadoSeleccionadoInterfaz != null) {
                 // Quita la clase seleccionado al estado seleccionado anteriormente
@@ -228,10 +246,11 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             colorPicker.id = 'colorPicker-' + i.toString()
             colorPicker.setAttribute('type', 'color')
             colorPicker.value = colorEstados[i]
-            colorPicker.dataset.estado = i
+            colorPicker.dataset.estado = i.toString();
             colorPicker.addEventListener('change', () => {
-              colorEstados[colorPicker.dataset.estado] = colorPicker.value
-              dibujaMatrizInterfaz(matrizCelulas)
+              colorEstados[parseInt(colorPicker.dataset.estado)] = colorPicker.value;
+              const matrizCelulas = historialAutomata[parseInt(rangoHistorialAutomata.value)];
+              dibujaMatrizInterfaz(matrizCelulas);
             })
 
             const color = document.createElement('td')
@@ -333,7 +352,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
         * @param {number[][]} matrizCelulas
         * @returns {number[]} arreglo con el número de células por estado
         */
-        function cuentaEstados(matrizCelulas) {
+        function cuentaEstadosDensidad(matrizCelulas) {
           const numEstados = conf.numEstados;
           const cuenta = new Array(numEstados).fill(0);
           for (let j = 0; j < conf.altura; j++) {
@@ -344,13 +363,53 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           return cuenta;
         }
         /**
+        * Calcula la densidad de población de cada estado en cada generación
+        * @returns {number[][]} densidad de población de cada estado en cada generación
+        */
+        function calculaDensidad() {
+          /**
+           * @type {number[][]}
+           */
+          const densidadPoblacion = new Array(conf.numEstados).fill(0).map(_ => new Array(historialAutomata.length));
+          for (let i = 0; i < historialAutomata.length; i++) {
+            const celulasPorEstado = cuentaEstadosDensidad(historialAutomata[i]);
+            for (let estado = 0; estado < conf.numEstados; estado++) {
+              densidadPoblacion[estado][i] = celulasPorEstado[estado];
+            }
+          }
+          return densidadPoblacion;
+        }
+        /**
+        * Calcula la densidad de población de cada estado en cada generación
+        * @param {number} numGeneraciones - Número de generaciones a promediar
+        * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
+        * @returns {number[][]} densidad media de población de cada estado en un intervalo de n generaciones
+        */
+        function calculaDensidadMedia(numGeneraciones, densidadPoblacion) {
+          /**
+           * @type {number[][]}
+           */
+          const densidadPoblacionMedia = new Array(conf.numEstados).fill(0).map(_ => new Array(Math.ceil(densidadPoblacion[0].length / numGeneraciones)));
+          for (let estado = 0; estado < conf.numEstados; estado++) {
+            for (let rangoGeneracion = 0; rangoGeneracion < densidadPoblacionMedia[estado].length; rangoGeneracion++) {
+              let suma = 0;
+              const nGen = Math.min(numGeneraciones, densidadPoblacion[estado].length - rangoGeneracion * numGeneraciones);
+              for (let i = 0; i < nGen; i++) {
+                suma += densidadPoblacion[estado][rangoGeneracion * numGeneraciones + i];
+              }
+              densidadPoblacionMedia[estado][rangoGeneracion] = suma / nGen;
+            }
+          }
+          return densidadPoblacionMedia;
+        }
+        /**
          * Inicializa la gráfica con el número de células por estado
-         * @param {Chart} grafica1 - Gráfica
+         * @param {HTMLCanvasElement} ctxGrafica - Gráfica
          * @param {number} numEstados - Número de estados
          * @param {string[]} colorEstados - Arreglo con los colores de cada estado
          * @returns {Chart} Gráfica inicializada
          */
-        function inicializaGrafica(ctxGrafica1, numEstados, colorEstados) {
+        function inicializaGrafica(ctxGrafica, numEstados, colorEstados) {
           const labels = [];
           const datasets = [];
           for (let i = 0; i < numEstados; i++) {
@@ -362,7 +421,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               tension: 0.1
             })
           }
-          return new Chart(ctxGrafica1, {
+          return new Chart(ctxGrafica, {
             type: 'line',
             data: {
               labels,
@@ -387,46 +446,46 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
         }
         /**
          * Actualiza la gráfica con el número de células por estado
-         * @param {Chart} grafica1
-         * @param {number[]} celulasPorEstado
+         * @param {Chart} grafica - Gráfica
+         * @param {number[][]} densidadPoblacion - Densidad de población de cada estado en cada generación
          */
-        function agregaDatosGrafica(grafica1, celulasPorEstado) {
-          grafica1.data.labels.push(grafica1.data.labels.length);
-          for (let i = 0; i < celulasPorEstado.length; i++) {
-            grafica1.data.datasets[i].data.push(celulasPorEstado[i]);
+        function agregaDatosGraficaDensidad(grafica, densidadPoblacion) {
+          for(estado = 0; estado < conf.numEstados; estado++){
+            const densidadEstado = densidadPoblacion[estado];
+            grafica.data.labels = new Array(densidadEstado.length).fill(0);
+            grafica.data.datasets[estado].data = densidadEstado;
+            for (let generacion = 0; generacion < densidadEstado.length; generacion++) {
+              grafica.data.labels[generacion] = generacion;
+            }
           }
         }
         //////////////////////////////////////////////
         ////////// Eventos de la interfaz ////////////
         //////////////////////////////////////////////
         botonPausa.addEventListener('click', () => {
-          ejecutando = !ejecutando
-          imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY
+          ejecutando = !ejecutando;
+          imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY;
         });
         formConfiguracion.addEventListener('submit', (e) => {
-          e.preventDefault()
-          conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value)
-          conf.anchura = parseInt(formConfiguracion.elements['anchura'].value)
-          conf.altura = parseInt(formConfiguracion.elements['altura'].value)
-          automata.updateConfig(conf.numEstados, conf.anchura, conf.altura)
+          e.preventDefault();
+          ejecutando = false;
+          imgPausa.src = IMAGEN_PLAY;
+          conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value);
+          conf.anchura = parseInt(formConfiguracion.elements['anchura'].value);
+          conf.altura = parseInt(formConfiguracion.elements['altura'].value);
+          automata.updateConfig(conf.numEstados, conf.anchura, conf.altura);
           // Default (Conway's game of life) TODO: Load from USER
-          automata.setRules(reglas)
-          err = automata.loadInitGrid(matrizAleatoria(conf.anchura, conf.altura, conf.numEstados))
+          automata.setRules(reglas);
+          const matrizCelulas = matrizAleatoria(conf.anchura, conf.altura, conf.numEstados);
+          err = automata.loadInitGrid(matrizCelulas);
           if (err != null) {
             generaMensaje(`Error cargando la matriz ${err}`, "error");
             ejecutando = false;
             return
           }
-          const matrizCelulas = automata.getInitGrid();
-          const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
-          for (let j = 0; j < conf.altura; j++) {
-            for (let k = 0; k < conf.anchura; k++) {
-              matrizCelulasCopia[j][k] = matrizCelulas[j][k];
-            }
-          }
 
           reiniciaHistorial();
-          agregaHistorial(matrizCelulasCopia);
+          agregaHistorial(matrizCelulas);
 
           asignaColorArcoiris(conf.numEstados);
           cargarColorEstadosInterfaz(colorEstados);
@@ -435,20 +494,22 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           estadoSeleccionadoInterfaz.classList.add('seleccionado');
           canvasGrid.width = conf.anchura * TAM_CELDA;
           canvasGrid.height = conf.altura * TAM_CELDA;
-          dibujaMatrizInterfaz(matrizCelulasCopia);
-        })
+          dibujaMatrizInterfaz(matrizCelulas);
+        });
         formReglas.addEventListener('submit', (e) => {
-          e.preventDefault()
-          condicion = formReglas.elements['condicion'].value
-          estado = parseInt(formReglas.elements['estado'].value)
+          e.preventDefault();
+          ejecutando = false;
+          imgPausa.src = IMAGEN_PLAY;
+          condicion = formReglas.elements['condicion'].value;
+          estado = parseInt(formReglas.elements['estado'].value);
           if (condicion == "") {
-            return
+            return;
           }
-          reglas.push(Rule2d(condicion, estado))
-          cargarReglasInterfaz(reglas)
-          automata.setRules(reglas)
-          formReglas.elements['condicion'].value = ""
-          formReglas.elements['estado'].value = ""
+          reglas.push(Rule2d(condicion, estado));
+          cargarReglasInterfaz(reglas);
+          automata.setRules(reglas);
+          formReglas.elements['condicion'].value = "";
+          formReglas.elements['estado'].value = "";
           const matrizCelulas = automata.getInitGrid();
           const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
           for (let j = 0; j < conf.altura; j++) {
@@ -456,9 +517,9 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               matrizCelulasCopia[j][k] = matrizCelulas[j][k];
             }
           }
-          reiniciaHistorial()
-          agregaHistorial(matrizCelulasCopia)
-        })
+          reiniciaHistorial();
+          agregaHistorial(matrizCelulasCopia);
+        });
         rangoVelocidad.addEventListener('change', (e) => {
           velocidadEjecucion = parseInt(e.target.value)
         })
@@ -556,6 +617,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           dibujaMatrizInterfaz(matrizCelulas)
         });
         botonGuardarHistorial?.addEventListener('click', async () => {
+          ejecutando = false;
+          imgPausa.src = IMAGEN_PLAY;
           inicioContenedor.style.opacity = '0.1'
           wrapGuardar.style.display = 'grid'
           inicioContenedor.style.transition = 'transition: all 0.5s ease-out;'
@@ -583,7 +646,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             estados: conf.numEstados,
             reglas: reglas,
           }
-          console.log(simulacion);
           let msgError = validaSimulacion(simulacion);
           if (msgError) {
             generaMensaje(msgError, "error");
@@ -613,7 +675,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               window.location.href = response.url;
             }
             const data = await response.json();
-            console.log(data);
             nuevaSimulacionId = data.simulacion_id;
             error = data.error;
           } catch (error) {
@@ -636,7 +697,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           const historialFlat = historialAutomata.flat(2);
           const uint8Array = new Uint8Array(historialFlat);
           const uint8ArrayComprimido = pako.deflate(uint8Array);
-          console.log(`Original: ${uint8Array.length} bytes, comprimido: ${uint8ArrayComprimido.length} bytes`);
           try {
             const response = await fetch(`/simulaciones/${nuevaSimulacionId}/generaciones`, {
               method: 'POST',
@@ -647,7 +707,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               window.location.href = response.url;
             }
             const data = await response.json();
-            console.log(data);
             if (data.error) {
               generaMensaje(data.error, "error");
               cierraGuardar.click();
@@ -667,6 +726,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           wrapGuardar.style.display = 'none'
         });
         botonProcesarAutomata?.addEventListener('click', async () => {
+          ejecutando = false;
+          imgPausa.src = IMAGEN_PLAY;
           inicioContenedor.style.opacity = '0.1'
           wrapProcesar.style.display = 'grid'
           inicioContenedor.style.transition = 'transition: all 0.5s ease-out;'
@@ -715,7 +776,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               window.location.href = response.url;
             }
             const data = await response.json();
-            console.log(data);
             if (data.error) {
               generaMensaje(data.error, "error");
             }
@@ -739,17 +799,26 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           inicioContenedor.style.opacity = '1'
           wrapProcesar.style.display = 'none'
         })
-        botonGrafica1?.addEventListener('click', () => {
+        botonGraficas?.addEventListener('click', () => {
+          ejecutando = false;
+          imgPausa.src = IMAGEN_PLAY;
+          divGrafica1.style.display = 'grid';
+          divGrafica2.style.display = 'grid';
           if (grafica1) {
-            grafica1.destroy(); // Destruye la gráfica anterior
+            grafica1.destroy();
+          }
+          if (grafica2) {
+            grafica2.destroy();
           }
           grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados);
-
-          for (matrizCelulas of historialAutomata) {
-            const celulasPorEstado = cuentaEstados(matrizCelulas);
-            agregaDatosGrafica(grafica1, celulasPorEstado);
-          }
+          grafica2 = inicializaGrafica(ctxGrafica2, conf.numEstados, colorEstados);
+          
+          const densidadPoblacion = calculaDensidad();
+          const densidadPoblacionMedia = calculaDensidadMedia(10, densidadPoblacion);
+          agregaDatosGraficaDensidad(grafica1, densidadPoblacion);
+          agregaDatosGraficaDensidad(grafica2, densidadPoblacionMedia);
           grafica1.update();
+          grafica2.update();
         });
       });
     } else {

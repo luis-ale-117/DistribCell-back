@@ -10,6 +10,14 @@
     /* Muestra las barras de desplazamiento cuando sea necesario */
 }
 
+.divGraficas {
+    display: grid;
+    place-items: center;
+    max-width: 100vw;
+    height: 50vh;
+    margin-top: 15px;
+}
+
 canvas {
     border: 1px solid white;
     display: block;

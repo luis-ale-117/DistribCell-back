@@ -30,7 +30,7 @@
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
-                    <input type="text" id="desc_simulacion" name="desc_simulacion" maxlength="2048" required>
+                    <input type="text" id="desc_simulacion" name="desc_simulacion" maxlength="2048">
                     <label for="correo">Descripcion de la simulacion</label>
                 </div>
                 <div class="inputBox">
@@ -67,7 +67,7 @@
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
-                    <input type="text" id="desc_historial" name="desc_historial" maxlength="2048" required>
+                    <input type="text" id="desc_historial" name="desc_historial" maxlength="2048">
                     <label for="correo">Descripcion de la simulacion</label>
                 </div>
                 <div class="divBotonGif">
@@ -183,10 +183,15 @@
         <canvas id="canvasGrid"></canvas>
     </div>
     <div>
-        <button id="botonGrafica1" class="botonCarga">Grafica 1</button>
+        <button id="botonGraficas" class="botonCarga">Mostrar graficas</button>
     </div>
-    <div class="divGrid">
+    <div id="divGrafica1" class="divGraficas" style="display: none;">
+        <h3>Gráfica de densidad de población</h3>
         <canvas id="canvasGrafica1"></canvas>
+    </div>
+    <div id="divGrafica2" class="divGraficas" style="display: none;">
+        <h3>Gráfica de densidad media (en 10 generaciones)</h3>
+        <canvas id="canvasGrafica2"></canvas>
     </div>
 </div>
 {% endblock %}
