@@ -35,6 +35,7 @@ const ctx = canvasGrid.getContext('2d');
 const TAM_CELDA = 10; // Tamaño de la celda en píxeles
 
 const botonGraficas = document.getElementById('botonGraficas');
+const inputRangoMedia = document.getElementById('inputRangoMedia');
 
 /**
  * @type {HTMLCanvasElement}
@@ -878,7 +879,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           if (grafica3) {
             grafica3.destroy();
           }
-          const rangoMedia = 10;
+
+          const r = parseInt(inputRangoMedia.value);
+          if (Number.isNaN(r) || r < 1) {
+            inputRangoMedia.value = '1';
+          }
+          const rangoMedia = parseInt(inputRangoMedia.value);
+
+          const g2Titulo = divGrafica2.children[0];
+          const g3Titulo = divGrafica3.children[0];
+          g2Titulo.textContent = `Gráfica de densidad media (${rangoMedia} generaciones)`;
+          g3Titulo.textContent = `Gráfica de varianza (${rangoMedia} generaciones)`;
+
           grafica1 = inicializaGrafica(ctxGrafica1, conf.numEstados, colorEstados);
           grafica2 = inicializaGrafica(ctxGrafica2, conf.numEstados, colorEstados);
           grafica3 = inicializaGrafica(ctxGrafica3, conf.numEstados, colorEstados);

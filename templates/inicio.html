@@ -182,8 +182,10 @@
     <div class="divGrid">
         <canvas id="canvasGrid"></canvas>
     </div>
-    <div>
-        <button id="botonGraficas" class="botonCarga">Mostrar graficas</button>
+    <div class="inputForm">
+        <button id="botonGraficas" class="botonCarga">Cargar graficas</button>
+        <label for="rangoMedia" style="padding-left: 20px;">Generaciones para la media y varianza</label>
+        <input id="inputRangoMedia" name="rangoMedia" type="number" min="1" step="1" value="10" autocomplete="off" style="width: 100px;">
     </div>
     <div id="divGrafica1" class="divGraficas" style="display: none;">
         <h3>Gráfica de densidad de población</h3>
