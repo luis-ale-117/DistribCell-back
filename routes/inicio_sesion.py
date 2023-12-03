@@ -1,7 +1,7 @@
 """
 inicio_sesion.py
 Modulo para el manejo de sesiones de usuarios
-que ya estan registrados y confirmados
+que ya están registrados y confirmados
 """
 from flask import (
     redirect,
@@ -19,10 +19,10 @@ blueprint = Blueprint("sesion", __name__)
 
 @blueprint.route("/inicio_sesion", methods=["GET"])
 def pagina_inicio_de_sesion():
-    """Regresa la pagina de inicio de sesion"""
+    """Regresa la pagina de inicio de sesión"""
     if "usuario_id" in session:
         return redirect(url_for("inicio.pagina_inicio"))
-    return render_template("inicio_sesion.html", titulo="Inicia Sesion")
+    return render_template("inicio_sesion.html", titulo="Inicia Sesión")
 
 
 @blueprint.route("/inicio_sesion", methods=["POST"])
@@ -34,11 +34,11 @@ def genera_sesion():
         correo = request.form["correo"]
         contrasena = request.form["contrasena"]
     except KeyError:
-        flash("Error en la peticion. Revisa los campos.", "error")
+        flash("Error en la petición. Revisa los campos.", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     usuario = Usuarios.query.filter_by(correo=correo).first()
     if usuario is None or not usuario.checa_contrasena(contrasena):
-        flash("Usuario o contrasena incorrecta, intenta de nuevo", "advertencia")
+        flash("Usuario o contraseña incorrecta, intenta de nuevo", "advertencia")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     if usuario and not usuario.confirmado:
         flash("Confirma tu cuenta. Revisa tu correo.", "advertencia")
@@ -54,5 +54,5 @@ def cierra_sesion():
     if "usuario_id" not in session:
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     session.pop("usuario_id", None)
-    flash("Sesion finalizada", "exito")
+    flash("Sesión finalizada", "exito")
     return redirect(url_for("inicio.pagina_inicio"))

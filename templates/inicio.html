@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titulo %}Automatas celulares{% endblock %}
+{% block titulo %}Autómatas celulares{% endblock %}
 
 {% block headEspecial %}
 <script src="{{ url_for('static', filename='wasm/wasm_exec.js') }}"></script>
@@ -31,7 +31,7 @@
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
                     <input type="text" id="desc_simulacion" name="desc_simulacion" maxlength="2048">
-                    <label for="correo">Descripcion de la simulacion</label>
+                    <label for="correo">Descripción de la simulación</label>
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="keypad-outline"></ion-icon></span>
@@ -68,7 +68,7 @@
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
                     <input type="text" id="desc_historial" name="desc_historial" maxlength="2048">
-                    <label for="correo">Descripcion de la simulacion</label>
+                    <label for="correo">Descripción de la simulación</label>
                 </div>
                 <div class="divBotonGif">
                     <button type="submit" class="botonGif">
@@ -111,7 +111,7 @@
     <div>
         <form id="formReglas">
             <div class="inputForm">
-                <label for="condicion">Condicion</label>
+                <label for="condicion">Condición</label>
                 <input id="condicion" name="condicion" type="text" value="" placeholder="Regla" autocomplete="off">
             </div>
             <div class="inputForm">
@@ -183,7 +183,7 @@
         <canvas id="canvasGrid"></canvas>
     </div>
     <div class="inputForm">
-        <button id="botonGraficas" class="botonCarga">Cargar graficas</button>
+        <button id="botonGraficas" class="botonCarga">Cargar gráficas</button>
         <label for="rangoMedia" style="padding-left: 20px;">Generaciones para la media y varianza</label>
         <input id="inputRangoMedia" name="rangoMedia" type="number" min="1" step="1" value="10" autocomplete="off" style="width: 100px;">
     </div>

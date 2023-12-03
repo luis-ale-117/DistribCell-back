@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titulo %}Simulacion{% endblock %}
+{% block titulo %}Simulación{% endblock %}
 
 {% block headEspecial %}
 <script src="{{ url_for('static', filename='wasm/wasm_exec.js') }}"></script>
@@ -14,7 +14,7 @@
         <h3 id="simNombre" data-id="{{ simulacion.id }}">Id: {{ simulacion.id }} - {{ simulacion.nombre }}</h3>
     </div>
     <div>
-        <p>Descripcion: {{ simulacion.descripcion }}</p>
+        <p>Descripción: {{ simulacion.descripcion }}</p>
     </div>
     <div>
         <form id="formConfiguracion">
@@ -42,7 +42,7 @@
     <div class="divTabEstados divListaReglas">
         <table id="listaReglas">
             <tr>
-                <th>Condicion</th>
+                <th>Condición</th>
                 <th>Estado</th>
             </tr>
             {% for regla in simulacion.reglas %}

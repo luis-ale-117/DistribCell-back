@@ -188,7 +188,7 @@ rangoHistorialAutomata?.addEventListener('input', (e) => {
   const indice = parseInt(e.target?.value);
   matrizCelulas = historialAutomata[indice];
   if (matrizCelulas === undefined) {
-    generaMensaje('No hay un historial para esa generacion', 'advertencia');
+    generaMensaje('No hay un historial para esa generación', 'advertencia');
     return;
   }
   labelRangoHistorialAutomata.textContent = `Generación ${indice} de ${historialAutomata.length - 1} `;
@@ -199,11 +199,11 @@ const cargaSimulacionInterfaz = async () => {
   try {
     const response = await fetch(`/simulaciones/${SIM_ID}/generaciones`);
     if (response.redirected) {
-      alert('Inicio de sesion requerido');
+      alert('Inicio de sesión requerido');
       window.location.href = response.url;
     }
     if (response.status !== 200) {
-      generaMensaje('Ocurrio un error al cargar la simulacion', 'error');
+      generaMensaje('Ocurrió un error al cargar la simulación', 'error');
       return;
     }
 
@@ -226,7 +226,7 @@ const cargaSimulacionInterfaz = async () => {
     }
   } catch (error) {
     console.error(error);
-    generaMensaje('Ocurrio un error guardando el historial', 'error');
+    generaMensaje('Ocurrió un error guardando el historial', 'error');
     return;
   }
   rangoHistorialAutomata.max = (historialAutomata.length - 1).toString();

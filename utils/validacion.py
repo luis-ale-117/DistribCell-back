@@ -53,7 +53,7 @@ def validar_campos_nuevo_usuario(
     elif not 2 <= len(correo) <= MAX_CORREO:
         mensaje = "El correo debe tener entre 2 y 255 caracteres"
     elif not email_regex.fullmatch(correo):
-        mensaje = "El correo tiene un formato invalido"
+        mensaje = "El correo tiene un formato inválido"
     elif contrasena == "":
         mensaje = "Contraseña requerida"
     elif not MIN_CONTRASENA <= len(contrasena) <= MAX_CONTRASENA:
@@ -64,7 +64,7 @@ def validar_campos_nuevo_usuario(
 
 
 def validar_campos_usuario(nombre: str, apellido: str, correo: str) -> str | None:
-    """Validacion de los campos al intentar actualizar los datos de un usuario"""
+    """Validación de los campos al intentar actualizar los datos de un usuario"""
     mensaje = None
     if not isinstance(nombre, str):
         mensaje = "Nombre debe ser una cadena"
@@ -94,12 +94,12 @@ def validar_campos_simulacion(
     estados: int,
     reglas: list[dict[str, str | int]],
 ) -> str | None:
-    """Validacion de los campos al intentar crear una simulacion"""
+    """Validación de los campos al intentar crear una simulación"""
     mensaje = None
     if not isinstance(nombre, str):
         mensaje = "Nombre debe ser una cadena"
     elif not isinstance(descripcion, (str, type(None))):
-        mensaje = "Descripcion debe ser una cadena o None"
+        mensaje = "Descripción debe ser una cadena o None"
     elif not isinstance(anchura, int):
         mensaje = "Anchura debe ser un entero"
     elif not isinstance(altura, int):
@@ -114,7 +114,7 @@ def validar_campos_simulacion(
     elif not 2 <= len(nombre) <= MAX_NOMBRE:
         mensaje = "El nombre debe tener entre 2 y 255 caracteres"
     elif descripcion not in [None, ""] and not 1 <= len(descripcion) <= MAX_DESCRIPCION:
-        mensaje = "La descripcion debe tener entre 0 y 2048 caracteres"
+        mensaje = "La descripción debe tener entre 0 y 2048 caracteres"
     elif not MIN_ANCHURA <= anchura <= MAX_ANCHURA:
         mensaje = f"Anchura debe estar entre {MIN_ANCHURA} y {MAX_ANCHURA}"
     elif not MIN_ALTURA <= altura <= MAX_ALTURA:
@@ -127,13 +127,13 @@ def validar_campos_simulacion(
         if not isinstance(regla, dict):
             mensaje = "Cada regla debe ser un objeto valido"
         elif "condition" not in regla:
-            mensaje = "Cada regla debe tener una condicion"
+            mensaje = "Cada regla debe tener una condición"
         elif "state" not in regla:
             mensaje = "Cada regla debe tener un estado"
         elif not isinstance(regla["state"], int):
             mensaje = "El estado de cada regla debe ser un entero"
         elif not isinstance(regla["condition"], str):
-            mensaje = "La condicion de cada regla debe ser una cadena"
+            mensaje = "La condición de cada regla debe ser una cadena"
         elif MIN_ESTADOS <= regla["state"] <= MAX_ESTADOS:
             mensaje = f"El estado de cada regla debe estar entre {MIN_ESTADOS} y {MAX_ESTADOS}"
         if mensaje is not None:
@@ -151,7 +151,7 @@ def validar_campos_procesamiento(
     reglas: list[dict[str, str | int]],
     num_generaciones: int,
 ) -> str | None:
-    """Validacion de los campos al intentar crear una simulacion para procesamiento"""
+    """Validación de los campos al intentar crear una simulación para procesamiento"""
     mensaje = None
     mensaje = validar_campos_simulacion(
         nombre, descripcion, anchura, altura, estados, reglas
@@ -171,13 +171,13 @@ def validar_generacion(
     estados: int,
     generacion: bytes,
 ):
-    """Validacion de la generacion"""
+    """Validación de la generación"""
     mensaje = None
     if len(generacion) != (altura * anchura):
-        mensaje = "Altura y anchura no coinciden con la configuracion de la simulacion"
+        mensaje = "Altura y anchura no coinciden con la configuración de la simulación"
     for casilla in generacion:
         if not 0 <= casilla <= estados:
-            mensaje = f"Cada casilla de la generacion debe estar entre 0 y {estados}"
+            mensaje = f"Cada casilla de la generación debe estar entre 0 y {estados}"
         if mensaje is not None:
             break
     return mensaje
@@ -189,7 +189,7 @@ def validar_generacion_matriz(
     estados: int,
     generacion: list[list[int]],
 ):
-    """Validacion de la generacion"""
+    """Validación de la generacion"""
     mensaje = None
     if not isinstance(generacion, list):
         mensaje = "La generacion debe ser una lista de listas de enteros"

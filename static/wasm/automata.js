@@ -343,7 +343,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             err = automata.step();
             if (err != null) {
               console.error('Error:', err);
-              generaMensaje(`Ocurrio un error, revisa tus reglas: ${err}`, 'error');
+              generaMensaje(`Ocurrió un error, revisa tus reglas: ${err}`, 'error');
               ejecutando = false;
               imgPausa.src = IMAGEN_PLAY;
               continue;
@@ -737,7 +737,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               body: JSON.stringify(simulacion)
             });
             if (response.redirected) {
-              alert('Inicio de sesion requerido');
+              alert('Inicio de sesión requerido');
               window.location.href = response.url;
             }
             const data = await response.json();
@@ -769,7 +769,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               body: uint8ArrayComprimido.buffer
             });
             if (response.redirected) {
-              alert('Inicio de sesion requerido');
+              alert('Inicio de sesión requerido');
               window.location.href = response.url;
             }
             const data = await response.json();
@@ -838,7 +838,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               body: JSON.stringify(simulacion)
             });
             if (response.redirected) {
-              alert('Inicio de sesion requerido');
+              alert('Inicio de sesión requerido');
               window.location.href = response.url;
             }
             const data = await response.json();

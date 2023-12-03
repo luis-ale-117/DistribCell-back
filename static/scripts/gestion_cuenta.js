@@ -80,7 +80,7 @@ camposForm.forEach((campo) => {
 // @ts-ignore
 const validar_datos = (form) => {
   if (form === null) {
-    return 'Formualrio no encontrado';
+    return 'Formulario no encontrado';
   }
   form.nombre.value = form.nombre.value.trim();
   form.apellido.value = form.apellido.value.trim();

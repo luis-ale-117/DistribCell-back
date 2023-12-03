@@ -22,7 +22,7 @@ blueprint = Blueprint("simulaciones", __name__)
 def pagina_simulaciones():
     """Muestra las simulaciones del usuario"""
     if "usuario_id" not in session:
-        flash("Por favor, inicia sesion.", "info")
+        flash("Por favor, inicia sesión.", "info")
         return redirect(url_for("inicio.pagina_inicio"))
     usuario = Usuarios.query.get(session["usuario_id"])
     if usuario is None:
@@ -42,7 +42,7 @@ def pagina_simulaciones():
 def pagina_simulacion(simulacion_id: int):
     """Muestra las simulaciones del usuario"""
     if "usuario_id" not in session:
-        flash("Por favor, inicia sesion.", "info")
+        flash("Por favor, inicia sesión.", "info")
         return redirect(url_for("inicio.pagina_inicio"))
     usuario = Usuarios.query.get(session["usuario_id"])
     if usuario is None:
@@ -73,7 +73,7 @@ def pagina_simulacion(simulacion_id: int):
         "simulacion.html",
         usuario=usuario,
         simulacion=simulacion,
-        titulo="Simulacion " + str(simulacion_id),
+        titulo="Simulación " + str(simulacion_id),
     )
 
 
@@ -81,7 +81,7 @@ def pagina_simulacion(simulacion_id: int):
 def borrar_simulacion(simulacion_id: int):
     """Borra la simulacion seleccionada"""
     if "usuario_id" not in session:
-        flash("Por favor, inicia sesion.", "info")
+        flash("Por favor, inicia sesión.", "info")
         return redirect(url_for("inicio.pagina_inicio"))
     usuario = Usuarios.query.get(session["usuario_id"])
     if usuario is None:
@@ -106,7 +106,7 @@ def borrar_simulacion(simulacion_id: int):
     db.session.delete(simulacion)
 
     db.session.commit()
-    flash("Simulacion borrada con exito", "exito")
+    flash("Simulación borrada con éxito", "exito")
     return redirect(url_for("simulaciones.pagina_simulaciones"))
 
 
@@ -133,7 +133,7 @@ def crear_simulacion():
         estados = conf["estados"]
         reglas = conf["reglas"]
     except KeyError:
-        flash("Error en la peticion. Revisa los campos.", "advertencia")
+        flash("Error en la petición. Revisa los campos.", "advertencia")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
     mensaje_validacion = validar_campos_simulacion(
@@ -241,7 +241,7 @@ def obtener_generaciones(simulacion_id: int):
     generaciones: Generaciones = simulacion.generaciones
 
     if generaciones is None:
-        return {"error": "Simulacion sin generaciones"}, 404
+        return {"error": "Simulación sin generaciones"}, 404
 
     matrices = bytearray()
     for generacion in generaciones:
@@ -277,7 +277,7 @@ def crear_procesamiento():
         num_generaciones: int = conf["numGeneraciones"]
         generacion_inicial: list[list[int]] = conf["generacionInicial"]
     except KeyError:
-        return {"error": "Error en la peticion. Revisa los campos."}, 400
+        return {"error": "Error en la petición. Revisa los campos."}, 400
 
     mensaje_validacion = validar_campos_procesamiento(
         nombre, descripcion, anchura, altura, estados, reglas, num_generaciones
@@ -285,7 +285,7 @@ def crear_procesamiento():
     if mensaje_validacion is not None:
         return {"error": mensaje_validacion}, 400
     if generacion_inicial is None:
-        return {"error": "Simulacion sin generaciones"}, 400
+        return {"error": "Simulación sin generaciones"}, 400
     mensaje = validar_generacion_matriz(anchura, altura, estados, generacion_inicial)
     if mensaje is not None:
         return {"error": mensaje}, 400
