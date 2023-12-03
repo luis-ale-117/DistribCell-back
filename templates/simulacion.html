@@ -63,11 +63,31 @@
     <div class="divGrid">
         <canvas id="canvasGrid" width="{{ simulacion.anchura * 10 }}" height="{{ simulacion.altura * 10 }}"></canvas>
     </div>
+    <div class="inputForm">
+        <button id="botonGraficas" class="botonCarga">Cargar gráficas</button>
+        <label for="rangoMedia" style="padding-left: 20px;">Generaciones para la media y varianza</label>
+        <input id="inputRangoMedia" name="rangoMedia" type="number" min="1" step="1" value="10" autocomplete="off" style="width: 100px;">
+    </div>
+    <div id="divGrafica1" class="divGraficas" style="display: none;">
+        <h3>Gráfica de densidad de población</h3>
+        <canvas id="canvasGrafica1"></canvas>
+    </div>
+    <div id="divGrafica2" class="divGraficas" style="display: none;">
+        <h3>Gráfica de densidad media (en 10 generaciones)</h3>
+        <canvas id="canvasGrafica2"></canvas>
+    </div>
+    <div id="divGrafica3" class="divGraficas" style="display: none;">
+        <h3>Gráfica de varianza (en 10 generaciones)</h3>
+        <canvas id="canvasGrafica3"></canvas>
+    </div>
     
 </div>
 {% endblock %}
 
 {% block scriptEspecial %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
+integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
+crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"
 integrity="sha512-g2TeAWw5GPnX7z0Kn8nFbYfeHcvAu/tx6d6mrLe/90mkCxO+RcptyYpksUz35EO337F83bZwcmUyHiHamspkfg=="
 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
