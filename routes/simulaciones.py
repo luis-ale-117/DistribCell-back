@@ -2,6 +2,7 @@
 simulaciones.py
 Modulo para el manejo de las simulaciones pertenecientes del usuario
 """
+import zlib
 from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template, flash, session, request
 from models import Simulaciones, Usuarios, Generaciones, Cola
@@ -11,6 +12,7 @@ from utils.validacion import (
     validar_campos_simulacion,
     validar_campos_procesamiento,
     validar_generacion,
+    validar_generacion_matriz,
 )
 
 blueprint = Blueprint("simulaciones", __name__)
@@ -20,7 +22,7 @@ blueprint = Blueprint("simulaciones", __name__)
 def pagina_simulaciones():
     """Muestra las simulaciones del usuario"""
     if "usuario_id" not in session:
-        flash("Por favor, inicia sesion.", "info")
+        flash("Por favor, inicia sesión.", "info")
         return redirect(url_for("inicio.pagina_inicio"))
     usuario = Usuarios.query.get(session["usuario_id"])
     if usuario is None:
@@ -40,7 +42,7 @@ def pagina_simulaciones():
 def pagina_simulacion(simulacion_id: int):
     """Muestra las simulaciones del usuario"""
     if "usuario_id" not in session:
-        flash("Por favor, inicia sesion.", "info")
+        flash("Por favor, inicia sesión.", "info")
         return redirect(url_for("inicio.pagina_inicio"))
     usuario = Usuarios.query.get(session["usuario_id"])
     if usuario is None:
@@ -71,7 +73,7 @@ def pagina_simulacion(simulacion_id: int):
         "simulacion.html",
         usuario=usuario,
         simulacion=simulacion,
-        titulo="Simulacion " + str(simulacion_id),
+        titulo="Simulación " + str(simulacion_id),
     )
 
 
@@ -79,7 +81,7 @@ def pagina_simulacion(simulacion_id: int):
 def borrar_simulacion(simulacion_id: int):
     """Borra la simulacion seleccionada"""
     if "usuario_id" not in session:
-        flash("Por favor, inicia sesion.", "info")
+        flash("Por favor, inicia sesión.", "info")
         return redirect(url_for("inicio.pagina_inicio"))
     usuario = Usuarios.query.get(session["usuario_id"])
     if usuario is None:
@@ -104,7 +106,7 @@ def borrar_simulacion(simulacion_id: int):
     db.session.delete(simulacion)
 
     db.session.commit()
-    flash("Simulacion borrada con exito", "exito")
+    flash("Simulación borrada con éxito", "exito")
     return redirect(url_for("simulaciones.pagina_simulaciones"))
 
 
@@ -119,6 +121,8 @@ def crear_simulacion():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+    if usuario.numero_simulaciones() >= 5:
+        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
 
     conf = request.get_json()
     try:
@@ -129,7 +133,7 @@ def crear_simulacion():
         estados = conf["estados"]
         reglas = conf["reglas"]
     except KeyError:
-        flash("Error en la peticion. Revisa los campos.", "advertencia")
+        flash("Error en la petición. Revisa los campos.", "advertencia")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
     mensaje_validacion = validar_campos_simulacion(
@@ -137,9 +141,6 @@ def crear_simulacion():
     )
     if mensaje_validacion is not None:
         return {"error": mensaje_validacion}, 400
-
-    if usuario.numero_simulaciones() >= 5:
-        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
 
     simulacion = Simulaciones(
         usuario_id=usuario.id,
@@ -168,7 +169,6 @@ def anadir_generaciones(simulacion_id: int):
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
 
-    nuevas_generaciones: list[list[list[int]]] = request.get_json()
     simulacion: Simulaciones = Simulaciones.query.filter_by(
         usuario_id=usuario.id, id=simulacion_id
     ).first()
@@ -177,10 +177,25 @@ def anadir_generaciones(simulacion_id: int):
         flash("Simulación no encontrada", "error")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
+    generaciones_comprimidas = request.data
+    generaciones_bytes = zlib.decompress(generaciones_comprimidas)
+
+    items_por_generacion = int(simulacion.anchura * simulacion.altura)
+    if len(generaciones_bytes) % items_por_generacion != 0:
+        return {"error": "Error en el numero de elementos"}, 400
+
+    num_generaciones = len(generaciones_bytes) // items_por_generacion
     indice: int = simulacion.numero_generaciones()
 
-    if indice >= MAX_GENERACIONES:
-        return {"error": "Limite de generaciones alcanzado"}, 400
+    if indice >= MAX_GENERACIONES or indice + num_generaciones > MAX_GENERACIONES:
+        return {
+            "error": f"Se supera el limite de generaciones: {MAX_GENERACIONES}"
+        }, 400
+
+    nuevas_generaciones = [
+        generaciones_bytes[i * items_por_generacion : (i + 1) * items_por_generacion]
+        for i in range(num_generaciones)
+    ]
 
     for generacion in nuevas_generaciones:
         mensaje = validar_generacion(
@@ -189,22 +204,14 @@ def anadir_generaciones(simulacion_id: int):
         if mensaje is not None:
             return {"error": mensaje}, 400
 
-    gens: list[Generaciones] = []
-    for generacion in nuevas_generaciones:
-        contenido = bytearray()
-        for fila in generacion:
-            contenido.extend(fila)
-        contenido = bytes(contenido)
-        gens.append(
-            Generaciones(
-                simulacion_id=simulacion.id,
-                iteracion=indice,
-                contenido=contenido,
-            )
+    gens: list[Generaciones] = [
+        Generaciones(
+            simulacion_id=simulacion.id,
+            iteracion=indice + i,
+            contenido=generacion,
         )
-        indice += 1
-        if indice >= MAX_GENERACIONES:
-            break
+        for i, generacion in enumerate(nuevas_generaciones)
+    ]
 
     db.session.add_all(gens)
     db.session.commit()
@@ -231,31 +238,18 @@ def obtener_generaciones(simulacion_id: int):
         flash("Simulación no encontrada", "error")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
-    gen_inicio = request.args.get("inicio", default=0, type=int)
-    gen_fin = request.args.get("fin", default=10, type=int)
-
     generaciones: Generaciones = simulacion.generaciones
 
     if generaciones is None:
-        return {"mensaje": "Simulacion sin generaciones"}, 200
+        return {"error": "Simulación sin generaciones"}, 404
 
-    generaciones = generaciones[gen_inicio:gen_fin]
-
-    matrices: list[list[list[int]]] = []
-    filas: int = simulacion.altura
-    columnas: int = simulacion.anchura
-
+    matrices = bytearray()
     for generacion in generaciones:
-        matriz: list[list[int]] = []
-        for fila in range(filas):
-            matriz_fila: list[int] = []
-            for columna in range(columnas):
-                num = generacion.contenido[fila * columnas + columna]
-                matriz_fila.append(num)
-            matriz.append(matriz_fila)
-        matrices.append(matriz)
+        matrices.extend(generacion.contenido)
 
-    return matrices, 200
+    matrices_comp = zlib.compress(matrices)
+
+    return matrices_comp, 200
 
 
 @blueprint.route("/simulaciones/procesamiento", methods=["POST"])
@@ -269,6 +263,8 @@ def crear_procesamiento():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
+    if usuario.numero_simulaciones() >= 5:
+        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
 
     conf = request.get_json()
     try:
@@ -281,7 +277,7 @@ def crear_procesamiento():
         num_generaciones: int = conf["numGeneraciones"]
         generacion_inicial: list[list[int]] = conf["generacionInicial"]
     except KeyError:
-        return {"error": "Error en la peticion. Revisa los campos."}, 400
+        return {"error": "Error en la petición. Revisa los campos."}, 400
 
     mensaje_validacion = validar_campos_procesamiento(
         nombre, descripcion, anchura, altura, estados, reglas, num_generaciones
@@ -289,8 +285,8 @@ def crear_procesamiento():
     if mensaje_validacion is not None:
         return {"error": mensaje_validacion}, 400
     if generacion_inicial is None:
-        return {"error": "Simulacion sin generaciones"}, 400
-    mensaje = validar_generacion(anchura, altura, estados, generacion_inicial)
+        return {"error": "Simulación sin generaciones"}, 400
+    mensaje = validar_generacion_matriz(anchura, altura, estados, generacion_inicial)
     if mensaje is not None:
         return {"error": mensaje}, 400
 

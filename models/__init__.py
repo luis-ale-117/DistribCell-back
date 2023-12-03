@@ -37,14 +37,14 @@ class Usuarios(db.Model):
 
     def checa_contrasena(self, contrasena: str) -> bool:
         """
-        Revisa si la contrasena es la misma que la
-        del usuario selecionado
+        Revisa si la contraseña es la misma que la
+        del usuario seleccionado
         """
         return check_password_hash(self.contrasena_hash, contrasena)
 
     def asigna_contrasena(self, contrasena: str):
         """
-        Asigna la nueva contrasena al usuario seleccionado
+        Asigna la nueva contraseña al usuario seleccionado
         """
         self.contrasena_hash = generate_password_hash(contrasena)
 
@@ -75,7 +75,7 @@ class Simulaciones(db.Model):
     )
 
     def numero_generaciones(self):
-        """Numero de generaciones de la simulacion"""
+        """Numero de generaciones de la simulación"""
         return len(self.generaciones)
 
 

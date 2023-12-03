@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titulo %}Automatas celulares{% endblock %}
+{% block titulo %}Autómatas celulares{% endblock %}
 
 {% block headEspecial %}
 <script src="{{ url_for('static', filename='wasm/wasm_exec.js') }}"></script>
@@ -30,8 +30,8 @@
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
-                    <input type="text" id="desc_simulacion" name="desc_simulacion" maxlength="2048" required>
-                    <label for="correo">Descripcion de la simulacion</label>
+                    <input type="text" id="desc_simulacion" name="desc_simulacion" maxlength="2048">
+                    <label for="correo">Descripción de la simulación</label>
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="keypad-outline"></ion-icon></span>
@@ -67,8 +67,8 @@
                 </div>
                 <div class="inputBox">
                     <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
-                    <input type="text" id="desc_historial" name="desc_historial" maxlength="2048" required>
-                    <label for="correo">Descripcion de la simulacion</label>
+                    <input type="text" id="desc_historial" name="desc_historial" maxlength="2048">
+                    <label for="correo">Descripción de la simulación</label>
                 </div>
                 <div class="divBotonGif">
                     <button type="submit" class="botonGif">
@@ -111,7 +111,7 @@
     <div>
         <form id="formReglas">
             <div class="inputForm">
-                <label for="condicion">Condicion</label>
+                <label for="condicion">Condición</label>
                 <input id="condicion" name="condicion" type="text" value="" placeholder="Regla" autocomplete="off">
             </div>
             <div class="inputForm">
@@ -137,10 +137,6 @@
                 <li><i>m</i> es el número de células vecinas del punto anterior</li>
             </ul>
             </p>
-            <!-- <p>Donde:<br> n<sub>xy</sub> representa la célula que se va a evaluar y su estado inicial
-                <br>
-                s<sub>n</sub> es el número de vecinos en el estado <i>n</i>
-            </p> -->
         </div>
         <div class="divTabEstados divListaReglas">
             <table id="listaReglas">
@@ -186,11 +182,22 @@
     <div class="divGrid">
         <canvas id="canvasGrid"></canvas>
     </div>
-    <div>
-        <button id="botonGrafica1" class="botonCarga">Grafica 1</button>
+    <div class="inputForm">
+        <button id="botonGraficas" class="botonCarga">Cargar gráficas</button>
+        <label for="rangoMedia" style="padding-left: 20px;">Generaciones para la media y varianza</label>
+        <input id="inputRangoMedia" name="rangoMedia" type="number" min="1" step="1" value="10" autocomplete="off" style="width: 100px;">
     </div>
-    <div class="divGrid">
+    <div id="divGrafica1" class="divGraficas" style="display: none;">
+        <h3>Gráfica de densidad de población</h3>
         <canvas id="canvasGrafica1"></canvas>
+    </div>
+    <div id="divGrafica2" class="divGraficas" style="display: none;">
+        <h3>Gráfica de densidad media (en 10 generaciones)</h3>
+        <canvas id="canvasGrafica2"></canvas>
+    </div>
+    <div id="divGrafica3" class="divGraficas" style="display: none;">
+        <h3>Gráfica de varianza (en 10 generaciones)</h3>
+        <canvas id="canvasGrafica3"></canvas>
     </div>
 </div>
 {% endblock %}
@@ -198,6 +205,9 @@
 {% block scriptEspecial %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
     integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"
+    integrity="sha512-g2TeAWw5GPnX7z0Kn8nFbYfeHcvAu/tx6d6mrLe/90mkCxO+RcptyYpksUz35EO337F83bZwcmUyHiHamspkfg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ url_for('static', filename='wasm/automata.js') }}"></script>
 {% endblock %}

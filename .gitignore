@@ -160,3 +160,6 @@ cython_debug/
 #.idea/
 
 .python-version
+
+# node modules
+node_modules/

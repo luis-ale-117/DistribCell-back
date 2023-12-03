@@ -1,7 +1,7 @@
 """
 app.py
-Modulo de configuracion e inicio de ejecucion
-de la aplicacion web principal
+Modulo de configuración e inicio de ejecucion
+de la aplicación web principal
 """
 import os
 from datetime import timedelta
@@ -45,7 +45,7 @@ app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 app.config["MAIL_PASSWORD"] = os.getenv(
     "MAIL_PASSWORD"
-)  # No la contrasena del correo, checar: https://youtu.be/g_j6ILT-X0k
+)  # No la contraseña del correo, checar: https://youtu.be/g_j6ILT-X0k
 app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "false").lower() == "true"
 app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "true").lower() == "true"
 app.config["SALT_EMAIL"] = os.getenv("SALT_EMAIL", "my super secret salt")
@@ -54,20 +54,20 @@ mail = Mail(app)
 serializer = URLSafeTimedSerializer(app.secret_key)
 
 
-# SECCION DE REGISTRO DE USUARIOS, no los pude separar :c
+# SECCIÓN DE REGISTRO DE USUARIOS, no los pude separar :c
 def genera_token_confirmacion(email: str):
-    """Genera el token de confirmacion de correo electronico"""
+    """Genera el token de confirmación de correo electrónico"""
     return serializer.dumps(email, salt=app.config["SALT_EMAIL"])
 
 
 def confirma_token(token, expiration=3600):  # 1 hora
-    """Confirma el token de confirmacion de correo electronico"""
+    """Confirma el token de confirmación de correo electrónico"""
     email = serializer.loads(token, salt=app.config["SALT_EMAIL"], max_age=expiration)
     return email
 
 
 def enviar_correo(correo: str, asunto: str, template: str):
-    """Envia el correo electronico"""
+    """Envía el correo electrónico"""
     msg = Message(
         subject=asunto,
         sender=app.config["MAIL_DEFAULT_SENDER"],
@@ -103,7 +103,7 @@ def crea_usuario():
     usuario = Usuarios.query.filter_by(correo=correo).first()
 
     if usuario and usuario.confirmado:
-        flash("Correo no dispoible", "advertencia")
+        flash("Correo no disponible", "advertencia")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     if usuario and not usuario.confirmado:
@@ -130,7 +130,7 @@ def crea_usuario():
     temp = render_template(
         "confirmar_correo.html", usuario=None, url_confirmacion=url_confirmacion
     )
-    enviar_correo(correo, "Confirmacion de correo", temp)
+    enviar_correo(correo, "Confirmación de correo", temp)
 
     flash(
         "Registrado. Te enviamos un correo de confirmación. (Tienes 1h para confirmar)",
@@ -141,31 +141,31 @@ def crea_usuario():
 
 @registro_usuario.blueprint.route("/confirma_correo/<token>")
 def confirmar_correo(token):
-    """Confirma el correo electronico"""
+    """Confirma el correo electrónico"""
     try:
         correo = confirma_token(token)
     except SignatureExpired:
-        flash("El token ha expirado, registrate nuevamente.", "advertencia")
+        flash("El token ha expirado, regístrate nuevamente.", "advertencia")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
     except BadSignature:
-        flash("El token es invalido, registrate nuevamente.", "error")
+        flash("El token es inválido, regístrate nuevamente.", "error")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
     except Exception:
-        flash("Error desconocido, registrate nuevamente", "error")
+        flash("Error desconocido, regístrate nuevamente", "error")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     if correo is None:
-        flash("El token ha expirado, registrate nuevamente.", "advertencia")
+        flash("El token ha expirado, regístrate nuevamente.", "advertencia")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     usuario = Usuarios.query.filter_by(correo=correo).first()
 
     if usuario is None:
-        flash("El usuario no existe, registrate nuevamente.", "error")
+        flash("El usuario no existe, regístrate nuevamente.", "error")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
 
     if usuario.confirmado:
-        flash("El correo ya ha sido confirmado, por favor inicia sesion", "info")
+        flash("El correo ya ha sido confirmado, por favor inicia sesión", "info")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     usuario.confirmado = True
     db.session.add(usuario)

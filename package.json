@@ -1,0 +1,18 @@
+{
+  "name": "distribcell-back",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "prettier-format": "prettier --config .prettierrc --write 'static/**/*.{js,jsx}'",
+    "prettier-format-check": "prettier --config .prettierrc --check 'static/**/*.{js,jsx}'"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "prettier": "^3.1.0"
+  }
+}
