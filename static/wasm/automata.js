@@ -14,9 +14,12 @@ const botonGuardarHistorial = document.getElementById('botonGuardarHistorial');
 const wrapProcesar = document.querySelector('.procesar');
 const cierraProcesar = document.querySelector('.cierraProcesar');
 const formProcesar = document.getElementById('form-procesar');
+const formEditar = document.getElementById('form-editar');
 
 const wrapGuardar = document.querySelector('.guardar');
+const wrapEditar = document.querySelector('.editar');
 const cierraGuardar = document.getElementById('cierraGuardar');
+const cierraEditar = document.getElementById('cierraEditar');
 const formGuardar = document.getElementById('form-guardar');
 const inicioContenedor = document.querySelector('.inicioContenedor');
 const botonProcesarAutomata = document.getElementById('botonProcesarAutomata');
@@ -191,14 +194,17 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           const tituloCondicion = document.createElement('th');
           const tituloEstado = document.createElement('th');
           const tituloBorrar = document.createElement('th');
+          const tituloEditar = document.createElement('th');
           tituloCondicion.textContent = 'Condición';
           tituloEstado.textContent = 'Estado';
           tituloBorrar.textContent = 'Borrar';
+          tituloEditar.textContent = 'Editar';
 
           const filaTitulo = document.createElement('tr');
           filaTitulo.appendChild(tituloCondicion);
           filaTitulo.appendChild(tituloEstado);
           filaTitulo.appendChild(tituloBorrar);
+          filaTitulo.appendChild(tituloEditar);
           fragment.appendChild(filaTitulo);
 
           for (let i = 0; i < reglas.length; i++) {
@@ -218,11 +224,21 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             tdBotonBorrar.dataset.tipo = 'borrar';
             tdBotonBorrar.dataset.posicion = i;
 
+            const tdBotonEditar = document.createElement('td');
+            tdBotonEditar.dataset.tipo = 'editar';
+            tdBotonEditar.dataset.posicion = i;
+
             const imgCerrar = document.createElement('img');
             imgCerrar.src = '/static/imgs/cerrar.png';
             tdBotonBorrar.appendChild(imgCerrar);
 
+            const imgEditar = document.createElement('img');
+            imgEditar.src = '/static/imgs/editar.png';
+            tdBotonEditar.setAttribute('id', 'Editar');
+            tdBotonEditar.appendChild(imgEditar);
+
             regla.appendChild(tdBotonBorrar);
+            regla.appendChild(tdBotonEditar);
             fragment.appendChild(regla);
           }
           listaReglas.appendChild(fragment);
@@ -320,9 +336,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           historialAutomata.push(matrizCelulas);
           rangoHistorialAutomata.max = historialAutomata.length - 1;
           rangoHistorialAutomata.value = historialAutomata.length - 1;
-          labelRangoHistorialAutomata.textContent = `Generación ${historialAutomata.length - 1} de ${
-            historialAutomata.length - 1
-          } `;
+          labelRangoHistorialAutomata.textContent = `Generación ${historialAutomata.length - 1} de ${historialAutomata.length - 1
+            } `;
         }
         function reiniciaHistorial() {
           historialAutomata = [];
@@ -660,17 +675,50 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           if (e.target.tagName !== 'IMG' && e.target.tagName !== 'TD') {
             return;
           }
-          let borrar;
+          let borrar, editar;
           if (e.target.tagName === 'IMG') {
             borrar = e.target.parentNode;
           } else {
             borrar = e.target;
+          }
+          if (e.target.id === 'editar') {
+            editar = e.target.parentNode;
+          } else {
+            editar = e.target;
           }
           if (borrar.dataset.tipo === 'borrar') {
             reglas.splice(parseInt(e.target.dataset.posicion), 1);
             cargarReglasInterfaz(reglas);
             automata.setRules(reglas);
           }
+          else if (editar.dataset.tipo === 'editar') {
+            i = editar.dataset.posicion
+            inicioContenedor.style.opacity = '0.1';
+            wrapEditar.style.display = 'grid';
+            inicioContenedor.style.transition = 'transition: all 0.5s ease-out;';
+            wrapEditar.style.transition = 'transition: 0.5s ease;';
+            window.addEventListener('scroll', () => {
+              const scrollTop = window.scrollY + 100;
+              wrapEditar.style.top = `${scrollTop}px`;
+            });
+            document.getElementById("nueva_regla").value = reglas[i].condition
+            document.getElementById("nuevo_estado").value = parseInt(reglas[i].state)
+            formEditar.addEventListener('submit', async (e) => {
+              e.preventDefault();
+              let nuevaRegla = document.getElementById("nueva_regla").value
+              let nuevoEstado = document.getElementById("nuevo_estado").value
+              reglas[i].condition = nuevaRegla
+              reglas[i].state = parseInt(nuevoEstado)
+              cargarReglasInterfaz(reglas);
+              automata.setRules(reglas);
+              cierraEditar.click()
+            });
+            cierraEditar.addEventListener('click', () => {
+              inicioContenedor.style.opacity = '1';
+              wrapEditar.style.display = 'none';
+            });
+          }
+
         });
         rangoHistorialAutomata.addEventListener('input', (e) => {
           const indice = parseInt(e.target.value);

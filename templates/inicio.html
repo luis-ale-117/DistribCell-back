@@ -80,6 +80,37 @@
     </div>
 </div>
 
+<div class="editar">
+    <div class="wrapper">
+        <div class="formBox">
+            <div id="cierraEditar" class="cierraProcesar"><ion-icon name="close-circle-outline"></ion-icon></div>
+            <h2>Editar Regla</h2>
+            <br>
+            <label>
+                Ingresa la nueva regla y el nuevo estado correspondientel.
+            </label>
+            <br>
+            <form id="form-editar">
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="text" id="nueva_regla" name="nueva_regla" maxlength="255" required>
+                    <label for="text">Nueva regla</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon"><ion-icon name="document-text-outline"></ion-icon></span>
+                    <input type="number" id="nuevo_estado" name="nuevo_estado" maxlength="2048">
+                    <label for="text">Ingresa nuevo estado</label>
+                </div>
+                <div class="divBotonGif">
+                    <button type="submit" class="botonGif">
+                        <h4>Editar Regla</h4>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="inicioContenedor">
     <div>
         <form id="formConfiguracion">
@@ -185,7 +216,8 @@
     <div class="inputForm">
         <button id="botonGraficas" class="botonCarga">Cargar gráficas</button>
         <label for="rangoMedia" style="padding-left: 20px;">Generaciones para la media y varianza</label>
-        <input id="inputRangoMedia" name="rangoMedia" type="number" min="1" step="1" value="10" autocomplete="off" style="width: 100px;">
+        <input id="inputRangoMedia" name="rangoMedia" type="number" min="1" step="1" value="10" autocomplete="off"
+            style="width: 100px;">
     </div>
     <div id="divGrafica1" class="divGraficas" style="display: none;">
         <h3>Gráfica de densidad de población</h3>

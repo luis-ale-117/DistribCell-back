@@ -219,11 +219,13 @@
     cursor: grab;
 }
 
-.divListaReglas table td[data-tipo="borrar"] {
+.divListaReglas table td[data-tipo="borrar"],
+.divListaReglas table td[data-tipo="editar"] {
     cursor: pointer;
 }
 
-.divListaReglas table td[data-tipo="borrar"] img {
+.divListaReglas table td[data-tipo="borrar"] img,
+.divListaReglas table td[data-tipo="editar"] img {
     -webkit-filter: invert(100%);
     filter: invert(100%);
     background-color: white;
@@ -236,18 +238,21 @@
     margin-right: auto;
 }
 
-.divListaReglas table td[data-tipo="borrar"]:hover {
+.divListaReglas table td[data-tipo="borrar"]:hover,
+.divListaReglas table td[data-tipo="editar"]:hover {
     background-color: white;
 }
 
-.divListaReglas table td[data-tipo="borrar"]:hover img {
+.divListaReglas table td[data-tipo="borrar"]:hover img,
+.divListaReglas table td[data-tipo="editar"]:hover img {
     background-color: white;
     -webkit-filter: none;
     filter: none;
 }
 
 .procesar,
-.guardar {
+.guardar,
+.editar {
     display: none;
     /*grid*/
     align-items: center;
