@@ -50,7 +50,7 @@ class Usuarios(db.Model):
 
     def numero_simulaciones(self):
         """Numero de simulaciones del usuario"""
-        return len(self.simulaciones)
+        return db.session.query(Simulaciones).filter_by(usuario_id=self.id).count()
 
 
 class Simulaciones(db.Model):
@@ -76,7 +76,7 @@ class Simulaciones(db.Model):
 
     def numero_generaciones(self):
         """Numero de generaciones de la simulación"""
-        return len(self.generaciones)
+        return db.session.query(Generaciones).filter_by(simulacion_id=self.id).count()
 
 
 class Generaciones(db.Model):
