@@ -183,8 +183,8 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           }
         }
         /**
-         * 
-         * @param {{condition:string, state: number}[]} reglas 
+         *
+         * @param {{condition:string, state: number}[]} reglas
          */
         function cargarReglasInterfaz(reglas) {
           while (listaReglas.firstChild) {
@@ -650,7 +650,7 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             return;
           }
           if (estado < 0 || estado >= conf.numEstados) {
-            generaMensaje(`El estado debe estar entre 0 y ${conf.numEstados-1}`, 'error');
+            generaMensaje(`El estado debe estar entre 0 y ${conf.numEstados - 1}`, 'error');
             return;
           }
           reglas.push(Rule2d(condicion, estado));
@@ -671,10 +671,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
         rangoVelocidad.addEventListener('change', (e) => {
           velocidadEjecucion = parseInt(e.target.value);
         });
-        canvasGrid.addEventListener('mousedown', (e) => {
+        canvasGrid.addEventListener('mousedown', async (e) => {
+          if (e.target.tagName !== 'CANVAS') {
+            return;
+          }
+          ejecutando = false;
+          imgPausa.src = IMAGEN_PLAY;
+          await new Promise((r) => setTimeout(r, 500));
+
           const x = Math.floor(e.offsetX / TAM_CELDA);
           const y = Math.floor(e.offsetY / TAM_CELDA);
           nuevoEstado = parseInt(estadoSeleccionado);
+          const matrizCelulas = historialAutomata[parseInt(rangoHistorialAutomata.value)];
           matrizCelulas[y][x] = nuevoEstado;
           automata.updateCellState(x, y, nuevoEstado);
           ctx.fillStyle = colorEstados[nuevoEstado];
