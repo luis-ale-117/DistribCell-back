@@ -60,7 +60,10 @@
             <input id="rangoHistorialAutomata" name="rangoHistorialAutomata" class="historial" type="range" min="0" max="0" step="1" value="0" autocomplete="off">
         </div>
     </div>
-    <div class="divGrid">
+    <div id="divRuedaCarga" class="divGrid">
+        <div class="loader"></div> <!-- Ruedita de carga  -->
+    </div>
+    <div id="divCanvas" class="divGrid">
         <canvas id="canvasGrid" width="{{ simulacion.anchura * 10 }}" height="{{ simulacion.altura * 10 }}"></canvas>
     </div>
     <div class="inputForm">
