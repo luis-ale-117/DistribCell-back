@@ -900,9 +900,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           inicioContenedor.style.opacity = '1';
           wrapProcesar.style.display = 'none';
         });
-        botonGraficas?.addEventListener('click', () => {
+        botonGraficas?.addEventListener('click', async () => {
           ejecutando = false;
           imgPausa.src = IMAGEN_PLAY;
+          await new Promise((r) => setTimeout(r, 500));
           divGrafica1.style.display = 'grid';
           divGrafica2.style.display = 'grid';
           divGrafica3.style.display = 'grid';
