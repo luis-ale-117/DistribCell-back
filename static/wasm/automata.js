@@ -182,6 +182,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             }
           }
         }
+        /**
+         * 
+         * @param {{condition:string, state: number}[]} reglas 
+         */
         function cargarReglasInterfaz(reglas) {
           while (listaReglas.firstChild) {
             listaReglas.removeChild(listaReglas.firstChild);
@@ -203,16 +207,57 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
 
           for (let i = 0; i < reglas.length; i++) {
             const regla = document.createElement('tr');
-            regla.setAttribute('draggable', 'true');
             regla.id = 'regla-' + i.toString();
 
-            const condicion = document.createElement('td');
-            condicion.textContent = reglas[i].condition;
-            regla.appendChild(condicion);
+            const tdCondicion = document.createElement('td');
+            const inputCondicion = document.createElement('input');
+            inputCondicion.type = 'text';
+            inputCondicion.value = reglas[i].condition;
+            inputCondicion.style.width = '250px';
+            inputCondicion.style.minWidth = '70px';
+            inputCondicion.style.maxWidth = '700px';
+            inputCondicion.addEventListener('change', async () => {
+              ejecutando = false;
+              imgPausa.src = IMAGEN_PLAY;
+              await new Promise((r) => setTimeout(r, 500));
+              if (inputCondicion.value === '') {
+                generaMensaje('La condición no puede estar vacía', 'error');
+                inputCondicion.value = reglas[i].condition;
+                return;
+              }
+              reglas[i].condition = inputCondicion.value;
+              automata.setRules(reglas);
+            });
+            tdCondicion.appendChild(inputCondicion);
+            regla.appendChild(tdCondicion);
 
-            const estado = document.createElement('td');
-            estado.textContent = reglas[i].state;
-            regla.appendChild(estado);
+            const tdEstado = document.createElement('td');
+            const inputEstado = document.createElement('input');
+            inputEstado.type = 'number';
+            inputEstado.value = reglas[i].state;
+            inputEstado.min = '0';
+            inputEstado.max = (conf.numEstados - 1).toString();
+            inputEstado.style.width = '70px';
+            inputEstado.addEventListener('change', async () => {
+              ejecutando = false;
+              imgPausa.src = IMAGEN_PLAY;
+              await new Promise((r) => setTimeout(r, 500));
+              const value = parseInt(inputEstado.value);
+              if (Number.isNaN(value)) {
+                generaMensaje('El estado debe ser un número', 'error');
+                inputEstado.value = reglas[i].state;
+                return;
+              }
+              if (value < 0 || value >= conf.numEstados) {
+                generaMensaje(`El estado debe estar entre 0 y ${conf.numEstados - 1}`, 'error');
+                inputEstado.value = reglas[i].state;
+                return;
+              }
+              reglas[i].state = value;
+              automata.setRules(reglas);
+            });
+            tdEstado.appendChild(inputEstado);
+            regla.appendChild(tdEstado);
 
             const tdBotonBorrar = document.createElement('td');
             tdBotonBorrar.dataset.tipo = 'borrar';
@@ -634,59 +679,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           automata.updateCellState(x, y, nuevoEstado);
           ctx.fillStyle = colorEstados[nuevoEstado];
           ctx.fillRect(x * TAM_CELDA, y * TAM_CELDA, TAM_CELDA, TAM_CELDA);
-        });
-        listaReglas.addEventListener('dragstart', (e) => {
-          e.dataTransfer?.setData('text/plain', e.target.id);
-          const elementosHermanos = Array.from(e.target?.parentNode?.children);
-          const indiceElemento = elementosHermanos.indexOf(e.target);
-        });
-        listaReglas.addEventListener('drag', (e) => {
-          e.target.classList.add('opaco');
-        });
-        listaReglas.addEventListener('dragend', (e) => {
-          e.target.classList.remove('opaco');
-        });
-        listaReglas.addEventListener('dragenter', (e) => {
-          if (e.target.tagName === 'TD') {
-            e.target.parentNode.classList.add('seleccionado');
-          } else if (e.target.tagName === 'TR') {
-            e.target.classList.add('seleccionado');
-          }
-        });
-        listaReglas.addEventListener('dragleave', (e) => {
-          if (e.target.tagName === 'TD') {
-            e.target.parentNode.classList.remove('seleccionado');
-          } else if (e.target.tagName === 'TR') {
-            e.target.classList.remove('seleccionado');
-          }
-        });
-        listaReglas.addEventListener('dragover', (e) => {
-          e.preventDefault();
-        });
-        listaReglas.addEventListener('drop', (e) => {
-          e.preventDefault();
-          if (e.target.tagName !== 'TD' && e.target.tagName !== 'TR') {
-            return;
-          }
-          let destino;
-          if (e.target.tagName === 'TD') {
-            e.target.parentNode.classList.remove('seleccionado');
-            destino = e.target.parentNode;
-          } else {
-            e.target.classList.remove('seleccionado');
-            destino = e.target;
-          }
-          const elemento = document.getElementById(e.dataTransfer?.getData('text/plain'));
-          const elementosHermanos = Array.from(destino?.parentNode?.children);
-          const indiceElemento = elementosHermanos.indexOf(elemento);
-          const indiceDestino = elementosHermanos.indexOf(destino);
-          if (indiceElemento < indiceDestino) {
-            destino.after(elemento);
-          } else {
-            destino.before(elemento);
-          }
-          reglas.move(indiceElemento - 1, indiceDestino - 1); // -1 porque el primer elemento es el titulo
-          automata.setRules(reglas);
         });
         listaReglas.addEventListener('click', (e) => {
           if (e.target.tagName !== 'IMG' && e.target.tagName !== 'TD') {
