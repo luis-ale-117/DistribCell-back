@@ -629,6 +629,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           reiniciaHistorial();
           agregaHistorial(matrizCelulas);
 
+          if (estadoSeleccionadoInterfaz != null) {
+            // Quita la clase seleccionado al estado seleccionado anteriormente
+            estadoSeleccionadoInterfaz.classList.remove('seleccionado');
+          }
           estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild;
           estadoSeleccionadoInterfaz.classList.add('seleccionado');
           canvasGrid.width = anchura * TAM_CELDA;
