@@ -182,6 +182,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             }
           }
         }
+        /**
+         *
+         * @param {{condition:string, state: number}[]} reglas
+         */
         function cargarReglasInterfaz(reglas) {
           while (listaReglas.firstChild) {
             listaReglas.removeChild(listaReglas.firstChild);
@@ -203,16 +207,57 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
 
           for (let i = 0; i < reglas.length; i++) {
             const regla = document.createElement('tr');
-            regla.setAttribute('draggable', 'true');
             regla.id = 'regla-' + i.toString();
 
-            const condicion = document.createElement('td');
-            condicion.textContent = reglas[i].condition;
-            regla.appendChild(condicion);
+            const tdCondicion = document.createElement('td');
+            const inputCondicion = document.createElement('input');
+            inputCondicion.type = 'text';
+            inputCondicion.value = reglas[i].condition;
+            inputCondicion.style.width = '250px';
+            inputCondicion.style.minWidth = '70px';
+            inputCondicion.style.maxWidth = '700px';
+            inputCondicion.addEventListener('change', async () => {
+              ejecutando = false;
+              imgPausa.src = IMAGEN_PLAY;
+              await new Promise((r) => setTimeout(r, 500));
+              if (inputCondicion.value === '') {
+                generaMensaje('La condición no puede estar vacía', 'error');
+                inputCondicion.value = reglas[i].condition;
+                return;
+              }
+              reglas[i].condition = inputCondicion.value;
+              automata.setRules(reglas);
+            });
+            tdCondicion.appendChild(inputCondicion);
+            regla.appendChild(tdCondicion);
 
-            const estado = document.createElement('td');
-            estado.textContent = reglas[i].state;
-            regla.appendChild(estado);
+            const tdEstado = document.createElement('td');
+            const inputEstado = document.createElement('input');
+            inputEstado.type = 'number';
+            inputEstado.value = reglas[i].state;
+            inputEstado.min = '0';
+            inputEstado.max = (conf.numEstados - 1).toString();
+            inputEstado.style.width = '70px';
+            inputEstado.addEventListener('change', async () => {
+              ejecutando = false;
+              imgPausa.src = IMAGEN_PLAY;
+              await new Promise((r) => setTimeout(r, 500));
+              const value = parseInt(inputEstado.value);
+              if (Number.isNaN(value)) {
+                generaMensaje('El estado debe ser un número', 'error');
+                inputEstado.value = reglas[i].state;
+                return;
+              }
+              if (value < 0 || value >= conf.numEstados) {
+                generaMensaje(`El estado debe estar entre 0 y ${conf.numEstados - 1}`, 'error');
+                inputEstado.value = reglas[i].state;
+                return;
+              }
+              reglas[i].state = value;
+              automata.setRules(reglas);
+            });
+            tdEstado.appendChild(inputEstado);
+            regla.appendChild(tdEstado);
 
             const tdBotonBorrar = document.createElement('td');
             tdBotonBorrar.dataset.tipo = 'borrar';
@@ -537,17 +582,43 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           ejecutando = !ejecutando;
           imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY;
         });
-        formConfiguracion.addEventListener('submit', (e) => {
+        formConfiguracion.addEventListener('submit', async (e) => {
           e.preventDefault();
           ejecutando = false;
           imgPausa.src = IMAGEN_PLAY;
-          conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value);
-          conf.anchura = parseInt(formConfiguracion.elements['anchura'].value);
-          conf.altura = parseInt(formConfiguracion.elements['altura'].value);
-          automata.updateConfig(conf.numEstados, conf.anchura, conf.altura);
+          await new Promise((r) => setTimeout(r, 500));
+
+          const numEstados = parseInt(formConfiguracion.elements['numEstados'].value);
+          const anchura = parseInt(formConfiguracion.elements['anchura'].value);
+          const altura = parseInt(formConfiguracion.elements['altura'].value);
+          if (Number.isNaN(numEstados) || Number.isNaN(anchura) || Number.isNaN(altura)) {
+            generaMensaje('Los campos deben ser números', 'error');
+            return;
+          }
+          if (numEstados < 2 || numEstados > 255) {
+            generaMensaje('El número de estados debe estar entre 2 y 255', 'error');
+            return;
+          }
+          if (anchura < 3) {
+            generaMensaje('La anchura debe ser mayor a 3', 'error');
+            return;
+          }
+          if (altura < 3) {
+            generaMensaje('La altura debe ser mayor a 3', 'error');
+            return;
+          }
+          if (conf.numEstados !== numEstados) {
+            // Si el número de estados cambió, reinicia los colores
+            asignaColorArcoiris(numEstados);
+            cargarColorEstadosInterfaz(colorEstados);
+          }
+          conf.numEstados = numEstados;
+          conf.anchura = anchura;
+          conf.altura = altura;
+          automata.updateConfig(numEstados, anchura, altura);
           // Default (Conway's game of life) TODO: Load from USER
           automata.setRules(reglas);
-          const matrizCelulas = matrizAleatoria(conf.anchura, conf.altura, conf.numEstados);
+          const matrizCelulas = matrizAleatoria(anchura, altura, numEstados);
           err = automata.loadInitGrid(matrizCelulas);
           if (err != null) {
             generaMensaje(`Error cargando la matriz ${err}`, 'error');
@@ -558,13 +629,14 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           reiniciaHistorial();
           agregaHistorial(matrizCelulas);
 
-          asignaColorArcoiris(conf.numEstados);
-          cargarColorEstadosInterfaz(colorEstados);
-
+          if (estadoSeleccionadoInterfaz != null) {
+            // Quita la clase seleccionado al estado seleccionado anteriormente
+            estadoSeleccionadoInterfaz.classList.remove('seleccionado');
+          }
           estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild;
           estadoSeleccionadoInterfaz.classList.add('seleccionado');
-          canvasGrid.width = conf.anchura * TAM_CELDA;
-          canvasGrid.height = conf.altura * TAM_CELDA;
+          canvasGrid.width = anchura * TAM_CELDA;
+          canvasGrid.height = altura * TAM_CELDA;
           dibujaMatrizInterfaz(matrizCelulas);
         });
         formReglas.addEventListener('submit', (e) => {
@@ -574,13 +646,22 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           condicion = formReglas.elements['condicion'].value;
           estado = parseInt(formReglas.elements['estado'].value);
           if (condicion == '') {
+            generaMensaje('La condición no puede estar vacía', 'error');
+            return;
+          }
+          if (Number.isNaN(estado)) {
+            generaMensaje('El estado debe ser un número', 'error');
+            return;
+          }
+          if (estado < 0 || estado >= conf.numEstados) {
+            generaMensaje(`El estado debe estar entre 0 y ${conf.numEstados - 1}`, 'error');
             return;
           }
           reglas.push(Rule2d(condicion, estado));
           cargarReglasInterfaz(reglas);
           automata.setRules(reglas);
           formReglas.elements['condicion'].value = '';
-          formReglas.elements['estado'].value = '';
+          formReglas.elements['estado'].value = '0';
           const matrizCelulas = automata.getInitGrid();
           const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
           for (let j = 0; j < conf.altura; j++) {
@@ -594,67 +675,22 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
         rangoVelocidad.addEventListener('change', (e) => {
           velocidadEjecucion = parseInt(e.target.value);
         });
-        canvasGrid.addEventListener('mousedown', (e) => {
+        canvasGrid.addEventListener('mousedown', async (e) => {
+          if (e.target.tagName !== 'CANVAS') {
+            return;
+          }
+          ejecutando = false;
+          imgPausa.src = IMAGEN_PLAY;
+          await new Promise((r) => setTimeout(r, 500));
+
           const x = Math.floor(e.offsetX / TAM_CELDA);
           const y = Math.floor(e.offsetY / TAM_CELDA);
           nuevoEstado = parseInt(estadoSeleccionado);
+          const matrizCelulas = historialAutomata[parseInt(rangoHistorialAutomata.value)];
           matrizCelulas[y][x] = nuevoEstado;
           automata.updateCellState(x, y, nuevoEstado);
           ctx.fillStyle = colorEstados[nuevoEstado];
           ctx.fillRect(x * TAM_CELDA, y * TAM_CELDA, TAM_CELDA, TAM_CELDA);
-        });
-        listaReglas.addEventListener('dragstart', (e) => {
-          e.dataTransfer?.setData('text/plain', e.target.id);
-          const elementosHermanos = Array.from(e.target?.parentNode?.children);
-          const indiceElemento = elementosHermanos.indexOf(e.target);
-        });
-        listaReglas.addEventListener('drag', (e) => {
-          e.target.classList.add('opaco');
-        });
-        listaReglas.addEventListener('dragend', (e) => {
-          e.target.classList.remove('opaco');
-        });
-        listaReglas.addEventListener('dragenter', (e) => {
-          if (e.target.tagName === 'TD') {
-            e.target.parentNode.classList.add('seleccionado');
-          } else if (e.target.tagName === 'TR') {
-            e.target.classList.add('seleccionado');
-          }
-        });
-        listaReglas.addEventListener('dragleave', (e) => {
-          if (e.target.tagName === 'TD') {
-            e.target.parentNode.classList.remove('seleccionado');
-          } else if (e.target.tagName === 'TR') {
-            e.target.classList.remove('seleccionado');
-          }
-        });
-        listaReglas.addEventListener('dragover', (e) => {
-          e.preventDefault();
-        });
-        listaReglas.addEventListener('drop', (e) => {
-          e.preventDefault();
-          if (e.target.tagName !== 'TD' && e.target.tagName !== 'TR') {
-            return;
-          }
-          let destino;
-          if (e.target.tagName === 'TD') {
-            e.target.parentNode.classList.remove('seleccionado');
-            destino = e.target.parentNode;
-          } else {
-            e.target.classList.remove('seleccionado');
-            destino = e.target;
-          }
-          const elemento = document.getElementById(e.dataTransfer?.getData('text/plain'));
-          const elementosHermanos = Array.from(destino?.parentNode?.children);
-          const indiceElemento = elementosHermanos.indexOf(elemento);
-          const indiceDestino = elementosHermanos.indexOf(destino);
-          if (indiceElemento < indiceDestino) {
-            destino.after(elemento);
-          } else {
-            destino.before(elemento);
-          }
-          reglas.move(indiceElemento - 1, indiceDestino - 1); // -1 porque el primer elemento es el titulo
-          automata.setRules(reglas);
         });
         listaReglas.addEventListener('click', (e) => {
           if (e.target.tagName !== 'IMG' && e.target.tagName !== 'TD') {
@@ -864,9 +900,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           inicioContenedor.style.opacity = '1';
           wrapProcesar.style.display = 'none';
         });
-        botonGraficas?.addEventListener('click', () => {
+        botonGraficas?.addEventListener('click', async () => {
           ejecutando = false;
           imgPausa.src = IMAGEN_PLAY;
+          await new Promise((r) => setTimeout(r, 500));
           divGrafica1.style.display = 'grid';
           divGrafica2.style.display = 'grid';
           divGrafica3.style.display = 'grid';
