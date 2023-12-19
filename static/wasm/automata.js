@@ -574,13 +574,22 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           condicion = formReglas.elements['condicion'].value;
           estado = parseInt(formReglas.elements['estado'].value);
           if (condicion == '') {
+            generaMensaje('La condición no puede estar vacía', 'error');
+            return;
+          }
+          if (Number.isNaN(estado)) {
+            generaMensaje('El estado debe ser un número', 'error');
+            return;
+          }
+          if (estado < 0 || estado >= conf.numEstados) {
+            generaMensaje(`El estado debe estar entre 0 y ${conf.numEstados-1}`, 'error');
             return;
           }
           reglas.push(Rule2d(condicion, estado));
           cargarReglasInterfaz(reglas);
           automata.setRules(reglas);
           formReglas.elements['condicion'].value = '';
-          formReglas.elements['estado'].value = '';
+          formReglas.elements['estado'].value = '0';
           const matrizCelulas = automata.getInitGrid();
           const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
           for (let j = 0; j < conf.altura; j++) {
