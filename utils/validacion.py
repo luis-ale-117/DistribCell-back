@@ -42,8 +42,8 @@ def validar_campos_nuevo_usuario(
 
     elif nombre == "":
         mensaje = "Nombre requerido"
-    elif not 2 <= len(nombre) <= MAX_NOMBRE:
-        mensaje = "El nombre debe tener entre 2 y 255 caracteres"
+    elif not 1 <= len(nombre) <= MAX_NOMBRE:
+        mensaje = "El nombre debe tener entre 1 y 255 caracteres"
     elif apellido == "":
         mensaje = "Apellido requerido"
     elif not 2 <= len(apellido) <= MAX_APELLIDO:
@@ -75,8 +75,8 @@ def validar_campos_usuario(nombre: str, apellido: str, correo: str) -> str | Non
 
     elif nombre == "":
         mensaje = "Nombre requerido"
-    elif not 2 <= len(nombre) <= MAX_NOMBRE:
-        mensaje = "El nombre debe tener entre 2 y 255 caracteres"
+    elif not 1 <= len(nombre) <= MAX_NOMBRE:
+        mensaje = "El nombre debe tener entre 1 y 255 caracteres"
     elif apellido == "":
         mensaje = "Apellido requerido"
     elif not 2 <= len(apellido) <= MAX_APELLIDO:
@@ -111,8 +111,8 @@ def validar_campos_simulacion(
 
     elif nombre == "":
         mensaje = "Nombre requerido"
-    elif not 2 <= len(nombre) <= MAX_NOMBRE:
-        mensaje = "El nombre debe tener entre 2 y 255 caracteres"
+    elif not 1 <= len(nombre) <= MAX_NOMBRE:
+        mensaje = "El nombre debe tener entre 1 y 255 caracteres"
     elif descripcion not in [None, ""] and not 1 <= len(descripcion) <= MAX_DESCRIPCION:
         mensaje = "La descripción debe tener entre 0 y 2048 caracteres"
     elif not MIN_ANCHURA <= anchura <= MAX_ANCHURA:
