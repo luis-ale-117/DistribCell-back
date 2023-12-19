@@ -537,17 +537,43 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           ejecutando = !ejecutando;
           imgPausa.src = ejecutando ? IMAGEN_PAUSA : IMAGEN_PLAY;
         });
-        formConfiguracion.addEventListener('submit', (e) => {
+        formConfiguracion.addEventListener('submit', async (e) => {
           e.preventDefault();
           ejecutando = false;
           imgPausa.src = IMAGEN_PLAY;
-          conf.numEstados = parseInt(formConfiguracion.elements['numEstados'].value);
-          conf.anchura = parseInt(formConfiguracion.elements['anchura'].value);
-          conf.altura = parseInt(formConfiguracion.elements['altura'].value);
-          automata.updateConfig(conf.numEstados, conf.anchura, conf.altura);
+          await new Promise((r) => setTimeout(r, 500));
+
+          const numEstados = parseInt(formConfiguracion.elements['numEstados'].value);
+          const anchura = parseInt(formConfiguracion.elements['anchura'].value);
+          const altura = parseInt(formConfiguracion.elements['altura'].value);
+          if (Number.isNaN(numEstados) || Number.isNaN(anchura) || Number.isNaN(altura)) {
+            generaMensaje('Los campos deben ser números', 'error');
+            return;
+          }
+          if (numEstados < 2 || numEstados > 255) {
+            generaMensaje('El número de estados debe estar entre 2 y 255', 'error');
+            return;
+          }
+          if (anchura < 3) {
+            generaMensaje('La anchura debe ser mayor a 3', 'error');
+            return;
+          }
+          if (altura < 3) {
+            generaMensaje('La altura debe ser mayor a 3', 'error');
+            return;
+          }
+          if (conf.numEstados !== numEstados) {
+            // Si el número de estados cambió, reinicia los colores
+            asignaColorArcoiris(numEstados);
+            cargarColorEstadosInterfaz(colorEstados);
+          }
+          conf.numEstados = numEstados;
+          conf.anchura = anchura;
+          conf.altura = altura;
+          automata.updateConfig(numEstados, anchura, altura);
           // Default (Conway's game of life) TODO: Load from USER
           automata.setRules(reglas);
-          const matrizCelulas = matrizAleatoria(conf.anchura, conf.altura, conf.numEstados);
+          const matrizCelulas = matrizAleatoria(anchura, altura, numEstados);
           err = automata.loadInitGrid(matrizCelulas);
           if (err != null) {
             generaMensaje(`Error cargando la matriz ${err}`, 'error');
@@ -558,13 +584,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           reiniciaHistorial();
           agregaHistorial(matrizCelulas);
 
-          asignaColorArcoiris(conf.numEstados);
-          cargarColorEstadosInterfaz(colorEstados);
-
           estadoSeleccionadoInterfaz = tabColorEstados.firstChild?.firstChild;
           estadoSeleccionadoInterfaz.classList.add('seleccionado');
-          canvasGrid.width = conf.anchura * TAM_CELDA;
-          canvasGrid.height = conf.altura * TAM_CELDA;
+          canvasGrid.width = anchura * TAM_CELDA;
+          canvasGrid.height = altura * TAM_CELDA;
           dibujaMatrizInterfaz(matrizCelulas);
         });
         formReglas.addEventListener('submit', (e) => {
