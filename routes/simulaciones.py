@@ -238,7 +238,9 @@ def obtener_generaciones(simulacion_id: int):
         flash("Simulación no encontrada", "error")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
-    generaciones: Generaciones = simulacion.generaciones
+    generaciones: Generaciones = db.session.query(Generaciones).filter_by(
+        simulacion_id=simulacion.id
+    )
 
     if generaciones is None:
         return {"error": "Simulación sin generaciones"}, 404

@@ -25,6 +25,9 @@ const conf = {
   altura: parseInt(inputAltura.value)
 };
 const divMensajes = document.getElementById('mensajes');
+const divCanvas = document.getElementById('divCanvas');
+divCanvas.style.display = 'none';
+const divRuedaCarga = document.getElementById('divRuedaCarga');
 
 const divGrafica1 = document.getElementById('divGrafica1');
 const divGrafica2 = document.getElementById('divGrafica2');
@@ -283,6 +286,8 @@ const cargaSimulacionInterfaz = async () => {
     generaMensaje('Ocurrió un error guardando el historial', 'error');
     return;
   }
+  divRuedaCarga.style.display = 'none';
+  divCanvas.style.display = 'grid';
   rangoHistorialAutomata.max = (historialAutomata.length - 1).toString();
   rangoHistorialAutomata.value = '0';
   labelRangoHistorialAutomata.textContent = `Generación 0 de ${historialAutomata.length - 1} `;
