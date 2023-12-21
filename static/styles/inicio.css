@@ -294,3 +294,7 @@
     width: 30%;
     padding: 5% 0;
 }
+
+.infoTip li {
+    list-style-position: inside;
+}
