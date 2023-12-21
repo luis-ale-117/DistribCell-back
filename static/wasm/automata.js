@@ -913,6 +913,12 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           ejecutando = false;
           imgPausa.src = IMAGEN_PLAY;
           await new Promise((r) => setTimeout(r, 500));
+          const r = parseInt(inputRangoMedia.value);
+          if (Number.isNaN(r) || r < 1) {
+            generaMensaje('El rango debe ser un número mayor a 0', 'error');
+            inputRangoMedia.value = '1';
+            return;
+          }
           divGrafica1.style.display = 'grid';
           divGrafica2.style.display = 'grid';
           divGrafica3.style.display = 'grid';
@@ -926,10 +932,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             grafica3.destroy();
           }
 
-          const r = parseInt(inputRangoMedia.value);
-          if (Number.isNaN(r) || r < 1) {
-            inputRangoMedia.value = '1';
-          }
           const rangoMedia = parseInt(inputRangoMedia.value);
 
           const g2Titulo = divGrafica2.children[0];
