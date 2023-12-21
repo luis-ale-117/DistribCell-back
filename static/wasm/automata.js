@@ -705,6 +705,11 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           const tipo = borrar.dataset.tipo;
           const posicion = parseInt(borrar.dataset.posicion);
           if (Number.isNaN(posicion)) {
+            generaMensaje('Error al borrar la regla', 'error');
+            return;
+          }
+          if (reglas.length <= 1) {
+            generaMensaje('Debes tener al menos una regla', 'error');
             return;
           }
           if (tipo === 'borrar') {
