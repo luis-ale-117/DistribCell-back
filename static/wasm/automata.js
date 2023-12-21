@@ -607,6 +607,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             generaMensaje('La altura debe ser mayor a 3', 'error');
             return;
           }
+          if (reglas.some((regla) => regla.state >= numEstados)) {
+            generaMensaje('Alguna regla resulta en un estado mayor al número de estados', 'error');
+            return;
+          }
           if (conf.numEstados !== numEstados) {
             // Si el número de estados cambió, reinicia los colores
             asignaColorArcoiris(numEstados);
