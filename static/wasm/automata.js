@@ -669,7 +669,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               matrizCelulasCopia[j][k] = matrizCelulas[j][k];
             }
           }
-          reiniciaHistorial();
           agregaHistorial(matrizCelulasCopia);
         });
         rangoVelocidad.addEventListener('change', (e) => {
