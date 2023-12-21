@@ -607,6 +607,10 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             generaMensaje('La altura debe ser mayor a 3', 'error');
             return;
           }
+          if (reglas.some((regla) => regla.state >= numEstados)) {
+            generaMensaje('Alguna regla resulta en un estado mayor al número de estados', 'error');
+            return;
+          }
           if (conf.numEstados !== numEstados) {
             // Si el número de estados cambió, reinicia los colores
             asignaColorArcoiris(numEstados);
@@ -669,7 +673,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
               matrizCelulasCopia[j][k] = matrizCelulas[j][k];
             }
           }
-          reiniciaHistorial();
           agregaHistorial(matrizCelulasCopia);
         });
         rangoVelocidad.addEventListener('change', (e) => {
@@ -702,8 +705,18 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           } else {
             borrar = e.target;
           }
-          if (borrar.dataset.tipo === 'borrar') {
-            reglas.splice(parseInt(e.target.dataset.posicion), 1);
+          const tipo = borrar.dataset.tipo;
+          const posicion = parseInt(borrar.dataset.posicion);
+          if (Number.isNaN(posicion)) {
+            generaMensaje('Error al borrar la regla', 'error');
+            return;
+          }
+          if (reglas.length <= 1) {
+            generaMensaje('Debes tener al menos una regla', 'error');
+            return;
+          }
+          if (tipo === 'borrar') {
+            reglas.splice(posicion, 1);
             cargarReglasInterfaz(reglas);
             automata.setRules(reglas);
           }
@@ -904,6 +917,12 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           ejecutando = false;
           imgPausa.src = IMAGEN_PLAY;
           await new Promise((r) => setTimeout(r, 500));
+          const r = parseInt(inputRangoMedia.value);
+          if (Number.isNaN(r) || r < 1) {
+            generaMensaje('El rango debe ser un número mayor a 0', 'error');
+            inputRangoMedia.value = '1';
+            return;
+          }
           divGrafica1.style.display = 'grid';
           divGrafica2.style.display = 'grid';
           divGrafica3.style.display = 'grid';
@@ -917,10 +936,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
             grafica3.destroy();
           }
 
-          const r = parseInt(inputRangoMedia.value);
-          if (Number.isNaN(r) || r < 1) {
-            inputRangoMedia.value = '1';
-          }
           const rangoMedia = parseInt(inputRangoMedia.value);
 
           const g2Titulo = divGrafica2.children[0];
