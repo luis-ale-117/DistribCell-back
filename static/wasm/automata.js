@@ -702,8 +702,13 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           } else {
             borrar = e.target;
           }
-          if (borrar.dataset.tipo === 'borrar') {
-            reglas.splice(parseInt(e.target.dataset.posicion), 1);
+          const tipo = borrar.dataset.tipo;
+          const posicion = parseInt(borrar.dataset.posicion);
+          if (Number.isNaN(posicion)) {
+            return;
+          }
+          if (tipo === 'borrar') {
+            reglas.splice(posicion, 1);
             cargarReglasInterfaz(reglas);
             automata.setRules(reglas);
           }
