@@ -53,6 +53,16 @@
     text-align: justify;
 }
 
+.columna2 ul {
+    margin-top: 2vh;
+    font-size: 3vh;
+    text-align: justify;
+}
+
+.columna2 li {
+    list-style-position: inside;
+}
+
 .ManualUsuario {
     text-align: center;
     margin-bottom: 2vh;
