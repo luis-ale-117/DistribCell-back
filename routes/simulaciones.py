@@ -121,8 +121,8 @@ def crear_simulacion():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
-    if usuario.numero_simulaciones() >= 5:
-        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
+    if usuario.numero_simulaciones() >= 20:
+        return {"error": "Limite de simulaciones alcanzado: 20"}, 400
 
     conf = request.get_json()
     try:
@@ -265,8 +265,8 @@ def crear_procesamiento():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
-    if usuario.numero_simulaciones() >= 5:
-        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
+    if usuario.numero_simulaciones() >= 20:
+        return {"error": "Limite de simulaciones alcanzado: 20"}, 400
 
     conf = request.get_json()
     try:
