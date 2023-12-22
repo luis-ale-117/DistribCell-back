@@ -247,7 +247,7 @@ def obtener_generaciones(simulacion_id: int):
     for generacion in generaciones:
         matrices.extend(generacion.contenido)
 
-    matrices_comp = zlib.compress(matrices)
+    matrices_comp = zlib.compress(matrices, level=3)
 
     return matrices_comp, 200
 
