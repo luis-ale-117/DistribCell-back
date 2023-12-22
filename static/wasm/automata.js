@@ -666,14 +666,6 @@ fetch('/static/wasm/main.wasm') // Path to the WebAssembly binary file
           automata.setRules(reglas);
           formReglas.elements['condicion'].value = '';
           formReglas.elements['estado'].value = '0';
-          const matrizCelulas = automata.getInitGrid();
-          const matrizCelulasCopia = new Array(conf.altura).fill(0).map(() => new Array(conf.anchura).fill(0));
-          for (let j = 0; j < conf.altura; j++) {
-            for (let k = 0; k < conf.anchura; k++) {
-              matrizCelulasCopia[j][k] = matrizCelulas[j][k];
-            }
-          }
-          agregaHistorial(matrizCelulasCopia);
         });
         rangoVelocidad.addEventListener('change', (e) => {
           velocidadEjecucion = parseInt(e.target.value);
