@@ -97,14 +97,12 @@ def borrar_simulacion(simulacion_id: int):
         flash("Simulación no encontrada", "error")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
-    cola = Cola.query.filter_by(simulacion_id=simulacion.id).first()
-
-    for generacion in simulacion.generaciones:
-        db.session.delete(generacion)
-    if cola is not None:
-        db.session.delete(cola)
-    db.session.delete(simulacion)
-
+    # Borrar la cola
+    db.session.query(Cola).filter_by(simulacion_id=simulacion.id).delete()
+    # Borrar las generaciones
+    db.session.query(Generaciones).filter_by(simulacion_id=simulacion.id).delete()
+    # Borrar la simulacion
+    db.session.query(Simulaciones).filter_by(id=simulacion.id).delete()
     db.session.commit()
     flash("Simulación borrada con éxito", "exito")
     return redirect(url_for("simulaciones.pagina_simulaciones"))
