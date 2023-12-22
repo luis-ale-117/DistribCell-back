@@ -97,14 +97,12 @@ def borrar_simulacion(simulacion_id: int):
         flash("Simulación no encontrada", "error")
         return redirect(url_for("simulaciones.pagina_simulaciones"))
 
-    cola = Cola.query.filter_by(simulacion_id=simulacion.id).first()
-
-    for generacion in simulacion.generaciones:
-        db.session.delete(generacion)
-    if cola is not None:
-        db.session.delete(cola)
-    db.session.delete(simulacion)
-
+    # Borrar la cola
+    db.session.query(Cola).filter_by(simulacion_id=simulacion.id).delete()
+    # Borrar las generaciones
+    db.session.query(Generaciones).filter_by(simulacion_id=simulacion.id).delete()
+    # Borrar la simulacion
+    db.session.query(Simulaciones).filter_by(id=simulacion.id).delete()
     db.session.commit()
     flash("Simulación borrada con éxito", "exito")
     return redirect(url_for("simulaciones.pagina_simulaciones"))
@@ -121,8 +119,8 @@ def crear_simulacion():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
-    if usuario.numero_simulaciones() >= 5:
-        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
+    if usuario.numero_simulaciones() >= 20:
+        return {"error": "Limite de simulaciones alcanzado: 20"}, 400
 
     conf = request.get_json()
     try:
@@ -249,7 +247,7 @@ def obtener_generaciones(simulacion_id: int):
     for generacion in generaciones:
         matrices.extend(generacion.contenido)
 
-    matrices_comp = zlib.compress(matrices)
+    matrices_comp = zlib.compress(matrices, level=3)
 
     return matrices_comp, 200
 
@@ -265,8 +263,8 @@ def crear_procesamiento():
         session.pop("usuario_id", None)
         flash("Cuenta no encontrada. Vuelve a iniciar sesión", "error")
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
-    if usuario.numero_simulaciones() >= 5:
-        return {"error": "Limite de simulaciones alcanzado: 5"}, 400
+    if usuario.numero_simulaciones() >= 20:
+        return {"error": "Limite de simulaciones alcanzado: 20"}, 400
 
     conf = request.get_json()
     try:

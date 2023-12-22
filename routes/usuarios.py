@@ -5,7 +5,7 @@ Modulo para el manejo de los datos del usuario
 from flask import render_template, redirect, session, url_for, flash, request, Blueprint
 from utils.db import db
 from utils.validacion import MIN_CONTRASENA, validar_campos_usuario
-from models import Usuarios
+from models import Cola, Generaciones, Simulaciones, Usuarios
 
 blueprint = Blueprint("usuarios", __name__)
 
@@ -91,7 +91,13 @@ def elimina_cuenta():
         return redirect(url_for("sesion.pagina_inicio_de_sesion"))
     session.pop("usuario_id", None)
 
-    db.session.delete(usuario)
+    for simulacion in usuario.simulaciones:
+        db.session.query(Cola).filter_by(simulacion_id=simulacion.id).delete()
+        db.session.query(Generaciones).filter_by(simulacion_id=simulacion.id).delete()
+
+    db.session.query(Simulaciones).filter_by(usuario_id=usuario.id).delete()
+
+    db.session.query(Usuarios).filter_by(id=usuario.id).delete()
     db.session.commit()
     flash("Cuenta eliminada.", "exito")
     return redirect(url_for("inicio.pagina_inicio"))

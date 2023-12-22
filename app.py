@@ -115,9 +115,9 @@ def crea_usuario():
         # Si el usuario no existe, crea uno nuevo
         usuario = Usuarios(nombre, apellido, correo, contrasena)
 
-    # Para test se limita a 5 usuarios registrados
-    if Usuarios.query.count() >= 5:
-        flash("Limite de usuarios alcanzado: 5", "advertencia")
+    # Para test se limita a 20 usuarios registrados
+    if Usuarios.query.count() >= 20:
+        flash("Limite de usuarios alcanzado: 20", "advertencia")
         return redirect(url_for("registro_usuario.pagina_registro_usuario"))
     db.session.add(usuario)
     db.session.commit()
